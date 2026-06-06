@@ -257,7 +257,7 @@
       </div>
 
       <div class="bottom">
-        <button class="buy" onclick="openTariffs('all')">🔓 Получить доступ</button>
+        <button class="buy" onclick="openAllTariffs()">🔓 Получить доступ</button>
         <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Написать в поддержку</a>
       </div>
     </div>
@@ -438,6 +438,44 @@
     function getActiveScreen() {
       const active = document.querySelector(".screen.active");
       return active ? active.id : "home";
+    }
+
+
+    function openAllTariffs() {
+      previousScreen = getActiveScreen();
+      document.getElementById("tariffTitle").innerText = "🔓 Выберите доступ";
+      document.getElementById("tariffSubtitle").innerText = "Выберите направление и срок подписки. Тарифы подгружаются из Google Таблицы.";
+
+      const list = document.getElementById("tariffList");
+      list.innerHTML = "";
+
+      const groups = [
+        ["men", "👨 Для мужчин"],
+        ["women", "👩 Для женщин"],
+        ["bdsm", "💞 БДСМ & Swing"],
+        ["all", "💎 Всё и сразу"]
+      ];
+
+      groups.forEach(([key, title]) => {
+        const groupItems = (tariffs[key] && tariffs[key].length) ? tariffs[key] : (fallbackTariffs[key] || []);
+        if (!groupItems.length) return;
+
+        const heading = document.createElement("h3");
+        heading.innerText = title;
+        heading.style.margin = "18px 0 8px";
+        list.appendChild(heading);
+
+        groupItems.forEach(item => {
+          const a = document.createElement("a");
+          a.className = "tariff" + (item.recommended ? " recommended" : "");
+          a.href = item.url;
+          a.target = "_blank";
+          a.innerHTML = `<div><b>${item.tariff}</b><div class="small">${item.recommended ? "рекомендуемый вариант" : item.button}</div></div><div class="price">${item.price}</div>`;
+          list.appendChild(a);
+        });
+      });
+
+      openScreen("tariffs");
     }
 
     function openTariffs(key) {
