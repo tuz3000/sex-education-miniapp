@@ -430,34 +430,6 @@
       all: { title: "💎 Всё и сразу", subtitle: "Доступ сразу ко всем направлениям: мужчины, женщины и БДСМ & Swing." }
     };
 
-
-    function ensureRequiredTariffs() {
-      // Если Google Таблица по какой-то причине не вернула тариф "1 день" для мужчин,
-      // добавляем его из резервного списка, чтобы он всегда отображался.
-      if (!tariffs.men || !Array.isArray(tariffs.men)) {
-        tariffs.men = [];
-      }
-
-      const hasMenOneDay = tariffs.men.some(item =>
-        String(item.tariff || "").toLowerCase().includes("1 день") ||
-        String(item.price || "").toLowerCase().includes("1 день")
-      );
-
-      if (!hasMenOneDay) {
-        const oneDay = fallbackTariffs.men.find(item =>
-          String(item.tariff || "").toLowerCase().includes("1 день")
-        );
-
-        if (oneDay) {
-          tariffs.men.unshift(oneDay);
-        }
-      }
-
-      if (tariffs.men) {
-        tariffs.men.sort((a, b) => (Number(a.order) || 999) - (Number(b.order) || 999));
-      }
-    }
-
     const data = {
       men: {
         title: "👨 Для мужчин",
@@ -529,10 +501,8 @@
         });
 
         tariffs = Object.keys(loaded).length ? loaded : fallbackTariffs;
-        ensureRequiredTariffs();
       } catch(e) {
         tariffs = fallbackTariffs;
-        ensureRequiredTariffs();
       }
     }
 
@@ -618,7 +588,6 @@
     }
 
     function openAllTariffs() {
-      ensureRequiredTariffs();
       trackEvent("all_tariffs_open");
       previousScreen = getActiveScreen();
       document.getElementById("tariffTitle").innerText = "🔓 Выберите доступ";
@@ -661,7 +630,6 @@
     }
 
     function openTariffs(key) {
-      ensureRequiredTariffs();
       trackEvent("tariffs_open", { section: key });
       previousScreen = getActiveScreen();
       const meta = sectionNames[key] || sectionNames.all;
