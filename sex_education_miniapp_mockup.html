@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Секс-образование Mini App</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #0f1117;
+      color: #fff;
+    }
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #171923 0%, #0f1117 55%, #090a0f 100%);
+      padding: 18px;
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .badge {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      color: #ddd;
+    }
+    h1 {
+      font-size: 28px;
+      line-height: 1.05;
+      margin: 10px 0 8px;
+    }
+    .subtitle {
+      color: #b8bccb;
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+    .search {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      background: rgba(255,255,255,.07);
+      color: white;
+      outline: none;
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-card {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      cursor: pointer;
+      transition: .2s;
+    }
+    .section-card:hover, .cat-card:hover { transform: translateY(-2px); }
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .section-desc {
+      color: #c4c7d4;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      background: rgba(255,255,255,.09);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #f1f1f1;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 12px -18px 14px;
+      padding: 0 18px;
+    }
+    .tab {
+      white-space: nowrap;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      color: #ddd;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .tab.active { background: #fff; color: #111; }
+    .cat-card {
+      padding: 15px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(255,255,255,.1);
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .cat-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .cat-title { font-size: 16px; font-weight: 700; }
+    .cat-desc {
+      color: #b8bccb;
+      font-size: 13px;
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+    .count {
+      font-size: 12px;
+      color: #ffd56a;
+      white-space: nowrap;
+    }
+    .bottom {
+      position: sticky;
+      bottom: 10px;
+      margin-top: 22px;
+    }
+    .buy {
+      width: 100%;
+      border: 0;
+      background: linear-gradient(135deg, #ffd56a, #ff9f43);
+      color: #111;
+      font-weight: 800;
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 10px 35px rgba(255,170,60,.25);
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      color: #ddd;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .hero {
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: radial-gradient(circle at top right, rgba(255,213,106,.28), rgba(255,255,255,.07) 45%);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .examples {
+      margin: 14px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .examples li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      color: #e6e6e6;
+      font-size: 14px;
+    }
+    .locked {
+      background: rgba(255,255,255,.07);
+      padding: 14px;
+      border-radius: 16px;
+      color: #cfd2df;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 14px;
+    }
+    .tariffs {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .tariff {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .price { color: #ffd56a; font-weight: 800; }
+    .small { color:#aeb3c3; font-size:12px; margin-top:4px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div id="home" class="screen active">
+      <div class="top">
+        <div class="badge">18+ образовательный каталог</div>
+        <div class="badge">Mini App</div>
+      </div>
+
+      <h1>📚 Секс-образование</h1>
+      <div class="subtitle">Закрытые библиотеки курсов для мужчин, женщин и пар. Смотри, какие материалы есть внутри, и оформляй доступ через Telegram.</div>
+
+      <input class="search" placeholder="Поиск: массаж, здоровье, БДСМ..." oninput="filterCards(this.value)" />
+
+      <div class="grid" id="sections">
+        <div class="section-card" onclick="openSection('men')">
+          <div class="section-title">👨 Для мужчин</div>
+          <div class="section-desc">Здоровье, секс-техники, массаж, знакомства, соблазнение и отношения.</div>
+          <div class="stats"><span class="pill">10+ категорий</span><span class="pill">2000+ материалов</span></div>
+        </div>
+
+        <div class="section-card" onclick="openSection('women')">
+          <div class="section-title">👩 Для женщин</div>
+          <div class="section-desc">Сексуальность, здоровье, оргазмы, минет, лингам-массаж и отношения.</div>
+          <div class="stats"><span class="pill">15+ категорий</span><span class="pill">2000+ материалов</span></div>
+        </div>
+
+        <div class="section-card" onclick="openSection('bdsm')">
+          <div class="section-title">💞 БДСМ & Swing</div>
+          <div class="section-desc">БДСМ, свинг, шибари, ролевые игры, доминация и тематические фильмы.</div>
+          <div class="stats"><span class="pill">8+ категорий</span><span class="pill">500+ материалов</span></div>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <button class="buy" onclick="openScreen('tariffs')">🔓 Получить доступ</button>
+      </div>
+    </div>
+
+    <div id="section" class="screen">
+      <div class="back" onclick="openScreen('home')">← Назад</div>
+      <div class="hero">
+        <h1 id="sectionTitle">👨 Для мужчин</h1>
+        <div class="subtitle" id="sectionDesc">Описание раздела</div>
+      </div>
+
+      <div id="categoryList"></div>
+
+      <div class="bottom">
+        <button class="buy" onclick="openScreen('tariffs')">🔓 Оформить подписку</button>
+      </div>
+    </div>
+
+    <div id="category" class="screen">
+      <div class="back" onclick="openScreen('section')">← Назад</div>
+      <div class="hero">
+        <h1 id="catTitle">Категория</h1>
+        <div class="subtitle" id="catDesc">Описание категории</div>
+        <div class="stats"><span class="pill" id="catCount">35+ материалов</span><span class="pill">🔒 доступ после оплаты</span></div>
+      </div>
+
+      <h3>Примеры материалов внутри:</h3>
+      <ul class="examples" id="examples"></ul>
+
+      <div class="locked">
+        Это презентационный каталог. Сами видеоуроки и курсы находятся внутри закрытой Telegram-группы. После оплаты ты получишь доступ к группе, топикам, закреплённой навигации и поиску по материалам.
+      </div>
+
+      <div class="bottom">
+        <button class="buy" onclick="openScreen('tariffs')">🔓 Получить доступ</button>
+      </div>
+    </div>
+
+    <div id="tariffs" class="screen">
+      <div class="back" onclick="openScreen('home')">← Назад</div>
+      <h1>Выберите доступ</h1>
+      <div class="subtitle">Кнопки можно связать с твоими тарифами Nemiling.</div>
+
+      <div class="tariffs">
+        <div class="tariff"><div><b>1 день</b><div class="small">Быстро посмотреть материалы</div></div><div class="price">197 ₽</div></div>
+        <div class="tariff"><div><b>1 месяц</b><div class="small">Оптимальный вариант</div></div><div class="price">397 ₽</div></div>
+        <div class="tariff"><div><b>3 месяца</b><div class="small">Максимальная выгода</div></div><div class="price">897 ₽</div></div>
+      </div>
+
+      <div class="bottom">
+        <button class="buy" onclick="alert('Сюда вставляется ссылка Nemiling')">Перейти к оплате</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      men: {
+        title: "👨 Для мужчин",
+        desc: "Курсы и материалы по мужскому здоровью, сексуальным навыкам, массажу, знакомствам и отношениям.",
+        cats: [
+          ["💪 Здоровье мужчины","Эрекция, тестостерон, ЗППП, биохакинг, гигиена.","35+","Мужская интимная гигиена|Как долго не кончать|Преждевременная эякуляция|Стойкая эрекция за 7 дней"],
+          ["🔥 Массаж","Йони, сквирт, эротический массаж, массаж груди.","15+","Эротический массаж|Йони и вагинальный массаж|Как пробудить точку G|Массаж женской груди"],
+          ["👅 Кунилингус","Оральные техники и обучающие курсы.","10+","Куни мастер|PRO Куни|Куни техники|Как делать кунилингус"],
+          ["😍 Знакомства и соблазнение","Переписки, свидания, знакомства, уверенность.","20+","Влечение через переписки|РМЭС|Пикап. Самоучитель|Как знакомились пары"],
+          ["🎓 Алекс Лесли","Книги, тренинги, лекции и эфиры.","50+","Базовый тренинг|Тренинг по сексу 2024|Основы соблазнения|7 техник для быстрого секса"],
+          ["🎬 Фильмы","Подборка фильмов и сериалов по теме отношений и сексуальности.","40+","Содержанки|Стыд|Нимфоманка|Мастера секса"]
+        ]
+      },
+      women: {
+        title: "👩 Для женщин",
+        desc: "Материалы по женскому здоровью, сексуальности, оргазмам, минету, лингам-массажу и отношениям.",
+        cats: [
+          ["🌸 Здоровье женщины","Гинекология, интимная гигиена, красота, гормоны, здоровье.","50+","Менструальный цикл|Женская интимная гигиена|Гайд по контрацепции|СПКЯ"],
+          ["👄 Минет","Оральные техники, глубокое горло, лайфхаки.","20+","Оральное искусство|Глубокое горло|Лайфхаки минета|Техники минета"],
+          ["🧘 Тазовое дно","Интимные мышцы, тазовое дно, женские практики.","15+","Таз и тазовое дно|PRO Тазовое дно|Интимные мышцы|Упругая богиня"],
+          ["❤️ Оргазмы и сексуальность","Оргазмы, чувственность, сексуальное мастерство.","40+","Школа оргазма|Развитие женского оргазма|Оргазм за 3 минуты|Высшее любовное мастерство"],
+          ["💆 Лингам-массаж","Массаж мужчины, простата, лингам, эротические техники.","25+","Массаж лингама|Массаж простаты|Тантрический массаж|Эротический массаж"],
+          ["🎬 Фильмы","Подборка фильмов и сериалов.","40+","Секс в большом городе|365 дней|Секретарша|Открытый брак"]
+        ]
+      },
+      bdsm: {
+        title: "💞 БДСМ & Swing",
+        desc: "Материалы для пар: БДСМ, свинг, шибари, ролевые игры, доминация и тематические фильмы.",
+        cats: [
+          ["⛓️ БДСМ","Основы, безопасность, доминирование, практики.","20+","Библия БДСМ|Азбука БДСМ|Основы БДСМ|Искусство боли"],
+          ["🎭 Свинг","Свинг, sexwife, групповой секс, отношения в паре.","15+","Свинг для начинающих|50 фактов о свингерах|Секс втроём|Руководство для sexwife"],
+          ["🪢 Шибари","Связывание и эстетика практик.","5+","Шибари|Базовые техники|Практика связывания"],
+          ["👑 Доминация","Женское и мужское доминирование.","10+","Основы женского доминирования|Искусство мужского доминирования|Стань госпожой"],
+          ["🎬 Фильмы","Тематические фильмы: свинг, БДСМ, открытые отношения.","40+","С широко закрытыми глазами|50 оттенков серого|Новизна|Свингер"]
+        ]
+      }
+    };
+
+    let currentSection = "men";
+
+    function openScreen(id){
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      window.scrollTo(0,0);
+    }
+
+    function openSection(key){
+      currentSection = key;
+      const section = data[key];
+      document.getElementById("sectionTitle").innerText = section.title;
+      document.getElementById("sectionDesc").innerText = section.desc;
+      const list = document.getElementById("categoryList");
+      list.innerHTML = "";
+      section.cats.forEach((c, idx) => {
+        const div = document.createElement("div");
+        div.className = "cat-card searchable";
+        div.innerHTML = `<div class="cat-head"><div><div class="cat-title">${c[0]}</div><div class="cat-desc">${c[1]}</div></div><div class="count">${c[2]}</div></div>`;
+        div.onclick = () => openCategory(idx);
+        list.appendChild(div);
+      });
+      openScreen("section");
+    }
+
+    function openCategory(idx){
+      const c = data[currentSection].cats[idx];
+      document.getElementById("catTitle").innerText = c[0];
+      document.getElementById("catDesc").innerText = c[1];
+      document.getElementById("catCount").innerText = c[2] + " материалов";
+      const ul = document.getElementById("examples");
+      ul.innerHTML = "";
+      c[3].split("|").forEach(x => {
+        const li = document.createElement("li");
+        li.innerText = "• " + x;
+        ul.appendChild(li);
+      });
+      openScreen("category");
+    }
+
+    function filterCards(q){
+      q = q.toLowerCase();
+      document.querySelectorAll(".section-card").forEach(card => {
+        card.style.display = card.innerText.toLowerCase().includes(q) ? "block" : (q ? "none" : "block");
+      });
+    }
+  </script>
+</body>
+</html>
