@@ -278,7 +278,7 @@
 
       <div class="bottom">
         <button class="buy" onclick="openAllTariffs()">🔓 Получить доступ</button>
-        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Написать в поддержку</a>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniApp()">💬 Написать в поддержку</a>
         <div class="bot-actions">
           <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
           <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
@@ -298,7 +298,7 @@
 
       <div class="bottom">
         <button class="buy" onclick="openTariffs(currentSection)">🔓 Оформить подписку</button>
-        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Поддержка</a>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniApp()">💬 Поддержка</a>
         <div class="bot-actions">
           <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
           <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
@@ -324,7 +324,7 @@
 
       <div class="bottom">
         <button class="buy" onclick="openTariffs(currentSection)">🔓 Получить доступ</button>
-        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Поддержка</a>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniApp()">💬 Поддержка</a>
         <div class="bot-actions">
           <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
           <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
@@ -340,7 +340,7 @@
       <div class="tariffs" id="tariffList">
         <div class="loading">Загружаю тарифы...</div>
       </div>
-      <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Нужна помощь с оплатой?</a>
+      <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniApp()">💬 Нужна помощь с оплатой?</a>
         <div class="bot-actions">
           <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
           <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
@@ -353,6 +353,7 @@
     const SHEET_ID = "1E6wAXLQRKI1CEkAqterKMYS4ATpgvuaiFiBqn8kRXZc";
     const SHEET_NAME = "Лист1";
     const SUPPORT_URL = "https://t.me/seeex_education_support_bot";
+    const STATS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxP6FzEWh3LXRlwSaKRBi_Bo16CAd0CD0Pcif5nGANytN8zFaJ-sgECXJP3AQ8jYue4yA/exec";
 
     let tariffs = {};
 
@@ -481,6 +482,40 @@
     }
 
 
+    function getSessionId() {
+      let id = localStorage.getItem("sexedu_session_id");
+      if (!id) {
+        id = Date.now() + "_" + Math.random().toString(36).slice(2);
+        localStorage.setItem("sexedu_session_id", id);
+      }
+      return id;
+    }
+
+    function trackEvent(event, data = {}) {
+      try {
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+        const payload = {
+          event,
+          data,
+          user_id: tgUser.id || "",
+          username: tgUser.username || "",
+          first_name: tgUser.first_name || "",
+          session_id: getSessionId(),
+          page: location.href,
+          user_agent: navigator.userAgent
+        };
+
+        fetch(STATS_ENDPOINT, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch(e) {}
+    }
+
+
+
 
 
     function closeMiniApp() {
@@ -498,6 +533,7 @@
     }
 
     function openBotCommand(command) {
+      trackEvent(command + "_click");
       const url = "https://t.me/seeex_education_bot?start=" + command;
 
       try {
@@ -512,6 +548,7 @@
     }
 
     function openAllTariffs() {
+      trackEvent("all_tariffs_open");
       previousScreen = getActiveScreen();
       document.getElementById("tariffTitle").innerText = "🔓 Выберите доступ";
       document.getElementById("tariffSubtitle").innerText = "Выберите направление и срок подписки. Тарифы подгружаются из Google Таблицы.";
@@ -540,7 +577,10 @@
           a.className = "tariff" + (item.recommended ? " recommended" : "");
           a.href = item.url;
           a.target = "_blank";
-          a.onclick = () => closeMiniAppDelayed();
+          a.onclick = () => {
+            trackEvent("tariff_click", { section: key, tariff: item.tariff, price: item.price });
+            closeMiniAppDelayed();
+          };
           a.innerHTML = `<div><b>${item.tariff}</b><div class="small">${item.recommended ? "рекомендуемый вариант" : item.button}</div></div><div class="price">${item.price}</div>`;
           list.appendChild(a);
         });
@@ -550,6 +590,7 @@
     }
 
     function openTariffs(key) {
+      trackEvent("tariffs_open", { section: key });
       previousScreen = getActiveScreen();
       const meta = sectionNames[key] || sectionNames.all;
       const items = (tariffs[key] && tariffs[key].length) ? tariffs[key] : (fallbackTariffs[key] || fallbackTariffs.all);
@@ -565,6 +606,10 @@
         a.className = "tariff" + (item.recommended ? " recommended" : "");
         a.href = item.url;
         a.target = "_blank";
+        a.onclick = () => {
+          trackEvent("tariff_click", { section: key, tariff: item.tariff, price: item.price });
+          closeMiniAppDelayed();
+        };
         a.innerHTML = `<div><b>${item.tariff}</b><div class="small">${item.recommended ? "рекомендуемый вариант" : item.button}</div></div><div class="price">${item.price}</div>`;
         list.appendChild(a);
       });
@@ -573,6 +618,7 @@
     }
 
     function openSection(key) {
+      trackEvent("section_open", { section: key });
       currentSection = key;
       const section = data[key];
       document.getElementById("sectionTitle").innerText = section.title;
@@ -591,6 +637,7 @@
 
     function openCategory(idx) {
       const c = data[currentSection].cats[idx];
+      trackEvent("category_open", { section: currentSection, category: c[0] });
       document.getElementById("catTitle").innerText = c[0];
       document.getElementById("catDesc").innerText = c[1];
       document.getElementById("catCount").innerText = c[2] + " материалов";
@@ -611,6 +658,7 @@
       });
     }
 
+    trackEvent("app_open");
     loadTariffsFromSheet();
   </script>
 </body>
