@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Секс-образование 18+</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #0d0f16;
+      color: #fff;
+    }
+
+    .app {
+      max-width: 440px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 80% 0%, rgba(255, 210, 95, 0.16), transparent 32%),
+        linear-gradient(180deg, #171923 0%, #0d0f16 55%, #08090d 100%);
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      color: #d9dbe6;
+      font-size: 12px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    h1 {
+      margin: 10px 0 10px;
+      font-size: 30px;
+      line-height: 1.05;
+      letter-spacing: -0.4px;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
+    h3 {
+      margin: 20px 0 10px;
+      font-size: 17px;
+    }
+
+    .subtitle {
+      color: #b8bccb;
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .hero {
+      border-radius: 26px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(255, 213, 106, .22), transparent 45%),
+        rgba(255,255,255,.075);
+      border: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 16px;
+    }
+
+    .quick-panel {
+      border-radius: 24px;
+      padding: 16px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(255,255,255,.12);
+      margin: 16px 0 18px;
+    }
+
+    .quick-title {
+      font-size: 17px;
+      font-weight: 850;
+      margin-bottom: 6px;
+    }
+
+    .quick-desc {
+      color: #b8bccb;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .main-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 850;
+      color: #111;
+      background: linear-gradient(135deg, #ffd86b, #ff9f43);
+      cursor: pointer;
+      box-shadow: 0 12px 36px rgba(255, 171, 60, .22);
+    }
+
+    .secondary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .small-btn,
+    .support-btn {
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.075);
+      color: #fff;
+      border-radius: 16px;
+      padding: 13px 10px;
+      font-size: 14px;
+      font-weight: 750;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .support-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .section-label {
+      margin: 20px 0 10px;
+      font-size: 17px;
+      font-weight: 850;
+    }
+
+    .section-note {
+      color: #aeb3c3;
+      font-size: 13px;
+      line-height: 1.38;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      border-radius: 22px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .card:active {
+      transform: scale(.985);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 850;
+      margin-bottom: 7px;
+    }
+
+    .card-desc {
+      color: #c5c8d4;
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,.09);
+      color: #f2f2f2;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .pill.gold {
+      color: #111;
+      background: linear-gradient(135deg, #ffd86b, #ffb24d);
+      font-weight: 850;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 4px 0 14px;
+      color: #d8dbe6;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .content-box {
+      border-radius: 22px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(255,255,255,.11);
+    }
+
+    .list {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      color: #eceef6;
+      font-size: 14px;
+      line-height: 1.35;
+      padding-left: 22px;
+      position: relative;
+    }
+
+    .list li::before {
+      content: "•";
+      position: absolute;
+      left: 5px;
+      color: #ffd86b;
+      font-weight: 900;
+    }
+
+    .authors {
+      color: #d6d9e6;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .bottom {
+      position: sticky;
+      bottom: 10px;
+      margin-top: 18px;
+      z-index: 5;
+    }
+
+    .tariffs {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tariff {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .tariff.recommended {
+      border-color: rgba(255,216,107,.55);
+      background: rgba(255,216,107,.12);
+    }
+
+    .price {
+      color: #ffd86b;
+      font-size: 17px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .small {
+      color: #aeb3c3;
+      font-size: 12px;
+      line-height: 1.35;
+      margin-top: 4px;
+    }
+
+    .loading,
+    .empty {
+      color: #b8bccb;
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,.07);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .notice {
+      margin-top: 14px;
+      color: #aeb3c3;
+      font-size: 12px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <div id="home" class="screen active">
+      <div class="top">
+        <div class="badge">18+ образовательные материалы</div>
+        <a class="badge" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_top_click'); closeMiniAppDelayed()">Поддержка</a>
+      </div>
+
+      <div class="hero">
+        <h1>📚 Секс-образование</h1>
+        <div class="subtitle">
+          Закрытые библиотеки курсов, гайдов, видео и книг по сексуальному образованию, отношениям, телесности и интимному здоровью.
+        </div>
+        <button class="main-btn" onclick="openAllTariffs()">🔓 Получить доступ</button>
+      </div>
+
+      <div class="quick-panel">
+        <div class="quick-title">🚀 Быстрые действия</div>
+        <div class="quick-desc">Покупка доступа, проверка подписки и связь с поддержкой.</div>
+
+        <div class="secondary-grid">
+          <button class="small-btn" onclick="openBotCommand('plans')">📋 Тарифы</button>
+          <button class="small-btn" onclick="openBotCommand('status')">⭐ Моя подписка</button>
+        </div>
+
+        <a class="support-btn" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniAppDelayed()">💬 Написать в поддержку</a>
+      </div>
+
+      <div class="section-label">📚 Что внутри?</div>
+      <div class="section-note">
+        Кратко по направлениям. Полный список материалов находится внутри закрытых каналов.
+      </div>
+
+      <div class="card" onclick="openDirection('men')">
+        <div class="card-title">👨 Для мужчин</div>
+        <div class="card-desc">
+          Секс-техники, здоровье, кунилингус, сквирт, эротический массаж, отношения, знакомства и уверенность.
+        </div>
+        <div class="pills">
+          <span class="pill">секс-техники</span>
+          <span class="pill">массаж</span>
+          <span class="pill">здоровье</span>
+          <span class="pill">отношения</span>
+        </div>
+      </div>
+
+      <div class="card" onclick="openDirection('women')">
+        <div class="card-title">👩 Для женщин</div>
+        <div class="card-desc">
+          Женское здоровье, оргазмы, тазовое дно, минет, лингам-массаж, отношения, красота и телесные практики.
+        </div>
+        <div class="pills">
+          <span class="pill">оргазмы</span>
+          <span class="pill">здоровье</span>
+          <span class="pill">техники</span>
+          <span class="pill">отношения</span>
+        </div>
+      </div>
+
+      <div class="card" onclick="openDirection('bdsm')">
+        <div class="card-title">💞 БДСМ & Swing</div>
+        <div class="card-desc">
+          БДСМ для начинающих, доминирование, свинг, ролевые игры, шибари, безопасность, согласие и границы.
+        </div>
+        <div class="pills">
+          <span class="pill">БДСМ</span>
+          <span class="pill">свинг</span>
+          <span class="pill">шибари</span>
+          <span class="pill">ролевые игры</span>
+        </div>
+      </div>
+
+      <div class="card" onclick="openDirection('all')">
+        <div class="card-title">💎 Всё и сразу</div>
+        <div class="card-desc">
+          Максимальный доступ ко всем направлениям: мужчины, женщины, БДСМ & Swing, книги, гайды, фильмы и дополнительные материалы 18+.
+        </div>
+        <div class="pills">
+          <span class="pill gold">максимальная выгода</span>
+          <span class="pill">все направления</span>
+        </div>
+      </div>
+
+      <div class="notice">
+        Материалы предназначены для совершеннолетних. Это образовательный каталог 18+.
+      </div>
+    </div>
+
+    <div id="detail" class="screen">
+      <div class="back" onclick="openScreen('home')">← Назад</div>
+
+      <div class="hero">
+        <h1 id="detailTitle">👨 Для мужчин</h1>
+        <div class="subtitle" id="detailSubtitle"></div>
+      </div>
+
+      <div class="content-box">
+        <h2>Что внутри</h2>
+        <ul class="list" id="detailList"></ul>
+      </div>
+
+      <div class="content-box">
+        <h2>Авторы и источники</h2>
+        <div class="authors" id="detailAuthors"></div>
+      </div>
+
+      <div class="bottom">
+        <button class="main-btn" onclick="openTariffs(currentDirection)">🔓 Оформить доступ</button>
+        <div class="secondary-grid">
+          <button class="small-btn" onclick="openBotCommand('plans')">📋 Тарифы</button>
+          <button class="small-btn" onclick="openBotCommand('status')">⭐ Моя подписка</button>
+        </div>
+        <a class="support-btn" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_detail_click'); closeMiniAppDelayed()">💬 Задать вопрос</a>
+      </div>
+    </div>
+
+    <div id="tariffs" class="screen">
+      <div class="back" onclick="openScreen(previousScreen)">← Назад</div>
+      <div class="hero">
+        <h1 id="tariffTitle">🔓 Выберите доступ</h1>
+        <div class="subtitle" id="tariffSubtitle">Выберите направление и срок подписки.</div>
+      </div>
+
+      <div class="tariffs" id="tariffList">
+        <div class="loading">Загружаю тарифы...</div>
+      </div>
+
+      <a class="support-btn" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_tariffs_click'); closeMiniAppDelayed()">💬 Нужна помощь с оплатой?</a>
+    </div>
+
+  </div>
+
+  <script>
+    const TARIFF_SHEET_ID = "1E6wAXLQRKI1CEkAqterKMYS4ATpgvuaiFiBqn8kRXZc";
+    const TARIFF_SHEET_NAME = "Лист1";
+
+    const BOT_URL = "https://t.me/seeex_education_bot";
+    const SUPPORT_URL = "https://t.me/seeex_education_support_bot";
+
+    const STATS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxP6FzEWh3LXRlwSaKRBi_Bo16CAd0CD0Pcif5nGANytN8zFaJ-sgECXJP3AQ8jYue4yA/exec";
+
+    let currentDirection = "men";
+    let previousScreen = "home";
+    let tariffs = {};
+
+    const directions = {
+      men: {
+        title: "👨 Для мужчин",
+        subtitle: "Библиотека для мужчин, которые хотят лучше понимать секс, женское удовольствие, отношения, своё тело и уверенность в близости.",
+        tariffTitle: "👨 Доступ для мужчин",
+        tariffSubtitle: "Выберите срок доступа к материалам для мужчин.",
+        list: [
+          "мужское здоровье, интимная гигиена, эрекция, тестостерон",
+          "секс-техники, позы, оргазмы и сквирт",
+          "кунилингус и женское удовольствие",
+          "эротический массаж, йони-массаж и массаж груди",
+          "анальный секс и безопасность",
+          "знакомства, переписки, свидания и соблазнение",
+          "психология отношений, расставания и уверенность",
+          "фильмы, книги, гайды и дополнительные материалы 18+"
+        ],
+        authors: "Дмитрий Свиридов, Евгений Акатов, Алекс Лесли, Расим Каримов, Арсен Маркарян, Наталья Ионова, Валерия Агинская, Виктория Рахматулина, Эриксон Низигийимана, Никита Мартынов, Ирина Баранова, Dr. Eric Berg и другие."
+      },
+      women: {
+        title: "👩 Для женщин",
+        subtitle: "Библиотека для женщин, которые хотят глубже понимать своё тело, сексуальность, удовольствие, отношения и интимное здоровье.",
+        tariffTitle: "👩 Доступ для женщин",
+        tariffSubtitle: "Выберите срок доступа к материалам для женщин.",
+        list: [
+          "женское здоровье, цикл, гормоны и интимная гигиена",
+          "оргазмы, возбуждение, сексуальность и раскрытие тела",
+          "тазовое дно, интимные мышцы и женские практики",
+          "минет, оральные ласки и техники для партнёра",
+          "лингам-массаж и эротический массаж мужчине",
+          "анальный секс, безопасность и подготовка",
+          "отношения, любовь к себе и выбор партнёра",
+          "знакомства, переписки и свидания",
+          "грудь, самомассаж, уход за телом, красота и биохакинг",
+          "фильмы, книги, гайды и дополнительные материалы 18+"
+        ],
+        authors: "Ольга Василенко, Екатерина Бибишева, Оксана Бачинская, Екатерина Федорова, Наталья Ионова, Валерия Агинская, Виктория Рахматулина, Юлия Варра, Екатерина Любимова, Лилия Гарипова, Татьяна Лисовская, Елизавета Гребешкова, Ирина Баранова, Ольга Белоконь, Наталия Музыка, Алексей Тимофеев, Inna de Almeida, Dr. Eric Berg и другие."
+      },
+      bdsm: {
+        title: "💞 БДСМ & Swing",
+        subtitle: "Библиотека для взрослых пар и людей, которым интересны новые форматы близости, доверие, границы, ролевые практики, БДСМ и свинг-культура.",
+        tariffTitle: "💞 Доступ БДСМ & Swing",
+        tariffSubtitle: "Выберите срок доступа к материалам БДСМ & Swing.",
+        list: [
+          "основы БДСМ для начинающих",
+          "безопасность, границы, согласие и правила",
+          "доминирование и подчинение",
+          "женское и мужское доминирование",
+          "ролевые игры и сценарии для взрослых",
+          "шибари и эстетика связывания",
+          "свинг, секс втроём и групповые форматы",
+          "отношения в открытых форматах",
+          "книги, гайды, фильмы и дополнительные материалы 18+"
+        ],
+        authors: "Тристан Таормино, Вета, Кошачья Мята, Ирина Губанова, Нина Аринина, White Incubus, Ивета Гоар, Дмитрий Секс-Инструктор, Валерия Агинская, Алекс Лесли, Алиса Фокс, Дмитрий Свиридов, Борис Мосафир, Марина Картун, Наталья Касарина, Kinky Russia, Госпожа Полина и другие."
+      },
+      all: {
+        title: "💎 Всё и сразу",
+        subtitle: "Максимальный доступ ко всем направлениям: мужчины, женщины, БДСМ & Swing, книги, гайды, фильмы и дополнительные материалы 18+.",
+        tariffTitle: "💎 Всё и сразу",
+        tariffSubtitle: "Доступ сразу ко всем направлениям.",
+        list: [
+          "материалы для мужчин",
+          "материалы для женщин",
+          "БДСМ & Swing",
+          "большая библиотека книг, гайдов и пособий",
+          "фильмы, видео и дополнительные материалы 18+",
+          "лучший вариант, если хочется получить всю библиотеку сразу"
+        ],
+        authors: "Внутри собраны материалы разных авторов и направлений: сексология, отношения, интимное здоровье, телесные практики, эротический массаж, БДСМ, свинг, тантра, книги и гайды."
+      }
+    };
+
+    const fallbackTariffs = {
+      men: [
+        {tariff:"1 день доступ", price:"1 день 297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA0", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"1 неделя 797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQx", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 месяц 1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQ0", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"3 месяца 2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzA5", recommended:false, button:"Оформить доступ", order:4}
+      ],
+      women: [
+        {tariff:"1 день доступ", price:"1 день 297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA1", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"1 неделя 797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODkx", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 месяц 1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODky", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"3 месяца 2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzEy", recommended:false, button:"Оформить доступ", order:4}
+      ],
+      bdsm: [
+        {tariff:"1 день доступ", price:"1 день 197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA2", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"1 неделя 597 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTky", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 месяц 1 197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTkz", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"3 месяца 1 897 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTk3", recommended:false, button:"Оформить доступ", order:4}
+      ],
+      all: [
+        {tariff:"1 неделя доступ М, Ж, МЖ", price:"1 неделя 1 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MTAy", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 месяц доступ", price:"1 месяц 2 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk4", recommended:true, button:"Оформить доступ", order:2},
+        {tariff:"3 месяца доступ", price:"3 месяца 4 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk5", recommended:false, button:"Оформить доступ", order:3}
+      ]
+    };
+
+    function initTelegram() {
+      try {
+        if (window.Telegram && Telegram.WebApp) {
+          Telegram.WebApp.ready();
+          Telegram.WebApp.expand();
+        }
+      } catch(e) {}
+    }
+
+    function openScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      window.scrollTo(0, 0);
+    }
+
+    function getActiveScreen() {
+      const active = document.querySelector(".screen.active");
+      return active ? active.id : "home";
+    }
+
+    function safeText(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function openDirection(key) {
+      currentDirection = key;
+      previousScreen = "home";
+
+      const data = directions[key] || directions.men;
+
+      document.getElementById("detailTitle").innerText = data.title;
+      document.getElementById("detailSubtitle").innerText = data.subtitle;
+      document.getElementById("detailAuthors").innerText = data.authors;
+
+      const list = document.getElementById("detailList");
+      list.innerHTML = "";
+      data.list.forEach(item => {
+        const li = document.createElement("li");
+        li.innerText = item;
+        list.appendChild(li);
+      });
+
+      trackEvent("direction_open", { direction: key });
+      openScreen("detail");
+    }
+
+    function openTariffs(key) {
+      previousScreen = getActiveScreen();
+      currentDirection = key || "all";
+
+      const data = directions[currentDirection] || directions.all;
+      document.getElementById("tariffTitle").innerText = data.tariffTitle || "🔓 Выберите доступ";
+      document.getElementById("tariffSubtitle").innerText = data.tariffSubtitle || "Выберите срок доступа.";
+
+      renderTariffs(currentDirection);
+      trackEvent("tariffs_open", { direction: currentDirection });
+      openScreen("tariffs");
+    }
+
+    function openAllTariffs() {
+      previousScreen = getActiveScreen();
+      document.getElementById("tariffTitle").innerText = "🔓 Выберите доступ";
+      document.getElementById("tariffSubtitle").innerText = "Выберите направление и срок подписки.";
+
+      const list = document.getElementById("tariffList");
+      list.innerHTML = "";
+
+      [
+        ["men", "👨 Для мужчин"],
+        ["women", "👩 Для женщин"],
+        ["bdsm", "💞 БДСМ & Swing"],
+        ["all", "💎 Всё и сразу"]
+      ].forEach(([key, title]) => {
+        const items = getTariffItems(key);
+        if (!items.length) return;
+
+        const h = document.createElement("h3");
+        h.innerText = title;
+        list.appendChild(h);
+
+        items.forEach(item => list.appendChild(makeTariffElement(key, item)));
+      });
+
+      trackEvent("all_tariffs_open");
+      openScreen("tariffs");
+    }
+
+    function renderTariffs(key) {
+      const list = document.getElementById("tariffList");
+      const items = getTariffItems(key);
+
+      list.innerHTML = "";
+
+      if (!items.length) {
+        list.innerHTML = '<div class="empty">Тарифы не загрузились. Нажмите “Тарифы” или напишите в поддержку.</div>';
+        return;
+      }
+
+      items.forEach(item => {
+        list.appendChild(makeTariffElement(key, item));
+      });
+    }
+
+    function getTariffItems(key) {
+      const loaded = tariffs[key];
+      if (loaded && Array.isArray(loaded) && loaded.length) return loaded;
+      return fallbackTariffs[key] || [];
+    }
+
+    function makeTariffElement(key, item) {
+      const a = document.createElement("a");
+      a.className = "tariff" + (item.recommended ? " recommended" : "");
+      a.href = item.url;
+      a.target = "_blank";
+      a.onclick = () => {
+        trackEvent("tariff_click", {
+          direction: key,
+          tariff: item.tariff,
+          price: item.price
+        });
+        closeMiniAppDelayed();
+      };
+
+      a.innerHTML = `
+        <div>
+          <b>${safeText(item.tariff)}</b>
+          <div class="small">${item.recommended ? "рекомендуемый вариант" : safeText(item.button || "Оформить доступ")}</div>
+        </div>
+        <div class="price">${safeText(item.price)}</div>
+      `;
+
+      return a;
+    }
+
+    function getCell(cells, index) {
+      return cells[index] && cells[index].v != null ? String(cells[index].v).trim() : "";
+    }
+
+    function loadTariffsFromSheet() {
+      const cb = "tariff_cb_" + Date.now();
+      window[cb] = function(parsed) {
+        try {
+          const rows = parsed.table.rows || [];
+          const loaded = {};
+
+          rows.slice(1).forEach(row => {
+            const c = row.c || [];
+
+            const section = getCell(c, 0);
+            const tariff = getCell(c, 2);
+            const price = getCell(c, 4);
+            const url = getCell(c, 5);
+            const recommended = getCell(c, 6).toLowerCase() === "да";
+            const button = getCell(c, 7) || "Оформить доступ";
+            const order = Number(getCell(c, 8)) || 999;
+
+            if (!section || !tariff || !price || !url) return;
+
+            if (!loaded[section]) loaded[section] = [];
+            loaded[section].push({
+              tariff,
+              price,
+              url,
+              recommended,
+              button,
+              order
+            });
+          });
+
+          Object.keys(loaded).forEach(key => {
+            loaded[key].sort((a, b) => a.order - b.order);
+          });
+
+          tariffs = Object.keys(loaded).length ? loaded : fallbackTariffs;
+          ensureMenOneDay();
+        } catch(e) {
+          tariffs = fallbackTariffs;
+        }
+
+        const script = document.getElementById(cb);
+        if (script) script.remove();
+        delete window[cb];
+      };
+
+      const script = document.createElement("script");
+      script.id = cb;
+      script.src = `https://docs.google.com/spreadsheets/d/${TARIFF_SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(TARIFF_SHEET_NAME)}&tqx=${encodeURIComponent("out:json;responseHandler:" + cb)}&_=${Date.now()}`;
+      script.onerror = function() {
+        tariffs = fallbackTariffs;
+      };
+
+      document.body.appendChild(script);
+
+      setTimeout(() => {
+        if (!Object.keys(tariffs).length) {
+          tariffs = fallbackTariffs;
+          ensureMenOneDay();
+        }
+      }, 6000);
+    }
+
+    function ensureMenOneDay() {
+      if (!tariffs.men || !Array.isArray(tariffs.men)) tariffs.men = [];
+
+      const hasOneDay = tariffs.men.some(item =>
+        String(item.tariff || "").toLowerCase().includes("1 день") ||
+        String(item.price || "").toLowerCase().includes("1 день")
+      );
+
+      if (!hasOneDay && fallbackTariffs.men[0]) {
+        tariffs.men.unshift(fallbackTariffs.men[0]);
+      }
+    }
+
+    function openBotCommand(command) {
+      trackEvent(command + "_click");
+
+      const url = BOT_URL + "?start=" + command;
+
+      try {
+        if (window.Telegram && Telegram.WebApp) {
+          Telegram.WebApp.openTelegramLink(url);
+          setTimeout(() => Telegram.WebApp.close(), 150);
+          return;
+        }
+      } catch(e) {}
+
+      window.location.href = url;
+    }
+
+    function closeMiniAppDelayed() {
+      setTimeout(() => {
+        try {
+          if (window.Telegram && Telegram.WebApp) Telegram.WebApp.close();
+        } catch(e) {}
+      }, 150);
+    }
+
+    function getSessionId() {
+      let id = localStorage.getItem("sexedu_session_id");
+      if (!id) {
+        id = Date.now() + "_" + Math.random().toString(36).slice(2);
+        localStorage.setItem("sexedu_session_id", id);
+      }
+      return id;
+    }
+
+    function trackEvent(event, data = {}) {
+      try {
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+
+        const payload = {
+          event,
+          data,
+          user_id: tgUser.id || "",
+          username: tgUser.username || "",
+          first_name: tgUser.first_name || "",
+          session_id: getSessionId(),
+          page: location.href,
+          user_agent: navigator.userAgent
+        };
+
+        fetch(STATS_ENDPOINT, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch(e) {}
+    }
+
+    initTelegram();
+    tariffs = fallbackTariffs;
+    loadTariffsFromSheet();
+    trackEvent("app_open");
+  </script>
+</body>
+</html>
