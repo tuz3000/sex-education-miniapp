@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Админка Mini App</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #0f1117;
+      color: #fff;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 { margin: 0 0 8px; }
+    .muted { color: #aeb3c3; font-size: 14px; }
+    .panel {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 16px;
+      margin: 14px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+    .card {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .num {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffd56a;
+      margin-top: 6px;
+    }
+    input, button {
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 12px;
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      font-size: 14px;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffd56a, #ff9f43);
+      color: #111;
+      border: 0;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px 120px;
+      gap: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid rgba(255,255,255,.09);
+      padding: 9px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: #ffd56a; }
+    .bar {
+      height: 10px;
+      background: rgba(255,255,255,.09);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .bar > span {
+      display:block;
+      height: 100%;
+      background: #ffd56a;
+    }
+    .danger { color: #ff9f9f; }
+    @media(max-width:700px) {
+      .row { grid-template-columns: 1fr; }
+      table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📊 Админка Mini App</h1>
+    <div class="muted">Статистика просмотров, кликов, тарифов и действий пользователей.</div>
+
+    <div class="panel">
+      <div class="row">
+        <input id="endpoint" placeholder="Google Apps Script Web App URL">
+        <input id="key" placeholder="Admin key">
+        <button onclick="saveAndLoad()">Загрузить</button>
+      </div>
+      <div class="muted" style="margin-top:10px">
+        Вставь URL опубликованного Google Apps Script и секретный ключ из кода.
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="muted">Всего событий</div><div id="totalEvents" class="num">—</div></div>
+      <div class="card"><div class="muted">Уникальных пользователей</div><div id="uniqueUsers" class="num">—</div></div>
+      <div class="card"><div class="muted">Открытий Mini App</div><div id="appOpens" class="num">—</div></div>
+      <div class="card"><div class="muted">Кликов по тарифам</div><div id="tariffClicks" class="num">—</div></div>
+      <div class="card"><div class="muted">Кликов поддержка</div><div id="supportClicks" class="num">—</div></div>
+      <div class="card"><div class="muted">Кликов подписка</div><div id="statusClicks" class="num">—</div></div>
+    </div>
+
+    <div class="panel">
+      <h3>🔥 События</h3>
+      <div id="eventsChart"></div>
+    </div>
+
+    <div class="panel">
+      <h3>📂 Разделы / категории</h3>
+      <div id="sectionsChart"></div>
+    </div>
+
+    <div class="panel">
+      <h3>💳 Тарифы</h3>
+      <div id="tariffsChart"></div>
+    </div>
+
+    <div class="panel">
+      <h3>🕘 Последние события</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Время</th>
+            <th>Событие</th>
+            <th>Данные</th>
+            <th>Пользователь</th>
+          </tr>
+        </thead>
+        <tbody id="lastEvents"></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+  const savedEndpoint = localStorage.getItem("admin_endpoint") || "";
+  const savedKey = localStorage.getItem("admin_key") || "";
+  document.getElementById("endpoint").value = savedEndpoint;
+  document.getElementById("key").value = savedKey;
+
+  function saveAndLoad() {
+    localStorage.setItem("admin_endpoint", document.getElementById("endpoint").value.trim());
+    localStorage.setItem("admin_key", document.getElementById("key").value.trim());
+    loadStats();
+  }
+
+  function loadJSONP(url) {
+    return new Promise((resolve, reject) => {
+      const cb = "jsonp_cb_" + Math.random().toString(36).slice(2);
+      window[cb] = data => {
+        delete window[cb];
+        script.remove();
+        resolve(data);
+      };
+      const script = document.createElement("script");
+      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb + "&_=" + Date.now();
+      script.onerror = () => reject(new Error("Не удалось загрузить данные"));
+      document.body.appendChild(script);
+    });
+  }
+
+  async function loadStats() {
+    const endpoint = document.getElementById("endpoint").value.trim();
+    const key = document.getElementById("key").value.trim();
+    if (!endpoint || !key) return;
+
+    try {
+      const data = await loadJSONP(endpoint + "?action=summary&key=" + encodeURIComponent(key));
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      document.getElementById("totalEvents").innerText = data.totalEvents || 0;
+      document.getElementById("uniqueUsers").innerText = data.uniqueUsers || 0;
+      document.getElementById("appOpens").innerText = data.counts?.app_open || 0;
+      document.getElementById("tariffClicks").innerText = data.counts?.tariff_click || 0;
+      document.getElementById("supportClicks").innerText = data.counts?.support_click || 0;
+      document.getElementById("statusClicks").innerText = data.counts?.status_click || 0;
+
+      renderBars("eventsChart", data.counts || {});
+      renderBars("sectionsChart", data.sections || {});
+      renderBars("tariffsChart", data.tariffs || {});
+      renderLastEvents(data.lastEvents || []);
+    } catch(e) {
+      alert("Ошибка загрузки: " + e.message);
+    }
+  }
+
+  function renderBars(id, obj) {
+    const box = document.getElementById(id);
+    const entries = Object.entries(obj).sort((a,b) => b[1] - a[1]).slice(0, 20);
+    const max = entries[0]?.[1] || 1;
+
+    if (!entries.length) {
+      box.innerHTML = '<div class="muted">Пока нет данных</div>';
+      return;
+    }
+
+    box.innerHTML = entries.map(([name, value]) => `
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <div>${escapeHtml(name || "—")}</div>
+          <b>${value}</b>
+        </div>
+        <div class="bar"><span style="width:${Math.max(3, value / max * 100)}%"></span></div>
+      </div>
+    `).join("");
+  }
+
+  function renderLastEvents(rows) {
+    const tbody = document.getElementById("lastEvents");
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${escapeHtml(r.timestamp || "")}</td>
+        <td>${escapeHtml(r.event || "")}</td>
+        <td>${escapeHtml(r.data || "")}</td>
+        <td>${escapeHtml(r.user || "")}</td>
+      </tr>
+    `).join("");
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
+  }
+
+  if (savedEndpoint && savedKey) loadStats();
+</script>
+</body>
+</html>
