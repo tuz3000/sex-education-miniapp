@@ -54,14 +54,14 @@
     }
     button {
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 800;
       background: linear-gradient(135deg, #ffd56a, #ff9f43);
       color: #111;
       border: 0;
     }
     .row {
       display: grid;
-      grid-template-columns: 1fr 180px 120px;
+      grid-template-columns: 1fr 180px 140px;
       gap: 10px;
     }
     table {
@@ -88,7 +88,8 @@
       height: 100%;
       background: #ffd56a;
     }
-    .danger { color: #ff9f9f; }
+    .ok { color: #9effb0; }
+    .err { color: #ff9f9f; }
     @media(max-width:700px) {
       .row { grid-template-columns: 1fr; }
       table { font-size: 12px; }
@@ -102,13 +103,11 @@
 
     <div class="panel">
       <div class="row">
-        <input id="endpoint" placeholder="https://script.google.com/macros/s/AKfycbxP6FzEWh3LXRlwSaKRBi_Bo16CAd0CD0Pcif5nGANytN8zFaJ-sgECXJP3AQ8jYue4yA/exec">
-        <input id="key" placeholder="Admin key">
-        <button onclick="saveAndLoad()">Загрузить</button>
+        <input id="endpoint" value="https://script.google.com/macros/s/AKfycbxFzwGEUC8E5SGA18fp-ves_SKrqAmWus7aMVK4OkFLJqlOT0A9FwIi1S9N7hnPcyhniw/exec">
+        <input id="key" value="CHANGE_ME_12345">
+        <button id="loadBtn" type="button">Загрузить</button>
       </div>
-      <div class="muted" style="margin-top:10px">
-        Вставь URL опубликованного Google Apps Script и секретный ключ из кода.
-      </div>
+      <div id="status" class="muted" style="margin-top:10px">Готово к загрузке.</div>
     </div>
 
     <div class="grid">
@@ -120,97 +119,111 @@
       <div class="card"><div class="muted">Кликов подписка</div><div id="statusClicks" class="num">—</div></div>
     </div>
 
-    <div class="panel">
-      <h3>🔥 События</h3>
-      <div id="eventsChart"></div>
-    </div>
-
-    <div class="panel">
-      <h3>📂 Разделы / категории</h3>
-      <div id="sectionsChart"></div>
-    </div>
-
-    <div class="panel">
-      <h3>💳 Тарифы</h3>
-      <div id="tariffsChart"></div>
-    </div>
+    <div class="panel"><h3>🔥 События</h3><div id="eventsChart">Пока нет данных</div></div>
+    <div class="panel"><h3>📂 Разделы / категории</h3><div id="sectionsChart">Пока нет данных</div></div>
+    <div class="panel"><h3>💳 Тарифы</h3><div id="tariffsChart">Пока нет данных</div></div>
 
     <div class="panel">
       <h3>🕘 Последние события</h3>
       <table>
-        <thead>
-          <tr>
-            <th>Время</th>
-            <th>Событие</th>
-            <th>Данные</th>
-            <th>Пользователь</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Время</th><th>Событие</th><th>Данные</th><th>Пользователь</th></tr></thead>
         <tbody id="lastEvents"></tbody>
       </table>
     </div>
   </div>
 
 <script>
-  const savedEndpoint = localStorage.getItem("admin_endpoint") || "";
-  const savedKey = localStorage.getItem("admin_key") || "";
-  document.getElementById("endpoint").value = savedEndpoint;
-  document.getElementById("key").value = savedKey;
+  const loadBtn = document.getElementById("loadBtn");
+  const statusBox = document.getElementById("status");
 
-  function saveAndLoad() {
-    localStorage.setItem("admin_endpoint", document.getElementById("endpoint").value.trim());
-    localStorage.setItem("admin_key", document.getElementById("key").value.trim());
-    loadStats();
+  loadBtn.addEventListener("click", loadStats);
+
+  function setStatus(text, type = "") {
+    statusBox.className = type || "muted";
+    statusBox.textContent = text;
   }
 
   function loadJSONP(url) {
     return new Promise((resolve, reject) => {
       const cb = "jsonp_cb_" + Math.random().toString(36).slice(2);
+      let done = false;
+
       window[cb] = data => {
+        done = true;
         delete window[cb];
         script.remove();
         resolve(data);
       };
+
       const script = document.createElement("script");
       script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb + "&_=" + Date.now();
-      script.onerror = () => reject(new Error("Не удалось загрузить данные"));
+      script.onerror = () => {
+        if (!done) reject(new Error("Не удалось загрузить данные. Проверь Web App URL."));
+      };
+
       document.body.appendChild(script);
+
+      setTimeout(() => {
+        if (!done) {
+          delete window[cb];
+          script.remove();
+          reject(new Error("Нет ответа от Apps Script. Возможно, развертывание не завершено или ссылка старая."));
+        }
+      }, 10000);
     });
   }
 
   async function loadStats() {
     const endpoint = document.getElementById("endpoint").value.trim();
     const key = document.getElementById("key").value.trim();
-    if (!endpoint || !key) return;
+
+    if (!endpoint) {
+      setStatus("Вставь Web App URL.", "err");
+      return;
+    }
+
+    if (!key) {
+      setStatus("Вставь Admin key.", "err");
+      return;
+    }
+
+    setStatus("Загружаю данные...", "muted");
+    loadBtn.disabled = true;
+    loadBtn.textContent = "Загрузка...";
 
     try {
       const data = await loadJSONP(endpoint + "?action=summary&key=" + encodeURIComponent(key));
 
       if (data.error) {
-        alert(data.error);
+        setStatus("Ошибка: " + data.error, "err");
         return;
       }
 
       document.getElementById("totalEvents").innerText = data.totalEvents || 0;
       document.getElementById("uniqueUsers").innerText = data.uniqueUsers || 0;
-      document.getElementById("appOpens").innerText = data.counts?.app_open || 0;
-      document.getElementById("tariffClicks").innerText = data.counts?.tariff_click || 0;
-      document.getElementById("supportClicks").innerText = data.counts?.support_click || 0;
-      document.getElementById("statusClicks").innerText = data.counts?.status_click || 0;
+      document.getElementById("appOpens").innerText = (data.counts && data.counts.app_open) || 0;
+      document.getElementById("tariffClicks").innerText = (data.counts && data.counts.tariff_click) || 0;
+      document.getElementById("supportClicks").innerText = (data.counts && data.counts.support_click) || 0;
+      document.getElementById("statusClicks").innerText = (data.counts && data.counts.status_click) || 0;
 
       renderBars("eventsChart", data.counts || {});
       renderBars("sectionsChart", data.sections || {});
       renderBars("tariffsChart", data.tariffs || {});
       renderLastEvents(data.lastEvents || []);
+
+      setStatus("Данные загружены успешно.", "ok");
     } catch(e) {
-      alert("Ошибка загрузки: " + e.message);
+      setStatus("Ошибка загрузки: " + e.message, "err");
+    } finally {
+      loadBtn.disabled = false;
+      loadBtn.textContent = "Загрузить";
     }
   }
 
   function renderBars(id, obj) {
     const box = document.getElementById(id);
     const entries = Object.entries(obj).sort((a,b) => b[1] - a[1]).slice(0, 20);
-    const max = entries[0]?.[1] || 1;
+    const max = entries.length ? entries[0][1] : 1;
 
     if (!entries.length) {
       box.innerHTML = '<div class="muted">Пока нет данных</div>';
@@ -230,6 +243,11 @@
 
   function renderLastEvents(rows) {
     const tbody = document.getElementById("lastEvents");
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="muted">Пока нет данных</td></tr>';
+      return;
+    }
+
     tbody.innerHTML = rows.map(r => `
       <tr>
         <td>${escapeHtml(r.timestamp || "")}</td>
@@ -247,8 +265,6 @@
       .replaceAll(">","&gt;")
       .replaceAll('"',"&quot;");
   }
-
-  if (savedEndpoint && savedKey) loadStats();
 </script>
 </body>
 </html>
