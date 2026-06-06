@@ -24,6 +24,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 18px;
+      gap: 8px;
     }
     .badge {
       background: rgba(255,255,255,.08);
@@ -32,12 +33,14 @@
       padding: 7px 11px;
       font-size: 12px;
       color: #ddd;
+      text-decoration: none;
     }
     h1 {
       font-size: 28px;
       line-height: 1.05;
       margin: 10px 0 8px;
     }
+    h3 { margin: 18px 0 10px; }
     .subtitle {
       color: #b8bccb;
       font-size: 14px;
@@ -55,12 +58,6 @@
       margin-bottom: 16px;
       font-size: 15px;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
     .section-card {
       border-radius: 22px;
       padding: 18px;
@@ -68,8 +65,9 @@
       border: 1px solid rgba(255,255,255,.12);
       cursor: pointer;
       transition: .2s;
+      margin-bottom: 12px;
     }
-    .section-card:hover, .cat-card:hover { transform: translateY(-2px); }
+    .section-card:hover, .cat-card:hover, .tariff:hover { transform: translateY(-2px); }
     .section-title {
       font-size: 22px;
       font-weight: 700;
@@ -92,23 +90,6 @@
       font-size: 12px;
       color: #f1f1f1;
     }
-    .tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      margin: 12px -18px 14px;
-      padding: 0 18px;
-    }
-    .tab {
-      white-space: nowrap;
-      padding: 9px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      color: #ddd;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .tab.active { background: #fff; color: #111; }
     .cat-card {
       padding: 15px;
       border-radius: 18px;
@@ -151,6 +132,20 @@
       font-size: 16px;
       cursor: pointer;
       box-shadow: 0 10px 35px rgba(255,170,60,.25);
+    }
+    .support {
+      width: 100%;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 10px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.07);
+      color: #fff;
+      font-weight: 700;
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 15px;
     }
     .screen { display: none; }
     .screen.active { display: block; }
@@ -196,6 +191,8 @@
       margin-top: 14px;
     }
     .tariff {
+      text-decoration: none;
+      color: #fff;
       padding: 16px;
       border-radius: 18px;
       background: rgba(255,255,255,.08);
@@ -203,9 +200,21 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: .2s;
     }
-    .price { color: #ffd56a; font-weight: 800; }
+    .price { color: #ffd56a; font-weight: 800; font-size: 18px; }
     .small { color:#aeb3c3; font-size:12px; margin-top:4px; }
+    .recommended {
+      border-color: rgba(255,213,106,.55);
+      background: rgba(255,213,106,.12);
+    }
+    .loading {
+      color: #b8bccb;
+      background: rgba(255,255,255,.07);
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -213,7 +222,7 @@
     <div id="home" class="screen active">
       <div class="top">
         <div class="badge">18+ образовательный каталог</div>
-        <div class="badge">Mini App</div>
+        <a class="badge" href="https://t.me/seeex_education_support_bot" target="_blank">Поддержка</a>
       </div>
 
       <h1>📚 Секс-образование</h1>
@@ -221,28 +230,35 @@
 
       <input class="search" placeholder="Поиск: массаж, здоровье, БДСМ..." oninput="filterCards(this.value)" />
 
-      <div class="grid" id="sections">
-        <div class="section-card" onclick="openSection('men')">
+      <div id="sections">
+        <div class="section-card searchable" onclick="openSection('men')">
           <div class="section-title">👨 Для мужчин</div>
           <div class="section-desc">Здоровье, секс-техники, массаж, знакомства, соблазнение и отношения.</div>
           <div class="stats"><span class="pill">10+ категорий</span><span class="pill">2000+ материалов</span></div>
         </div>
 
-        <div class="section-card" onclick="openSection('women')">
+        <div class="section-card searchable" onclick="openSection('women')">
           <div class="section-title">👩 Для женщин</div>
           <div class="section-desc">Сексуальность, здоровье, оргазмы, минет, лингам-массаж и отношения.</div>
           <div class="stats"><span class="pill">15+ категорий</span><span class="pill">2000+ материалов</span></div>
         </div>
 
-        <div class="section-card" onclick="openSection('bdsm')">
+        <div class="section-card searchable" onclick="openSection('bdsm')">
           <div class="section-title">💞 БДСМ & Swing</div>
           <div class="section-desc">БДСМ, свинг, шибари, ролевые игры, доминация и тематические фильмы.</div>
           <div class="stats"><span class="pill">8+ категорий</span><span class="pill">500+ материалов</span></div>
         </div>
+
+        <div class="section-card searchable" onclick="openTariffs('all')">
+          <div class="section-title">💎 Всё и сразу</div>
+          <div class="section-desc">Доступ сразу ко всем направлениям: мужчины, женщины и БДСМ & Swing.</div>
+          <div class="stats"><span class="pill">максимальная выгода</span><span class="pill">все материалы</span></div>
+        </div>
       </div>
 
       <div class="bottom">
-        <button class="buy" onclick="openScreen('tariffs')">🔓 Получить доступ</button>
+        <button class="buy" onclick="openTariffs('all')">🔓 Получить доступ</button>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Написать в поддержку</a>
       </div>
     </div>
 
@@ -256,7 +272,8 @@
       <div id="categoryList"></div>
 
       <div class="bottom">
-        <button class="buy" onclick="openScreen('tariffs')">🔓 Оформить подписку</button>
+        <button class="buy" onclick="openTariffs(currentSection)">🔓 Оформить подписку</button>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Поддержка</a>
       </div>
     </div>
 
@@ -276,28 +293,62 @@
       </div>
 
       <div class="bottom">
-        <button class="buy" onclick="openScreen('tariffs')">🔓 Получить доступ</button>
+        <button class="buy" onclick="openTariffs(currentSection)">🔓 Получить доступ</button>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Поддержка</a>
       </div>
     </div>
 
     <div id="tariffs" class="screen">
-      <div class="back" onclick="openScreen('home')">← Назад</div>
-      <h1>Выберите доступ</h1>
-      <div class="subtitle">Кнопки можно связать с твоими тарифами Nemiling.</div>
-
-      <div class="tariffs">
-        <div class="tariff"><div><b>1 день</b><div class="small">Быстро посмотреть материалы</div></div><div class="price">197 ₽</div></div>
-        <div class="tariff"><div><b>1 месяц</b><div class="small">Оптимальный вариант</div></div><div class="price">397 ₽</div></div>
-        <div class="tariff"><div><b>3 месяца</b><div class="small">Максимальная выгода</div></div><div class="price">897 ₽</div></div>
+      <div class="back" onclick="openScreen(previousScreen)">← Назад</div>
+      <h1 id="tariffTitle">Выберите доступ</h1>
+      <div class="subtitle" id="tariffSubtitle">Тарифы подгружаются из Google Таблицы.</div>
+      <div class="tariffs" id="tariffList">
+        <div class="loading">Загружаю тарифы...</div>
       </div>
-
-      <div class="bottom">
-        <button class="buy" onclick="alert('Сюда вставляется ссылка Nemiling')">Перейти к оплате</button>
-      </div>
+      <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Нужна помощь с оплатой?</a>
     </div>
   </div>
 
   <script>
+    const SHEET_ID = "1E6wAXLQRKI1CEkAqterKMYS4ATpgvuaiFiBqn8kRXZc";
+    const SHEET_NAME = "Лист1";
+    const SUPPORT_URL = "https://t.me/seeex_education_support_bot";
+
+    let tariffs = {};
+
+    const fallbackTariffs = {
+      men: [
+        {tariff:"1 день доступ", price:"1 день 297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA0", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"1 неделя 797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQx", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 месяц 1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQ0", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"3 месяца 2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzA5", recommended:false, button:"Оформить доступ", order:4}
+      ],
+      women: [
+        {tariff:"1 день доступ", price:"1 день 297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA1", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"1 неделя 797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODkx", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 месяц 1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODky", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"3 месяца 2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzEy", recommended:false, button:"Оформить доступ", order:4}
+      ],
+      bdsm: [
+        {tariff:"1 день доступ", price:"1 день 197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA2", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"1 неделя 597 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTky", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 месяц 1 197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTkz", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"3 месяца 1 897 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTk3", recommended:false, button:"Оформить доступ", order:4}
+      ],
+      all: [
+        {tariff:"1 неделя доступ М, Ж, МЖ", price:"1 неделя 1 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MTAy", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 месяц доступ", price:"1 месяц 2 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk4", recommended:true, button:"Оформить доступ", order:2},
+        {tariff:"3 месяца доступ", price:"3 месяца 4 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk5", recommended:false, button:"Оформить доступ", order:3}
+      ]
+    };
+
+    const sectionNames = {
+      men: { title: "👨 Доступ для мужчин", subtitle: "Выберите срок доступа к мужскому каналу." },
+      women: { title: "👩 Доступ для женщин", subtitle: "Выберите срок доступа к женскому каналу." },
+      bdsm: { title: "💞 Доступ БДСМ & Swing", subtitle: "Выберите срок доступа к каналу для пар." },
+      all: { title: "💎 Всё и сразу", subtitle: "Доступ сразу ко всем направлениям: мужчины, женщины и БДСМ & Swing." }
+    };
+
     const data = {
       men: {
         title: "👨 Для мужчин",
@@ -337,14 +388,82 @@
     };
 
     let currentSection = "men";
+    let previousScreen = "home";
 
-    function openScreen(id){
+    async function loadTariffsFromSheet() {
+      try {
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+        const res = await fetch(url);
+        const text = await res.text();
+        const jsonText = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
+        const parsed = JSON.parse(jsonText);
+        const rows = parsed.table.rows || [];
+        const loaded = {};
+
+        rows.slice(1).forEach(row => {
+          const c = row.c || [];
+          const section = getCell(c, 0);
+          const tariff = getCell(c, 2);
+          const price = getCell(c, 4);
+          const url = getCell(c, 5);
+          const recommended = getCell(c, 6).toLowerCase() === "да";
+          const button = getCell(c, 7) || "Оформить доступ";
+          const order = Number(getCell(c, 8)) || 999;
+
+          if (!section || !tariff || !price || !url) return;
+          if (!loaded[section]) loaded[section] = [];
+          loaded[section].push({ tariff, price, url, recommended, button, order });
+        });
+
+        Object.keys(loaded).forEach(key => {
+          loaded[key].sort((a,b) => a.order - b.order);
+        });
+
+        tariffs = Object.keys(loaded).length ? loaded : fallbackTariffs;
+      } catch(e) {
+        tariffs = fallbackTariffs;
+      }
+    }
+
+    function getCell(cells, index) {
+      return cells[index] && cells[index].v != null ? String(cells[index].v).trim() : "";
+    }
+
+    function openScreen(id) {
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
       window.scrollTo(0,0);
     }
 
-    function openSection(key){
+    function getActiveScreen() {
+      const active = document.querySelector(".screen.active");
+      return active ? active.id : "home";
+    }
+
+    function openTariffs(key) {
+      previousScreen = getActiveScreen();
+      const meta = sectionNames[key] || sectionNames.all;
+      const items = (tariffs[key] && tariffs[key].length) ? tariffs[key] : (fallbackTariffs[key] || fallbackTariffs.all);
+
+      document.getElementById("tariffTitle").innerText = meta.title;
+      document.getElementById("tariffSubtitle").innerText = meta.subtitle;
+
+      const list = document.getElementById("tariffList");
+      list.innerHTML = "";
+
+      items.forEach(item => {
+        const a = document.createElement("a");
+        a.className = "tariff" + (item.recommended ? " recommended" : "");
+        a.href = item.url;
+        a.target = "_blank";
+        a.innerHTML = `<div><b>${item.tariff}</b><div class="small">${item.recommended ? "рекомендуемый вариант" : item.button}</div></div><div class="price">${item.price}</div>`;
+        list.appendChild(a);
+      });
+
+      openScreen("tariffs");
+    }
+
+    function openSection(key) {
       currentSection = key;
       const section = data[key];
       document.getElementById("sectionTitle").innerText = section.title;
@@ -361,7 +480,7 @@
       openScreen("section");
     }
 
-    function openCategory(idx){
+    function openCategory(idx) {
       const c = data[currentSection].cats[idx];
       document.getElementById("catTitle").innerText = c[0];
       document.getElementById("catDesc").innerText = c[1];
@@ -376,12 +495,14 @@
       openScreen("category");
     }
 
-    function filterCards(q){
+    function filterCards(q) {
       q = q.toLowerCase();
-      document.querySelectorAll(".section-card").forEach(card => {
+      document.querySelectorAll("#sections .searchable").forEach(card => {
         card.style.display = card.innerText.toLowerCase().includes(q) ? "block" : (q ? "none" : "block");
       });
     }
+
+    loadTariffsFromSheet();
   </script>
 </body>
 </html>
