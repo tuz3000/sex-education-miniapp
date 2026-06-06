@@ -210,6 +210,38 @@
       background: rgba(255,213,106,.12);
     }
 
+
+    .quick-panel {
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      padding: 16px;
+      margin: 16px 0 18px;
+    }
+    .quick-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .quick-desc {
+      color: #b8bccb;
+      font-size: 13px;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+    .section-label {
+      margin: 20px 0 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .section-note {
+      color: #aeb3c3;
+      font-size: 13px;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+
     .bot-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -242,11 +274,28 @@
     <div id="home" class="screen active">
       <div class="top">
         <div class="badge">18+ образовательный каталог</div>
-        <a class="badge" href="https://t.me/seeex_education_support_bot" target="_blank">Поддержка</a>
+        <a class="badge" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniApp()">Поддержка</a>
       </div>
 
       <h1>📚 Секс-образование</h1>
       <div class="subtitle">Закрытые библиотеки курсов для мужчин, женщин и пар. Смотри, какие материалы есть внутри, и оформляй доступ через Telegram.</div>
+
+      <div class="quick-panel">
+        <div class="quick-title">🚀 Быстрые действия</div>
+        <div class="quick-desc">Если хочешь оформить доступ — нажми первую кнопку. Если подписка уже есть — проверь статус.</div>
+
+        <button class="buy" onclick="openAllTariffs()">🔓 Получить доступ</button>
+
+        <div class="bot-actions">
+          <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
+          <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
+        </div>
+
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniApp()">💬 Написать в поддержку</a>
+      </div>
+
+      <div class="section-label">📚 Посмотреть материалы внутри</div>
+      <div class="section-note">Ниже можно посмотреть направления и примеры материалов перед покупкой.</div>
 
       <input class="search" placeholder="Поиск: массаж, здоровье, БДСМ..." oninput="filterCards(this.value)" />
 
@@ -276,15 +325,6 @@
         </div>
       </div>
 
-      <div class="bottom">
-        <button class="buy" onclick="openAllTariffs()">🔓 Получить доступ</button>
-        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="trackEvent('support_click'); closeMiniApp()">💬 Написать в поддержку</a>
-        <div class="bot-actions">
-          <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
-          <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
-        </div>
-
-      </div>
     </div>
 
     <div id="section" class="screen">
