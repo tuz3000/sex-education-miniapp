@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Секс-образование Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -208,6 +209,25 @@
       border-color: rgba(255,213,106,.55);
       background: rgba(255,213,106,.12);
     }
+
+    .bot-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .bot-action {
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.07);
+      color: #fff;
+      font-weight: 700;
+      border-radius: 16px;
+      padding: 13px 10px;
+      font-size: 14px;
+      text-align: center;
+      cursor: pointer;
+    }
+
     .loading {
       color: #b8bccb;
       background: rgba(255,255,255,.07);
@@ -258,7 +278,12 @@
 
       <div class="bottom">
         <button class="buy" onclick="openAllTariffs()">🔓 Получить доступ</button>
-        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Написать в поддержку</a>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Написать в поддержку</a>
+        <div class="bot-actions">
+          <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
+          <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
+        </div>
+
       </div>
     </div>
 
@@ -273,7 +298,12 @@
 
       <div class="bottom">
         <button class="buy" onclick="openTariffs(currentSection)">🔓 Оформить подписку</button>
-        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Поддержка</a>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Поддержка</a>
+        <div class="bot-actions">
+          <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
+          <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
+        </div>
+
       </div>
     </div>
 
@@ -294,7 +324,12 @@
 
       <div class="bottom">
         <button class="buy" onclick="openTariffs(currentSection)">🔓 Получить доступ</button>
-        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Поддержка</a>
+        <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Поддержка</a>
+        <div class="bot-actions">
+          <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
+          <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
+        </div>
+
       </div>
     </div>
 
@@ -305,7 +340,12 @@
       <div class="tariffs" id="tariffList">
         <div class="loading">Загружаю тарифы...</div>
       </div>
-      <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank">💬 Нужна помощь с оплатой?</a>
+      <a class="support" href="https://t.me/seeex_education_support_bot" target="_blank" onclick="closeMiniApp()">💬 Нужна помощь с оплатой?</a>
+        <div class="bot-actions">
+          <button class="bot-action" onclick="openBotCommand('plans')">📋 Тарифы</button>
+          <button class="bot-action" onclick="openBotCommand('status')">⭐ Моя подписка</button>
+        </div>
+
     </div>
   </div>
 
@@ -441,6 +481,36 @@
     }
 
 
+
+
+    function closeMiniApp() {
+      try {
+        if (window.Telegram && Telegram.WebApp) {
+          Telegram.WebApp.close();
+        }
+      } catch (e) {}
+    }
+
+    function closeMiniAppDelayed() {
+      setTimeout(() => {
+        closeMiniApp();
+      }, 150);
+    }
+
+    function openBotCommand(command) {
+      const url = "https://t.me/seeex_education_bot?start=" + command;
+
+      try {
+        if (window.Telegram && Telegram.WebApp) {
+          Telegram.WebApp.openTelegramLink(url);
+          setTimeout(() => Telegram.WebApp.close(), 150);
+          return;
+        }
+      } catch (e) {}
+
+      window.location.href = url;
+    }
+
     function openAllTariffs() {
       previousScreen = getActiveScreen();
       document.getElementById("tariffTitle").innerText = "🔓 Выберите доступ";
@@ -470,6 +540,7 @@
           a.className = "tariff" + (item.recommended ? " recommended" : "");
           a.href = item.url;
           a.target = "_blank";
+          a.onclick = () => closeMiniAppDelayed();
           a.innerHTML = `<div><b>${item.tariff}</b><div class="small">${item.recommended ? "рекомендуемый вариант" : item.button}</div></div><div class="price">${item.price}</div>`;
           list.appendChild(a);
         });
