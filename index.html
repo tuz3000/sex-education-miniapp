@@ -326,10 +326,6 @@
       line-height: 1.45;
       text-align: center;
     }
-
-    .hidden {
-      display: none !important;
-    }
   </style>
 </head>
 
@@ -452,6 +448,7 @@
 
     <div id="tariffs" class="screen">
       <div class="back" onclick="openScreen(previousScreen)">← Назад</div>
+
       <div class="hero">
         <h1 id="tariffTitle">🔓 Выберите доступ</h1>
         <div class="subtitle" id="tariffSubtitle">Выберите направление и срок подписки.</div>
@@ -471,8 +468,6 @@
     const TARIFF_SHEET_NAME = "Лист1";
 
     const BOT_URL = "https://t.me/seeex_education_bot";
-    const SUPPORT_URL = "https://t.me/seeex_education_support_bot";
-
     const STATS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxP6FzEWh3LXRlwSaKRBi_Bo16CAd0CD0Pcif5nGANytN8zFaJ-sgECXJP3AQ8jYue4yA/exec";
 
     let currentDirection = "men";
@@ -553,27 +548,27 @@
 
     const fallbackTariffs = {
       men: [
-        {tariff:"1 день доступ", price:"1 день 297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA0", recommended:false, button:"Оформить доступ", order:1},
-        {tariff:"1 неделя доступ", price:"1 неделя 797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQx", recommended:false, button:"Оформить доступ", order:2},
-        {tariff:"1 месяц доступ", price:"1 месяц 1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQ0", recommended:true, button:"Оформить доступ", order:3},
-        {tariff:"3 месяца доступ", price:"3 месяца 2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzA5", recommended:false, button:"Оформить доступ", order:4}
+        {tariff:"1 день доступ", price:"297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA0", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQx", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MjQ0", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzA5", recommended:false, button:"Оформить доступ", order:4}
       ],
       women: [
-        {tariff:"1 день доступ", price:"1 день 297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA1", recommended:false, button:"Оформить доступ", order:1},
-        {tariff:"1 неделя доступ", price:"1 неделя 797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODkx", recommended:false, button:"Оформить доступ", order:2},
-        {tariff:"1 месяц доступ", price:"1 месяц 1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODky", recommended:true, button:"Оформить доступ", order:3},
-        {tariff:"3 месяца доступ", price:"3 месяца 2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzEy", recommended:false, button:"Оформить доступ", order:4}
+        {tariff:"1 день доступ", price:"297 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA1", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"797 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODkx", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc3ODky", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"2 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTc4MzEy", recommended:false, button:"Оформить доступ", order:4}
       ],
       bdsm: [
-        {tariff:"1 день доступ", price:"1 день 197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA2", recommended:false, button:"Оформить доступ", order:1},
-        {tariff:"1 неделя доступ", price:"1 неделя 597 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTky", recommended:false, button:"Оформить доступ", order:2},
-        {tariff:"1 месяц доступ", price:"1 месяц 1 197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTkz", recommended:true, button:"Оформить доступ", order:3},
-        {tariff:"3 месяца доступ", price:"3 месяца 1 897 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTk3", recommended:false, button:"Оформить доступ", order:4}
+        {tariff:"1 день доступ", price:"197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjQ1NTA2", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 неделя доступ", price:"597 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTky", recommended:false, button:"Оформить доступ", order:2},
+        {tariff:"1 месяц доступ", price:"1 197 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTkz", recommended:true, button:"Оформить доступ", order:3},
+        {tariff:"3 месяца доступ", price:"1 897 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNTgyNTk3", recommended:false, button:"Оформить доступ", order:4}
       ],
       all: [
-        {tariff:"1 неделя доступ М, Ж, МЖ", price:"1 неделя 1 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MTAy", recommended:false, button:"Оформить доступ", order:1},
-        {tariff:"1 месяц доступ", price:"1 месяц 2 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk4", recommended:true, button:"Оформить доступ", order:2},
-        {tariff:"3 месяца доступ", price:"3 месяца 4 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk5", recommended:false, button:"Оформить доступ", order:3}
+        {tariff:"1 неделя доступ М, Ж, МЖ", price:"1 997 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MTAy", recommended:false, button:"Оформить доступ", order:1},
+        {tariff:"1 месяц доступ", price:"2 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk4", recommended:true, button:"Оформить доступ", order:2},
+        {tariff:"3 месяца доступ", price:"4 497 ₽", url:"https://t.me/seeex_education_bot?start=dGFyaWZfNjc4MDk5", recommended:false, button:"Оформить доступ", order:3}
       ]
     };
 
@@ -706,10 +701,10 @@
 
       a.innerHTML = `
         <div>
-          <b>${safeText(item.tariff)}</b>
+          <b>${safeText(item.tariff || "Доступ")}</b>
           <div class="small">${item.recommended ? "рекомендуемый вариант" : safeText(item.button || "Оформить доступ")}</div>
         </div>
-        <div class="price">${safeText(item.price)}</div>
+        <div class="price">${safeText(item.price || "")}</div>
       `;
 
       return a;
@@ -721,6 +716,7 @@
 
     function loadTariffsFromSheet() {
       const cb = "tariff_cb_" + Date.now();
+
       window[cb] = function(parsed) {
         try {
           const rows = parsed.table.rows || [];
@@ -740,6 +736,7 @@
             if (!section || !tariff || !price || !url) return;
 
             if (!loaded[section]) loaded[section] = [];
+
             loaded[section].push({
               tariff,
               price,
