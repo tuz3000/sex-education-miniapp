@@ -255,7 +255,7 @@
       background: rgba(255,255,255,.07);
       color: #fff;
       border-radius: 18px;
-      padding: 14px 12px;
+      padding: 15px 12px;
       font-size: 14px;
       font-weight: 850;
       text-align: center;
@@ -274,16 +274,23 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 11px;
+      gap: 12px;
       width: 100%;
     }
 
     .svg-ico {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       display: inline-block;
       flex: 0 0 auto;
-      filter: drop-shadow(0 0 8px rgba(255,255,255,.18));
+      filter:
+        drop-shadow(0 0 9px rgba(255,66,177,.22))
+        drop-shadow(0 0 9px rgba(42,169,255,.20));
+    }
+
+    .ghost-btn .btn-flex span:last-child,
+    .support-btn .btn-flex span:last-child {
+      line-height: 1.05;
     }
 
     .stats {
@@ -495,6 +502,68 @@
       color: var(--gold);
       font-weight: 950;
       margin-top: -1px;
+    }
+
+
+
+    .channel-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 25px;
+      padding: 16px;
+      margin-top: 14px;
+      border: 1px solid rgba(42,169,255,.22);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(42,169,255,.15), transparent 42%),
+        radial-gradient(circle at 100% 0%, rgba(255,66,177,.13), transparent 42%),
+        rgba(255,255,255,.065);
+      box-shadow: 0 12px 42px rgba(0,0,0,.18);
+    }
+
+    .channel-title {
+      font-size: 17px;
+      font-weight: 950;
+      margin-bottom: 8px;
+    }
+
+    .channel-text {
+      color: #dfe3ee;
+      font-size: 13px;
+      line-height: 1.42;
+      margin: 0 0 12px;
+    }
+
+    .channel-link {
+      display: inline-flex;
+      color: var(--blue-2);
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 12px;
+      text-decoration: none;
+    }
+
+    .channel-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.13);
+      background: linear-gradient(135deg, rgba(255,66,177,.17), rgba(42,169,255,.15));
+      color: #fff;
+      border-radius: 17px;
+      padding: 14px 12px;
+      font-size: 14px;
+      font-weight: 900;
+      text-align: center;
+      text-decoration: none;
+      backdrop-filter: blur(15px);
+    }
+
+    .channel-btn svg {
+      width: 24px;
+      height: 24px;
+      filter: drop-shadow(0 0 9px rgba(42,169,255,.28));
     }
 
     .notice {
@@ -752,7 +821,7 @@
                 <circle cx="12" cy="12" r="7.6" stroke="#8D5FFF" stroke-width="1.8"/>
                 <path d="M12 8.2l1.15 2.35 2.6.38-1.88 1.83.44 2.59L12 14.15l-2.31 1.2.44-2.59-1.88-1.83 2.6-.38L12 8.2z" fill="#FF55B7"/>
               </svg>
-              <span>Подписка</span>
+              <span>Моя подписка</span>
             </span>
           </button>
         </div>
@@ -857,6 +926,19 @@
         </div>
       </div>
 
+      <div class="channel-card">
+        <div class="channel-title">Не потерять доступ</div>
+        <p class="channel-text">Подпишитесь на официальный канал проекта — там публикуются актуальные ссылки, обновления материалов и важная информация, если бот или отдельные разделы временно будут недоступны.</p>
+        <a class="channel-link" href="https://t.me/seeex_education" target="_blank" onclick="trackEvent('official_channel_text_click'); closeMiniAppDelayed()">@seeex_education</a>
+        <a class="channel-btn" href="https://t.me/seeex_education" target="_blank" onclick="trackEvent('official_channel_click'); closeMiniAppDelayed()">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20.4 4.6L4.6 10.7c-1.05.42-1.04 1.02-.18 1.29l4.06 1.27 1.55 4.72c.19.54.1.75.66.75.43 0 .62-.2.86-.43l2.06-2.01 4.28 3.16c.79.44 1.36.21 1.56-.73l2.82-13.29c.29-1.15-.44-1.67-1.75-1.12Z" stroke="#7fd9ff" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M8.6 13.1L17.9 7" stroke="#ff77cb" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <span>Подписаться на канал</span>
+        </a>
+      </div>
+
       <div class="notice">
         Материалы предназначены только для совершеннолетних. Это образовательный каталог 18+.
       </div>
@@ -902,7 +984,7 @@
                 <circle cx="12" cy="12" r="7.6" stroke="#8D5FFF" stroke-width="1.8"/>
                 <path d="M12 8.2l1.15 2.35 2.6.38-1.88 1.83.44 2.59L12 14.15l-2.31 1.2.44-2.59-1.88-1.83 2.6-.38L12 8.2z" fill="#FF55B7"/>
               </svg>
-              <span>Подписка</span>
+              <span>Моя подписка</span>
             </span>
           </button>
         </div>
