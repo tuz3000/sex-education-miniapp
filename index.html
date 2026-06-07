@@ -293,6 +293,45 @@
       line-height: 1.05;
     }
 
+    /* Центровка двух главных кнопок: иконка слева, текст строго по центру кнопки */
+    .secondary-row .ghost-btn {
+      min-height: 86px;
+      padding: 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .secondary-row .ghost-btn .btn-flex {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) 42px;
+      align-items: center;
+      justify-items: center;
+      gap: 0;
+      width: 100%;
+    }
+
+    .secondary-row .ghost-btn .btn-flex::after {
+      content: "";
+      width: 34px;
+      height: 34px;
+      display: block;
+    }
+
+    .secondary-row .ghost-btn .svg-ico {
+      width: 34px;
+      height: 34px;
+      justify-self: center;
+    }
+
+    .secondary-row .ghost-btn .btn-flex span:last-child {
+      display: block;
+      width: 100%;
+      text-align: center;
+      line-height: 1.05;
+      white-space: normal;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
