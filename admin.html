@@ -1,270 +1,762 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Админка Mini App</title>
+  <title>Админка Mini App PRO</title>
+
   <style>
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: #0f1117;
-      color: #fff;
+    :root {
+      --bg:#06070d; --panel:rgba(255,255,255,.075); --panel2:rgba(255,255,255,.105);
+      --line:rgba(255,255,255,.12); --muted:#aab1c4; --text:#fff;
+      --pink:#ff42b1; --blue:#2aa9ff; --violet:#8d5fff; --gold:#ffd86b; --green:#6ee7a8; --red:#ff6b7a;
     }
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
+    html,body {
+      margin:0; min-height:100%; background:#06070d; color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     }
-    h1 { margin: 0 0 8px; }
-    .muted { color: #aeb3c3; font-size: 14px; }
-    .panel {
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      padding: 16px;
-      margin: 14px 0;
+    body:before {
+      content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+      background:
+        radial-gradient(circle at 10% 0%,rgba(255,66,177,.18),transparent 30%),
+        radial-gradient(circle at 90% 0%,rgba(42,169,255,.16),transparent 32%),
+        linear-gradient(180deg,#111425 0%,#06070d 72%);
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 12px;
-      margin: 14px 0;
+    body:after {
+      content:""; position:fixed; inset:0; z-index:-1; opacity:.08; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
+      background-size:30px 30px; mask-image:linear-gradient(to bottom,#000,transparent 78%);
+    }
+
+    .app { max-width:1180px; margin:0 auto; padding:18px; }
+    .top {
+      display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px;
+    }
+    .brand h1 {
+      margin:0; font-size:30px; line-height:1; letter-spacing:-.6px;
+      background:linear-gradient(90deg,var(--pink),#c87bff 50%,#7fd9ff);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .brand p { margin:8px 0 0; color:var(--muted); font-size:14px; line-height:1.35; }
+    .actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+
+    button,.btn {
+      border:1px solid var(--line); background:rgba(255,255,255,.07); color:#fff;
+      border-radius:14px; padding:11px 13px; font-size:13px; font-weight:800; cursor:pointer; text-decoration:none;
+    }
+    button.primary {
+      color:#111; border:0; background:linear-gradient(135deg,var(--gold),#ffae45);
+      box-shadow:0 12px 32px rgba(255,174,69,.18);
+    }
+    button.danger { border-color:rgba(255,107,122,.35); color:#ffd2d8; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+
+    .status {
+      border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--muted);
+      border-radius:18px; padding:12px 14px; margin-bottom:14px; font-size:13px; line-height:1.4;
+    }
+    .status.ok { color:#d8ffe9; border-color:rgba(110,231,168,.32); background:rgba(110,231,168,.08); }
+    .status.err { color:#ffd7dc; border-color:rgba(255,107,122,.32); background:rgba(255,107,122,.08); }
+
+    .filters {
+      display:grid; grid-template-columns:1.2fr .9fr .9fr .9fr auto; gap:10px; margin:14px 0 16px;
+    }
+    input,select,textarea {
+      width:100%; border:1px solid var(--line); background:rgba(255,255,255,.065); color:#fff;
+      border-radius:14px; padding:12px 12px; font-size:13px; outline:none;
+    }
+    option { background:#111425; color:#fff; }
+
+    .cards {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;
     }
     .card {
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      padding: 16px;
+      border:1px solid var(--line); border-radius:22px; padding:16px;
+      background:
+        radial-gradient(circle at 100% 0%,var(--accent,rgba(255,255,255,.08)),transparent 42%),
+        rgba(255,255,255,.065);
+      min-height:104px;
     }
-    .num {
-      font-size: 28px;
-      font-weight: 800;
-      color: #ffd56a;
-      margin-top: 6px;
+    .card .label { color:var(--muted); font-size:12px; line-height:1.2; }
+    .card .num { font-size:30px; font-weight:950; margin-top:10px; line-height:1; }
+    .card .sub { color:var(--muted); font-size:12px; margin-top:8px; line-height:1.25; }
+
+    .grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;
     }
-    input, button {
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.14);
-      padding: 12px;
-      background: rgba(255,255,255,.08);
-      color: #fff;
-      font-size: 14px;
+    .wide { grid-column:1 / -1; }
+
+    .panel {
+      border:1px solid var(--line); border-radius:22px; padding:16px;
+      background:rgba(255,255,255,.065);
     }
-    button {
-      cursor: pointer;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ffd56a, #ff9f43);
-      color: #111;
-      border: 0;
+    .panel h2 {
+      margin:0 0 12px; font-size:18px; letter-spacing:-.2px;
     }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 180px 140px;
-      gap: 10px;
+    .panel-note { color:var(--muted); font-size:12px; line-height:1.35; margin-top:-6px; margin-bottom:12px; }
+
+    .bar-list { display:grid; gap:9px; }
+    .bar-row { display:grid; grid-template-columns:minmax(100px,1fr) 3fr auto; gap:10px; align-items:center; font-size:13px; }
+    .bar-name { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#eef1f7; }
+    .bar-track { height:10px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; }
+    .bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--pink),var(--blue)); min-width:2px; }
+    .bar-val { color:var(--gold); font-weight:900; min-width:34px; text-align:right; }
+
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    th,td { padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.08); vertical-align:top; }
+    th { color:var(--muted); font-weight:800; text-align:left; position:sticky; top:0; background:#101220; z-index:1; }
+    td { color:#edf0f7; }
+    .table-wrap { overflow:auto; max-height:430px; border-radius:16px; border:1px solid rgba(255,255,255,.08); }
+    .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:11px; color:#cfd4e5; }
+    .tag {
+      display:inline-flex; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06);
+      border-radius:999px; padding:4px 8px; font-size:11px; color:#fff; white-space:nowrap;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
+    .tag.pink { border-color:rgba(255,66,177,.35); color:#ffd5ed; }
+    .tag.blue { border-color:rgba(42,169,255,.35); color:#d9f1ff; }
+    .tag.gold { border-color:rgba(255,216,107,.35); color:#fff2c2; }
+    .empty { color:var(--muted); padding:14px; border:1px dashed rgba(255,255,255,.12); border-radius:16px; font-size:13px; }
+    .raw-box {
+      display:none; margin-top:12px;
     }
-    th, td {
-      border-bottom: 1px solid rgba(255,255,255,.09);
-      padding: 9px 6px;
-      text-align: left;
-      vertical-align: top;
+    .raw-box textarea { min-height:180px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; }
+
+    @media(max-width:900px){
+      .top { display:block; }
+      .actions { justify-content:flex-start; margin-top:12px; }
+      .filters { grid-template-columns:1fr 1fr; }
+      .cards { grid-template-columns:1fr 1fr; }
+      .grid { grid-template-columns:1fr; }
     }
-    th { color: #ffd56a; }
-    .bar {
-      height: 10px;
-      background: rgba(255,255,255,.09);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 6px;
-    }
-    .bar > span {
-      display:block;
-      height: 100%;
-      background: #ffd56a;
-    }
-    .ok { color: #9effb0; }
-    .err { color: #ff9f9f; }
-    @media(max-width:700px) {
-      .row { grid-template-columns: 1fr; }
-      table { font-size: 12px; }
+    @media(max-width:520px){
+      .app { padding:14px; }
+      .brand h1 { font-size:25px; }
+      .filters { grid-template-columns:1fr; }
+      .cards { grid-template-columns:1fr; }
+      .bar-row { grid-template-columns:1fr; gap:5px; }
+      .bar-val { text-align:left; }
     }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <h1>📊 Админка Mini App</h1>
-    <div class="muted">Статистика просмотров, кликов, тарифов и действий пользователей.</div>
 
-    <div class="panel">
-      <div class="row">
-        <input id="endpoint" value="https://script.google.com/macros/s/AKfycbxFzwGEUC8E5SGA18fp-ves_SKrqAmWus7aMVK4OkFLJqlOT0A9FwIi1S9N7hnPcyhniw/exec">
-        <input id="key" value="CHANGE_ME_12345">
-        <button id="loadBtn" type="button">Загрузить</button>
+<body>
+  <div class="app">
+    <div class="top">
+      <div class="brand">
+        <h1>Админка Mini App PRO</h1>
+        <p>Статистика открытий, разделов, тарифов, поддержки, подписки, квиза и действий пользователей.</p>
       </div>
-      <div id="status" class="muted" style="margin-top:10px">Готово к загрузке.</div>
+      <div class="actions">
+        <button class="primary" onclick="loadData()">Загрузить</button>
+        <button onclick="toggleAutoRefresh()" id="autoBtn">Авто: выкл</button>
+        <button onclick="exportCsv()">CSV</button>
+        <button onclick="exportJson()">JSON</button>
+        <a class="btn" href="./index.html" target="_blank">Открыть Mini App</a>
+      </div>
     </div>
+
+    <div id="status" class="status">Готово к загрузке. Нажми «Загрузить».</div>
+
+    <div class="filters">
+      <input id="search" placeholder="Поиск: событие, тариф, username, данные..." oninput="applyFilters()">
+      <select id="period" onchange="applyFilters()">
+        <option value="all">Всё время</option>
+        <option value="today">Сегодня</option>
+        <option value="7">7 дней</option>
+        <option value="30">30 дней</option>
+        <option value="90">90 дней</option>
+      </select>
+      <select id="eventFilter" onchange="applyFilters()">
+        <option value="">Все события</option>
+      </select>
+      <select id="directionFilter" onchange="applyFilters()">
+        <option value="">Все разделы</option>
+        <option value="men">Мужчины</option>
+        <option value="women">Женщины</option>
+        <option value="bdsm">БДСМ & Свинг</option>
+        <option value="all">Всё сразу</option>
+      </select>
+      <button onclick="resetFilters()">Сброс</button>
+    </div>
+
+    <div class="cards" id="cards"></div>
 
     <div class="grid">
-      <div class="card"><div class="muted">Всего событий</div><div id="totalEvents" class="num">—</div></div>
-      <div class="card"><div class="muted">Уникальных пользователей</div><div id="uniqueUsers" class="num">—</div></div>
-      <div class="card"><div class="muted">Открытий Mini App</div><div id="appOpens" class="num">—</div></div>
-      <div class="card"><div class="muted">Кликов по тарифам</div><div id="tariffClicks" class="num">—</div></div>
-      <div class="card"><div class="muted">Кликов поддержка</div><div id="supportClicks" class="num">—</div></div>
-      <div class="card"><div class="muted">Кликов подписка</div><div id="statusClicks" class="num">—</div></div>
-    </div>
+      <div class="panel">
+        <h2>События</h2>
+        <div class="panel-note">Что чаще всего делают пользователи.</div>
+        <div id="eventsChart" class="bar-list"></div>
+      </div>
 
-    <div class="panel"><h3>🔥 События</h3><div id="eventsChart">Пока нет данных</div></div>
-    <div class="panel"><h3>📂 Разделы / категории</h3><div id="sectionsChart">Пока нет данных</div></div>
-    <div class="panel"><h3>💳 Тарифы</h3><div id="tariffsChart">Пока нет данных</div></div>
+      <div class="panel">
+        <h2>Разделы</h2>
+        <div class="panel-note">Интерес к направлениям и открытиям тарифов.</div>
+        <div id="directionsChart" class="bar-list"></div>
+      </div>
 
-    <div class="panel">
-      <h3>🕘 Последние события</h3>
-      <table>
-        <thead><tr><th>Время</th><th>Событие</th><th>Данные</th><th>Пользователь</th></tr></thead>
-        <tbody id="lastEvents"></tbody>
-      </table>
+      <div class="panel">
+        <h2>Тарифы</h2>
+        <div class="panel-note">Клики по конкретным тарифам и ценам.</div>
+        <div id="tariffsChart" class="bar-list"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Пользователи</h2>
+        <div class="panel-note">Самые активные пользователи / сессии.</div>
+        <div id="usersChart" class="bar-list"></div>
+      </div>
+
+      <div class="panel wide">
+        <h2>Последние события</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Время</th>
+                <th>Событие</th>
+                <th>Раздел</th>
+                <th>Тариф / цена</th>
+                <th>Пользователь</th>
+                <th>Данные</th>
+              </tr>
+            </thead>
+            <tbody id="eventsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel wide">
+        <h2>Сырые данные / диагностика</h2>
+        <div class="panel-note">Нужно, если endpoint вернул данные в непривычном формате.</div>
+        <button onclick="toggleRaw()">Показать / скрыть JSON</button>
+        <div class="raw-box" id="rawBox">
+          <textarea id="rawJson" readonly></textarea>
+        </div>
+      </div>
     </div>
   </div>
 
-<script>
-  const loadBtn = document.getElementById("loadBtn");
-  const statusBox = document.getElementById("status");
+  <script>
+    const STATS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxP6FzEWh3LXRlwSaKRBi_Bo16CAd0CD0Pcif5nGANytN8zFaJ-sgECXJP3AQ8jYue4yA/exec";
 
-  loadBtn.addEventListener("click", loadStats);
+    let rawPayload = null;
+    let allEvents = [];
+    let filteredEvents = [];
+    let serverMetrics = {};
+    let autoTimer = null;
 
-  function setStatus(text, type = "") {
-    statusBox.className = type || "muted";
-    statusBox.textContent = text;
-  }
+    function setStatus(text, type = "") {
+      const el = document.getElementById("status");
+      el.textContent = text;
+      el.className = "status" + (type ? " " + type : "");
+    }
 
-  function loadJSONP(url) {
-    return new Promise((resolve, reject) => {
-      const cb = "jsonp_cb_" + Math.random().toString(36).slice(2);
-      let done = false;
+    function nowParam() {
+      return "_=" + Date.now();
+    }
 
-      window[cb] = data => {
-        done = true;
-        delete window[cb];
-        script.remove();
-        resolve(data);
-      };
+    async function fetchJson(url) {
+      const res = await fetch(url, { method: "GET", cache: "no-store" });
+      const text = await res.text();
 
-      const script = document.createElement("script");
-      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb + "&_=" + Date.now();
-      script.onerror = () => {
-        if (!done) reject(new Error("Не удалось загрузить данные. Проверь Web App URL."));
-      };
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        const match = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+        if (match) return JSON.parse(match[0]);
+        throw new Error("Ответ не похож на JSON");
+      }
+    }
 
-      document.body.appendChild(script);
+    async function loadData() {
+      setStatus("Загружаю данные...", "");
+      const urls = [
+        STATS_ENDPOINT + "?action=stats&" + nowParam(),
+        STATS_ENDPOINT + "?action=getStats&" + nowParam(),
+        STATS_ENDPOINT + "?mode=read&" + nowParam(),
+        STATS_ENDPOINT + "?" + nowParam()
+      ];
 
-      setTimeout(() => {
-        if (!done) {
-          delete window[cb];
-          script.remove();
-          reject(new Error("Нет ответа от Apps Script. Возможно, развертывание не завершено или ссылка старая."));
+      let lastError = null;
+      for (const url of urls) {
+        try {
+          const data = await fetchJson(url);
+          rawPayload = data;
+          document.getElementById("rawJson").value = JSON.stringify(data, null, 2);
+          const parsed = normalizePayload(data);
+
+          allEvents = parsed.events;
+          serverMetrics = parsed.metrics || {};
+          fillEventFilter(allEvents);
+          applyFilters();
+
+          setStatus("Данные загружены. Событий: " + allEvents.length + ".", "ok");
+          return;
+        } catch (e) {
+          lastError = e;
         }
-      }, 10000);
-    });
-  }
+      }
 
-  async function loadStats() {
-    const endpoint = document.getElementById("endpoint").value.trim();
-    const key = document.getElementById("key").value.trim();
-
-    if (!endpoint) {
-      setStatus("Вставь Web App URL.", "err");
-      return;
+      rawPayload = null;
+      allEvents = [];
+      filteredEvents = [];
+      renderAll();
+      setStatus("Не удалось загрузить данные. Возможно, Apps Script не отдаёт JSON для админки или включены ограничения CORS. Ошибка: " + (lastError ? lastError.message : "неизвестно"), "err");
     }
 
-    if (!key) {
-      setStatus("Вставь Admin key.", "err");
-      return;
+    function normalizePayload(data) {
+      let events = [];
+      let metrics = {};
+
+      if (Array.isArray(data)) {
+        events = data;
+      } else if (data && typeof data === "object") {
+        events =
+          data.events ||
+          data.logs ||
+          data.rows ||
+          data.items ||
+          data.lastEvents ||
+          data.data?.events ||
+          data.data?.logs ||
+          data.data?.rows ||
+          [];
+
+        metrics =
+          data.metrics ||
+          data.stats ||
+          data.summary ||
+          data.data?.metrics ||
+          data.data?.stats ||
+          {};
+      }
+
+      if (!Array.isArray(events)) events = [];
+
+      events = events.map(normalizeEvent).filter(Boolean);
+
+      return { events, metrics };
     }
 
-    setStatus("Загружаю данные...", "muted");
-    loadBtn.disabled = true;
-    loadBtn.textContent = "Загрузка...";
+    function normalizeEvent(e, index) {
+      if (!e || typeof e !== "object") return null;
 
-    try {
-      const data = await loadJSONP(endpoint + "?action=summary&key=" + encodeURIComponent(key));
+      let data = e.data ?? e.payload ?? e.params ?? e.details ?? {};
+      if (typeof data === "string") {
+        try { data = JSON.parse(data); } catch (_) { data = { text: data }; }
+      }
+      if (!data || typeof data !== "object") data = {};
 
-      if (data.error) {
-        setStatus("Ошибка: " + data.error, "err");
+      const event =
+        e.event ||
+        e.name ||
+        e.type ||
+        e.action ||
+        data.event ||
+        "unknown";
+
+      const tsRaw =
+        e.timestamp ||
+        e.time ||
+        e.date ||
+        e.created_at ||
+        e.createdAt ||
+        e.ts ||
+        data.timestamp ||
+        data.time ||
+        "";
+
+      const dateObj = parseDate(tsRaw);
+
+      const userId =
+        e.user_id ||
+        e.userId ||
+        e.telegram_id ||
+        e.tg_id ||
+        e.user?.id ||
+        data.user_id ||
+        data.userId ||
+        "";
+
+      const username =
+        e.username ||
+        e.user?.username ||
+        data.username ||
+        "";
+
+      const firstName =
+        e.first_name ||
+        e.firstName ||
+        e.user?.first_name ||
+        data.first_name ||
+        "";
+
+      const sessionId =
+        e.session_id ||
+        e.sessionId ||
+        data.session_id ||
+        data.sessionId ||
+        "";
+
+      const direction =
+        data.direction ||
+        data.category ||
+        e.direction ||
+        e.category ||
+        "";
+
+      const tariff =
+        data.tariff ||
+        e.tariff ||
+        "";
+
+      const price =
+        data.price ||
+        e.price ||
+        "";
+
+      return {
+        id: e.id || index,
+        event: String(event),
+        tsRaw,
+        date: dateObj,
+        userId: String(userId || ""),
+        username: String(username || ""),
+        firstName: String(firstName || ""),
+        sessionId: String(sessionId || ""),
+        direction: String(direction || ""),
+        tariff: String(tariff || ""),
+        price: String(price || ""),
+        data,
+        raw: e
+      };
+    }
+
+    function parseDate(value) {
+      if (!value) return null;
+      if (value instanceof Date && !isNaN(value)) return value;
+      if (typeof value === "number") {
+        const d = new Date(value);
+        return isNaN(d) ? null : d;
+      }
+      const s = String(value);
+      let d = new Date(s);
+      if (!isNaN(d)) return d;
+
+      const m = s.match(/(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if (m) {
+        const year = Number(m[3].length === 2 ? "20" + m[3] : m[3]);
+        d = new Date(year, Number(m[2]) - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0));
+        return isNaN(d) ? null : d;
+      }
+
+      return null;
+    }
+
+    function fillEventFilter(events) {
+      const select = document.getElementById("eventFilter");
+      const current = select.value;
+      const names = [...new Set(events.map(e => e.event).filter(Boolean))].sort();
+
+      select.innerHTML = '<option value="">Все события</option>' + names.map(name => `<option value="${escapeAttr(name)}">${escapeHtml(name)}</option>`).join("");
+      select.value = names.includes(current) ? current : "";
+    }
+
+    function applyFilters() {
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const period = document.getElementById("period").value;
+      const eventName = document.getElementById("eventFilter").value;
+      const direction = document.getElementById("directionFilter").value;
+
+      const since = getSinceDate(period);
+
+      filteredEvents = allEvents.filter(e => {
+        if (since && e.date && e.date < since) return false;
+        if (since && !e.date) return false;
+        if (eventName && e.event !== eventName) return false;
+        if (direction && e.direction !== direction) return false;
+
+        if (q) {
+          const hay = [
+            e.event, e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId,
+            JSON.stringify(e.data || {})
+          ].join(" ").toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+
+        return true;
+      });
+
+      renderAll();
+    }
+
+    function getSinceDate(period) {
+      const now = new Date();
+      if (period === "today") return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const days = Number(period);
+      if (!days) return null;
+      return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    }
+
+    function resetFilters() {
+      document.getElementById("search").value = "";
+      document.getElementById("period").value = "all";
+      document.getElementById("eventFilter").value = "";
+      document.getElementById("directionFilter").value = "";
+      applyFilters();
+    }
+
+    function renderAll() {
+      renderCards();
+      renderCharts();
+      renderTable();
+    }
+
+    function renderCards() {
+      const events = filteredEvents;
+      const total = events.length || numberFrom(serverMetrics.totalEvents) || numberFrom(serverMetrics.total) || 0;
+      const users = uniqueUsers(events) || numberFrom(serverMetrics.uniqueUsers) || 0;
+      const opens = countIncludes(events, ["app_open"]);
+      const tariffClicks = countIncludes(events, ["tariff_click"]);
+      const supportClicks = countIncludes(events, ["support"]);
+      const subClicks = countIncludes(events, ["status", "subscription", "подпис"]);
+      const directionOpens = countIncludes(events, ["direction_open"]);
+      const quiz = countIncludes(events, ["quiz"]);
+      const conversion = opens ? Math.round((tariffClicks / opens) * 100) : 0;
+      const topDirection = topName(countBy(events, e => e.direction || ""));
+      const topTariff = topName(countBy(events, e => e.tariff || ""));
+
+      const cards = [
+        ["Всего событий", total, "за выбранный период", "rgba(255,66,177,.18)"],
+        ["Уникальных пользователей", users, "по user_id / username / session", "rgba(42,169,255,.18)"],
+        ["Открытий Mini App", opens, "app_open", "rgba(141,95,255,.18)"],
+        ["Кликов по тарифам", tariffClicks, "tariff_click", "rgba(255,216,107,.18)"],
+        ["Кликов поддержка", supportClicks, "support_*", "rgba(110,231,168,.16)"],
+        ["Кликов подписка", subClicks, "status / subscription", "rgba(255,66,177,.16)"],
+        ["Открытий разделов", directionOpens, topDirection ? "топ: " + topDirection : "direction_open", "rgba(42,169,255,.16)"],
+        ["Квиз / подбор", quiz, "quiz_open / quiz_result", "rgba(141,95,255,.16)"],
+        ["Конверсия в тариф", conversion + "%", "клики тарифов / открытия", "rgba(255,216,107,.18)"],
+        ["Топ-раздел", topDirection || "—", "по событиям с direction", "rgba(42,169,255,.16)"],
+        ["Топ-тариф", topTariff || "—", "по кликам тарифов", "rgba(255,216,107,.18)"],
+        ["Событий в исходнике", allEvents.length, "до фильтров", "rgba(255,255,255,.10)"]
+      ];
+
+      document.getElementById("cards").innerHTML = cards.map(c => `
+        <div class="card" style="--accent:${c[3]}">
+          <div class="label">${escapeHtml(c[0])}</div>
+          <div class="num">${escapeHtml(String(c[1]))}</div>
+          <div class="sub">${escapeHtml(c[2])}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderCharts() {
+      renderBarList("eventsChart", countBy(filteredEvents, e => e.event), 12);
+      renderBarList("directionsChart", countBy(filteredEvents, e => e.direction || "без раздела"), 10);
+      renderBarList("tariffsChart", countBy(filteredEvents.filter(e => e.tariff || e.event.includes("tariff")), e => [e.tariff || e.event, e.price].filter(Boolean).join(" — ")), 10);
+      renderBarList("usersChart", countBy(filteredEvents, e => userLabel(e)), 10);
+    }
+
+    function renderBarList(id, counts, limit) {
+      const entries = Object.entries(counts)
+        .filter(([k]) => k && k !== "без раздела" || Object.keys(counts).length === 1)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, limit);
+
+      const el = document.getElementById(id);
+
+      if (!entries.length) {
+        el.innerHTML = '<div class="empty">Пока нет данных</div>';
         return;
       }
 
-      document.getElementById("totalEvents").innerText = data.totalEvents || 0;
-      document.getElementById("uniqueUsers").innerText = data.uniqueUsers || 0;
-      document.getElementById("appOpens").innerText = (data.counts && data.counts.app_open) || 0;
-      document.getElementById("tariffClicks").innerText = (data.counts && data.counts.tariff_click) || 0;
-      document.getElementById("supportClicks").innerText = (data.counts && data.counts.support_click) || 0;
-      document.getElementById("statusClicks").innerText = (data.counts && data.counts.status_click) || 0;
-
-      renderBars("eventsChart", data.counts || {});
-      renderBars("sectionsChart", data.sections || {});
-      renderBars("tariffsChart", data.tariffs || {});
-      renderLastEvents(data.lastEvents || []);
-
-      setStatus("Данные загружены успешно.", "ok");
-    } catch(e) {
-      setStatus("Ошибка загрузки: " + e.message, "err");
-    } finally {
-      loadBtn.disabled = false;
-      loadBtn.textContent = "Загрузить";
-    }
-  }
-
-  function renderBars(id, obj) {
-    const box = document.getElementById(id);
-    const entries = Object.entries(obj).sort((a,b) => b[1] - a[1]).slice(0, 20);
-    const max = entries.length ? entries[0][1] : 1;
-
-    if (!entries.length) {
-      box.innerHTML = '<div class="muted">Пока нет данных</div>';
-      return;
+      const max = Math.max(...entries.map(x => x[1])) || 1;
+      el.innerHTML = entries.map(([name, value]) => {
+        const pct = Math.max(2, Math.round(value / max * 100));
+        return `
+          <div class="bar-row">
+            <div class="bar-name" title="${escapeAttr(name)}">${escapeHtml(name)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+            <div class="bar-val">${value}</div>
+          </div>
+        `;
+      }).join("");
     }
 
-    box.innerHTML = entries.map(([name, value]) => `
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;gap:10px">
-          <div>${escapeHtml(name || "—")}</div>
-          <b>${value}</b>
-        </div>
-        <div class="bar"><span style="width:${Math.max(3, value / max * 100)}%"></span></div>
-      </div>
-    `).join("");
-  }
+    function renderTable() {
+      const rows = [...filteredEvents].sort((a,b) => {
+        const at = a.date ? a.date.getTime() : 0;
+        const bt = b.date ? b.date.getTime() : 0;
+        return bt - at;
+      }).slice(0, 300);
 
-  function renderLastEvents(rows) {
-    const tbody = document.getElementById("lastEvents");
-    if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="muted">Пока нет данных</td></tr>';
-      return;
+      const tbody = document.getElementById("eventsTable");
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty">Пока нет данных</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map(e => `
+        <tr>
+          <td>${escapeHtml(formatDate(e.date, e.tsRaw))}</td>
+          <td><span class="tag ${tagClass(e.event)}">${escapeHtml(e.event)}</span></td>
+          <td>${escapeHtml(directionName(e.direction))}</td>
+          <td>${escapeHtml([e.tariff, e.price].filter(Boolean).join(" — "))}</td>
+          <td>${escapeHtml(userLabel(e))}</td>
+          <td class="mono">${escapeHtml(shortJson(e.data))}</td>
+        </tr>
+      `).join("");
     }
 
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td>${escapeHtml(r.timestamp || "")}</td>
-        <td>${escapeHtml(r.event || "")}</td>
-        <td>${escapeHtml(r.data || "")}</td>
-        <td>${escapeHtml(r.user || "")}</td>
-      </tr>
-    `).join("");
-  }
+    function countBy(events, getter) {
+      const map = {};
+      events.forEach(e => {
+        const key = getter(e);
+        const name = String(key || "").trim();
+        if (!name) return;
+        map[name] = (map[name] || 0) + 1;
+      });
+      return map;
+    }
 
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;");
-  }
-</script>
+    function countIncludes(events, needles) {
+      return events.filter(e => {
+        const s = [e.event, e.direction, e.tariff, JSON.stringify(e.data || {})].join(" ").toLowerCase();
+        return needles.some(n => s.includes(String(n).toLowerCase()));
+      }).length;
+    }
+
+    function uniqueUsers(events) {
+      const set = new Set();
+      events.forEach(e => {
+        const key = e.userId || e.username || e.sessionId;
+        if (key) set.add(key);
+      });
+      return set.size;
+    }
+
+    function userLabel(e) {
+      if (e.username) return "@" + e.username;
+      if (e.firstName) return e.firstName + (e.userId ? " · " + e.userId : "");
+      if (e.userId) return e.userId;
+      if (e.sessionId) return "session " + e.sessionId.slice(0, 10);
+      return "неизвестно";
+    }
+
+    function topName(counts) {
+      const entries = Object.entries(counts).filter(([k]) => k).sort((a,b) => b[1] - a[1]);
+      return entries[0] ? entries[0][0] : "";
+    }
+
+    function directionName(key) {
+      const map = { men:"Мужчины", women:"Женщины", bdsm:"БДСМ & Свинг", all:"Всё сразу" };
+      return map[key] || key || "";
+    }
+
+    function tagClass(event) {
+      const s = String(event).toLowerCase();
+      if (s.includes("tariff")) return "gold";
+      if (s.includes("support")) return "blue";
+      if (s.includes("direction") || s.includes("quiz")) return "pink";
+      return "";
+    }
+
+    function formatDate(date, raw) {
+      if (date) {
+        return date.toLocaleString("ru-RU", {
+          year:"2-digit", month:"2-digit", day:"2-digit",
+          hour:"2-digit", minute:"2-digit", second:"2-digit"
+        });
+      }
+      return raw ? String(raw) : "";
+    }
+
+    function shortJson(obj) {
+      const s = JSON.stringify(obj || {});
+      return s.length > 220 ? s.slice(0, 220) + "…" : s;
+    }
+
+    function numberFrom(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replaceAll("'","&#039;");
+    }
+
+    function toggleRaw() {
+      const box = document.getElementById("rawBox");
+      box.style.display = box.style.display === "block" ? "none" : "block";
+    }
+
+    function exportJson() {
+      const blob = new Blob([JSON.stringify(filteredEvents, null, 2)], { type:"application/json;charset=utf-8" });
+      downloadBlob(blob, "miniapp_events_filtered.json");
+    }
+
+    function exportCsv() {
+      const headers = ["time","event","direction","tariff","price","userId","username","firstName","sessionId","data"];
+      const rows = filteredEvents.map(e => [
+        formatDate(e.date, e.tsRaw),
+        e.event,
+        e.direction,
+        e.tariff,
+        e.price,
+        e.userId,
+        e.username,
+        e.firstName,
+        e.sessionId,
+        JSON.stringify(e.data || {})
+      ]);
+
+      const csv = [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\n");
+      const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
+      downloadBlob(blob, "miniapp_events_filtered.csv");
+    }
+
+    function csvCell(v) {
+      const s = String(v ?? "");
+      return '"' + s.replaceAll('"','""') + '"';
+    }
+
+    function downloadBlob(blob, filename) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 500);
+    }
+
+    function toggleAutoRefresh() {
+      const btn = document.getElementById("autoBtn");
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        btn.textContent = "Авто: выкл";
+        return;
+      }
+      autoTimer = setInterval(loadData, 60000);
+      btn.textContent = "Авто: 60 сек";
+      loadData();
+    }
+
+    renderAll();
+  </script>
 </body>
 </html>
