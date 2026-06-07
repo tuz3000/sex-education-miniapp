@@ -8,12 +8,12 @@
   <style>
     * { box-sizing: border-box; }
     :root {
-      --bg:#06070d; --panel:rgba(255,255,255,.075); --panel2:rgba(255,255,255,.105);
-      --line:rgba(255,255,255,.12); --muted:#aab1c4; --text:#fff;
-      --pink:#ff42b1; --blue:#2aa9ff; --violet:#8d5fff; --gold:#ffd86b; --green:#6ee7a8; --red:#ff6b7a;
+      --bg:#06070d; --line:rgba(255,255,255,.12); --muted:#aab1c4;
+      --pink:#ff42b1; --blue:#2aa9ff; --violet:#8d5fff; --gold:#ffd86b; --gold2:#ffae45;
+      --green:#6ee7a8; --red:#ff6b7a;
     }
     html,body {
-      margin:0; min-height:100%; background:#06070d; color:var(--text);
+      margin:0; min-height:100%; background:#06070d; color:#fff;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     }
     body:before {
@@ -32,9 +32,7 @@
     }
 
     .app { max-width:1180px; margin:0 auto; padding:18px; }
-    .top {
-      display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px;
-    }
+    .top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; }
     .brand h1 {
       margin:0; font-size:30px; line-height:1; letter-spacing:-.6px;
       background:linear-gradient(90deg,var(--pink),#c87bff 50%,#7fd9ff);
@@ -48,11 +46,9 @@
       border-radius:14px; padding:11px 13px; font-size:13px; font-weight:800; cursor:pointer; text-decoration:none;
     }
     button.primary {
-      color:#111; border:0; background:linear-gradient(135deg,var(--gold),#ffae45);
+      color:#111; border:0; background:linear-gradient(135deg,var(--gold),var(--gold2));
       box-shadow:0 12px 32px rgba(255,174,69,.18);
     }
-    button.danger { border-color:rgba(255,107,122,.35); color:#ffd2d8; }
-    button:disabled { opacity:.55; cursor:not-allowed; }
 
     .status {
       border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--muted);
@@ -61,18 +57,14 @@
     .status.ok { color:#d8ffe9; border-color:rgba(110,231,168,.32); background:rgba(110,231,168,.08); }
     .status.err { color:#ffd7dc; border-color:rgba(255,107,122,.32); background:rgba(255,107,122,.08); }
 
-    .filters {
-      display:grid; grid-template-columns:1.2fr .9fr .9fr .9fr auto; gap:10px; margin:14px 0 16px;
-    }
+    .filters { display:grid; grid-template-columns:1.2fr .9fr .9fr .9fr auto; gap:10px; margin:14px 0 16px; }
     input,select,textarea {
       width:100%; border:1px solid var(--line); background:rgba(255,255,255,.065); color:#fff;
       border-radius:14px; padding:12px 12px; font-size:13px; outline:none;
     }
     option { background:#111425; color:#fff; }
 
-    .cards {
-      display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;
-    }
+    .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
     .card {
       border:1px solid var(--line); border-radius:22px; padding:16px;
       background:
@@ -84,18 +76,10 @@
     .card .num { font-size:30px; font-weight:950; margin-top:10px; line-height:1; }
     .card .sub { color:var(--muted); font-size:12px; margin-top:8px; line-height:1.25; }
 
-    .grid {
-      display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;
-    }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
     .wide { grid-column:1 / -1; }
-
-    .panel {
-      border:1px solid var(--line); border-radius:22px; padding:16px;
-      background:rgba(255,255,255,.065);
-    }
-    .panel h2 {
-      margin:0 0 12px; font-size:18px; letter-spacing:-.2px;
-    }
+    .panel { border:1px solid var(--line); border-radius:22px; padding:16px; background:rgba(255,255,255,.065); }
+    .panel h2 { margin:0 0 12px; font-size:18px; letter-spacing:-.2px; }
     .panel-note { color:var(--muted); font-size:12px; line-height:1.35; margin-top:-6px; margin-bottom:12px; }
 
     .bar-list { display:grid; gap:9px; }
@@ -111,17 +95,12 @@
     td { color:#edf0f7; }
     .table-wrap { overflow:auto; max-height:430px; border-radius:16px; border:1px solid rgba(255,255,255,.08); }
     .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:11px; color:#cfd4e5; }
-    .tag {
-      display:inline-flex; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06);
-      border-radius:999px; padding:4px 8px; font-size:11px; color:#fff; white-space:nowrap;
-    }
+    .tag { display:inline-flex; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); border-radius:999px; padding:4px 8px; font-size:11px; color:#fff; white-space:nowrap; }
     .tag.pink { border-color:rgba(255,66,177,.35); color:#ffd5ed; }
     .tag.blue { border-color:rgba(42,169,255,.35); color:#d9f1ff; }
     .tag.gold { border-color:rgba(255,216,107,.35); color:#fff2c2; }
     .empty { color:var(--muted); padding:14px; border:1px dashed rgba(255,255,255,.12); border-radius:16px; font-size:13px; }
-    .raw-box {
-      display:none; margin-top:12px;
-    }
+    .raw-box { display:none; margin-top:12px; }
     .raw-box textarea { min-height:180px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; }
 
     @media(max-width:900px){
@@ -185,44 +164,16 @@
     <div class="cards" id="cards"></div>
 
     <div class="grid">
-      <div class="panel">
-        <h2>События</h2>
-        <div class="panel-note">Что чаще всего делают пользователи.</div>
-        <div id="eventsChart" class="bar-list"></div>
-      </div>
-
-      <div class="panel">
-        <h2>Разделы</h2>
-        <div class="panel-note">Интерес к направлениям и открытиям тарифов.</div>
-        <div id="directionsChart" class="bar-list"></div>
-      </div>
-
-      <div class="panel">
-        <h2>Тарифы</h2>
-        <div class="panel-note">Клики по конкретным тарифам и ценам.</div>
-        <div id="tariffsChart" class="bar-list"></div>
-      </div>
-
-      <div class="panel">
-        <h2>Пользователи</h2>
-        <div class="panel-note">Самые активные пользователи / сессии.</div>
-        <div id="usersChart" class="bar-list"></div>
-      </div>
+      <div class="panel"><h2>События</h2><div class="panel-note">Что чаще всего делают пользователи.</div><div id="eventsChart" class="bar-list"></div></div>
+      <div class="panel"><h2>Разделы</h2><div class="panel-note">Интерес к направлениям и открытиям тарифов.</div><div id="directionsChart" class="bar-list"></div></div>
+      <div class="panel"><h2>Тарифы</h2><div class="panel-note">Клики по конкретным тарифам и ценам.</div><div id="tariffsChart" class="bar-list"></div></div>
+      <div class="panel"><h2>Пользователи</h2><div class="panel-note">Самые активные пользователи / сессии.</div><div id="usersChart" class="bar-list"></div></div>
 
       <div class="panel wide">
         <h2>Последние события</h2>
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>Время</th>
-                <th>Событие</th>
-                <th>Раздел</th>
-                <th>Тариф / цена</th>
-                <th>Пользователь</th>
-                <th>Данные</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Время</th><th>Событие</th><th>Раздел</th><th>Тариф / цена</th><th>Пользователь</th><th>Данные</th></tr></thead>
             <tbody id="eventsTable"></tbody>
           </table>
         </div>
@@ -230,11 +181,9 @@
 
       <div class="panel wide">
         <h2>Сырые данные / диагностика</h2>
-        <div class="panel-note">Нужно, если endpoint вернул данные в непривычном формате.</div>
+        <div class="panel-note">Если данные не появились — нажми «Показать JSON». Там будет видно, что вернул Apps Script.</div>
         <button onclick="toggleRaw()">Показать / скрыть JSON</button>
-        <div class="raw-box" id="rawBox">
-          <textarea id="rawJson" readonly></textarea>
-        </div>
+        <div class="raw-box" id="rawBox"><textarea id="rawJson" readonly></textarea></div>
       </div>
     </div>
   </div>
@@ -254,57 +203,66 @@
       el.className = "status" + (type ? " " + type : "");
     }
 
-    function nowParam() {
-      return "_=" + Date.now();
-    }
+    function loadJsonp(params = {}) {
+      return new Promise((resolve, reject) => {
+        const cb = "stats_cb_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("JSONP timeout. Проверь, что Apps Script поддерживает параметр callback."));
+        }, 15000);
 
-    async function fetchJson(url) {
-      const res = await fetch(url, { method: "GET", cache: "no-store" });
-      const text = await res.text();
+        function cleanup() {
+          clearTimeout(timeout);
+          try { delete window[cb]; } catch(e) { window[cb] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
 
-      try {
-        return JSON.parse(text);
-      } catch (e) {
-        const match = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-        if (match) return JSON.parse(match[0]);
-        throw new Error("Ответ не похож на JSON");
-      }
+        window[cb] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        const qs = new URLSearchParams({
+          action: "events",
+          callback: cb,
+          _: Date.now(),
+          ...params
+        });
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("Не удалось загрузить JSONP-скрипт. Проверь публикацию Web App."));
+        };
+
+        script.src = STATS_ENDPOINT + "?" + qs.toString();
+        document.body.appendChild(script);
+      });
     }
 
     async function loadData() {
-      setStatus("Загружаю данные...", "");
-      const urls = [
-        STATS_ENDPOINT + "?action=stats&" + nowParam(),
-        STATS_ENDPOINT + "?action=getStats&" + nowParam(),
-        STATS_ENDPOINT + "?mode=read&" + nowParam(),
-        STATS_ENDPOINT + "?" + nowParam()
-      ];
+      setStatus("Загружаю данные через JSONP...", "");
 
-      let lastError = null;
-      for (const url of urls) {
-        try {
-          const data = await fetchJson(url);
-          rawPayload = data;
-          document.getElementById("rawJson").value = JSON.stringify(data, null, 2);
-          const parsed = normalizePayload(data);
+      try {
+        const data = await loadJsonp();
+        rawPayload = data;
+        document.getElementById("rawJson").value = JSON.stringify(data, null, 2);
 
-          allEvents = parsed.events;
-          serverMetrics = parsed.metrics || {};
-          fillEventFilter(allEvents);
-          applyFilters();
+        const parsed = normalizePayload(data);
+        allEvents = parsed.events;
+        serverMetrics = parsed.metrics || {};
 
-          setStatus("Данные загружены. Событий: " + allEvents.length + ".", "ok");
-          return;
-        } catch (e) {
-          lastError = e;
-        }
+        fillEventFilter(allEvents);
+        applyFilters();
+
+        setStatus("Данные загружены. Событий: " + allEvents.length + ".", "ok");
+      } catch (e) {
+        rawPayload = null;
+        allEvents = [];
+        filteredEvents = [];
+        renderAll();
+        setStatus("Не удалось загрузить данные: " + e.message + " Нужно обновить Apps Script кодом, который я прислал.", "err");
       }
-
-      rawPayload = null;
-      allEvents = [];
-      filteredEvents = [];
-      renderAll();
-      setStatus("Не удалось загрузить данные. Возможно, Apps Script не отдаёт JSON для админки или включены ограничения CORS. Ошибка: " + (lastError ? lastError.message : "неизвестно"), "err");
     }
 
     function normalizePayload(data) {
@@ -314,28 +272,11 @@
       if (Array.isArray(data)) {
         events = data;
       } else if (data && typeof data === "object") {
-        events =
-          data.events ||
-          data.logs ||
-          data.rows ||
-          data.items ||
-          data.lastEvents ||
-          data.data?.events ||
-          data.data?.logs ||
-          data.data?.rows ||
-          [];
-
-        metrics =
-          data.metrics ||
-          data.stats ||
-          data.summary ||
-          data.data?.metrics ||
-          data.data?.stats ||
-          {};
+        events = data.events || data.logs || data.rows || data.items || data.lastEvents || data.data?.events || data.data?.logs || data.data?.rows || [];
+        metrics = data.metrics || data.stats || data.summary || data.data?.metrics || data.data?.stats || {};
       }
 
       if (!Array.isArray(events)) events = [];
-
       events = events.map(normalizeEvent).filter(Boolean);
 
       return { events, metrics };
@@ -350,73 +291,17 @@
       }
       if (!data || typeof data !== "object") data = {};
 
-      const event =
-        e.event ||
-        e.name ||
-        e.type ||
-        e.action ||
-        data.event ||
-        "unknown";
-
-      const tsRaw =
-        e.timestamp ||
-        e.time ||
-        e.date ||
-        e.created_at ||
-        e.createdAt ||
-        e.ts ||
-        data.timestamp ||
-        data.time ||
-        "";
-
+      const event = e.event || e.name || e.type || e.action || data.event || "unknown";
+      const tsRaw = e.timestamp || e.time || e.date || e.created_at || e.createdAt || e.ts || data.timestamp || data.time || "";
       const dateObj = parseDate(tsRaw);
 
-      const userId =
-        e.user_id ||
-        e.userId ||
-        e.telegram_id ||
-        e.tg_id ||
-        e.user?.id ||
-        data.user_id ||
-        data.userId ||
-        "";
-
-      const username =
-        e.username ||
-        e.user?.username ||
-        data.username ||
-        "";
-
-      const firstName =
-        e.first_name ||
-        e.firstName ||
-        e.user?.first_name ||
-        data.first_name ||
-        "";
-
-      const sessionId =
-        e.session_id ||
-        e.sessionId ||
-        data.session_id ||
-        data.sessionId ||
-        "";
-
-      const direction =
-        data.direction ||
-        data.category ||
-        e.direction ||
-        e.category ||
-        "";
-
-      const tariff =
-        data.tariff ||
-        e.tariff ||
-        "";
-
-      const price =
-        data.price ||
-        e.price ||
-        "";
+      const userId = e.user_id || e.userId || e.telegram_id || e.tg_id || e.user?.id || data.user_id || data.userId || "";
+      const username = e.username || e.user?.username || data.username || "";
+      const firstName = e.first_name || e.firstName || e.user?.first_name || data.first_name || "";
+      const sessionId = e.session_id || e.sessionId || data.session_id || data.sessionId || "";
+      const direction = data.direction || data.category || e.direction || e.category || "";
+      const tariff = data.tariff || e.tariff || "";
+      const price = data.price || e.price || "";
 
       return {
         id: e.id || index,
@@ -452,7 +337,6 @@
         d = new Date(year, Number(m[2]) - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0));
         return isNaN(d) ? null : d;
       }
-
       return null;
     }
 
@@ -460,7 +344,6 @@
       const select = document.getElementById("eventFilter");
       const current = select.value;
       const names = [...new Set(events.map(e => e.event).filter(Boolean))].sort();
-
       select.innerHTML = '<option value="">Все события</option>' + names.map(name => `<option value="${escapeAttr(name)}">${escapeHtml(name)}</option>`).join("");
       select.value = names.includes(current) ? current : "";
     }
@@ -470,7 +353,6 @@
       const period = document.getElementById("period").value;
       const eventName = document.getElementById("eventFilter").value;
       const direction = document.getElementById("directionFilter").value;
-
       const since = getSinceDate(period);
 
       filteredEvents = allEvents.filter(e => {
@@ -480,13 +362,9 @@
         if (direction && e.direction !== direction) return false;
 
         if (q) {
-          const hay = [
-            e.event, e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId,
-            JSON.stringify(e.data || {})
-          ].join(" ").toLowerCase();
+          const hay = [e.event, e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})].join(" ").toLowerCase();
           if (!hay.includes(q)) return false;
         }
-
         return true;
       });
 
@@ -561,28 +439,16 @@
     }
 
     function renderBarList(id, counts, limit) {
-      const entries = Object.entries(counts)
-        .filter(([k]) => k && k !== "без раздела" || Object.keys(counts).length === 1)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0, limit);
-
+      const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, limit);
       const el = document.getElementById(id);
-
       if (!entries.length) {
         el.innerHTML = '<div class="empty">Пока нет данных</div>';
         return;
       }
-
       const max = Math.max(...entries.map(x => x[1])) || 1;
       el.innerHTML = entries.map(([name, value]) => {
         const pct = Math.max(2, Math.round(value / max * 100));
-        return `
-          <div class="bar-row">
-            <div class="bar-name" title="${escapeAttr(name)}">${escapeHtml(name)}</div>
-            <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-            <div class="bar-val">${value}</div>
-          </div>
-        `;
+        return `<div class="bar-row"><div class="bar-name" title="${escapeAttr(name)}">${escapeHtml(name)}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${value}</div></div>`;
       }).join("");
     }
 
@@ -614,8 +480,7 @@
     function countBy(events, getter) {
       const map = {};
       events.forEach(e => {
-        const key = getter(e);
-        const name = String(key || "").trim();
+        const name = String(getter(e) || "").trim();
         if (!name) return;
         map[name] = (map[name] || 0) + 1;
       });
@@ -709,18 +574,8 @@
     function exportCsv() {
       const headers = ["time","event","direction","tariff","price","userId","username","firstName","sessionId","data"];
       const rows = filteredEvents.map(e => [
-        formatDate(e.date, e.tsRaw),
-        e.event,
-        e.direction,
-        e.tariff,
-        e.price,
-        e.userId,
-        e.username,
-        e.firstName,
-        e.sessionId,
-        JSON.stringify(e.data || {})
+        formatDate(e.date, e.tsRaw), e.event, e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})
       ]);
-
       const csv = [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\n");
       const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
       downloadBlob(blob, "miniapp_events_filtered.csv");
@@ -737,10 +592,7 @@
       a.download = filename;
       document.body.appendChild(a);
       a.click();
-      setTimeout(() => {
-        URL.revokeObjectURL(a.href);
-        a.remove();
-      }, 500);
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
     }
 
     function toggleAutoRefresh() {
