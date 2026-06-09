@@ -1496,5 +1496,19 @@
     loadTariffsFromSheet();
     trackEvent("app_open");
   </script>
+  <script>
+window.addEventListener("load", function () {
+  const params = new URLSearchParams(window.location.search);
+  const plans = params.get("plans");
+  if (!plans) return;
+  setTimeout(function () {
+    if (typeof openTariffs === "function") {
+      openTariffs(plans);
+    } else if (typeof openAllTariffs === "function") {
+      openAllTariffs();
+    }
+  }, 500);
+});
+</script>
 </body>
 </html>
