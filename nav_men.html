@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Список материалов: мужской канал</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{
+      --bg:#06070d;--panel:rgba(255,255,255,.075);--panel2:rgba(255,255,255,.105);--line:rgba(255,255,255,.13);--line2:rgba(255,255,255,.2);--text:#fff;--muted:#aab1c4;--soft:#dfe3ee;--pink:#ff42b1;--blue:#2aa9ff;--violet:#8d5fff;--gold:#ffd86b;--gold2:#ffae45;--danger:#ff6a8a
+    }
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;scroll-behavior:smooth}
+    body:before{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(circle at 10% 14%,rgba(255,66,177,.18),transparent 28%),radial-gradient(circle at 90% 12%,rgba(42,169,255,.18),transparent 30%),radial-gradient(circle at 54% 96%,rgba(141,95,255,.14),transparent 34%),linear-gradient(180deg,#111425 0%,#06070d 70%)}
+    body:after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.12;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(to bottom,#000,transparent 75%)}
+    .app{max-width:460px;margin:0 auto;min-height:100vh;padding:16px 16px 96px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+    .brand{display:flex;align-items:center;gap:10px;min-width:0}.brand-mark{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;font-size:12px;font-weight:950;color:#0d1018;background:radial-gradient(circle at 25% 18%,rgba(255,255,255,.68),transparent 22%),linear-gradient(135deg,var(--pink),var(--blue));box-shadow:0 0 22px rgba(255,66,177,.25),0 0 22px rgba(42,169,255,.2)}
+    .brand-title{font-size:13px;font-weight:900;letter-spacing:.2px;white-space:nowrap}.brand-sub{color:var(--muted);font-size:11px;margin-top:3px;white-space:nowrap}.pill-link,.back-link{border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:850;backdrop-filter:blur(16px);cursor:pointer;white-space:nowrap}
+    .hero{position:relative;overflow:hidden;border-radius:30px;border:1px solid rgba(255,255,255,.15);padding:19px 17px 17px;background:radial-gradient(circle at 12% 10%,rgba(255,66,177,.17),transparent 32%),radial-gradient(circle at 88% 16%,rgba(42,169,255,.17),transparent 34%),linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.05));box-shadow:0 22px 80px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.12);margin-bottom:13px}
+    .kicker{font-size:12px;color:var(--gold);font-weight:900;text-transform:uppercase;letter-spacing:.9px;margin-bottom:8px}.hero h1{margin:0 0 10px;font-size:30px;line-height:1.02;letter-spacing:-.6px}.subtitle{color:var(--soft);font-size:14px;line-height:1.48;margin:0}.notice{border-radius:23px;border:1px solid rgba(255,216,107,.22);background:radial-gradient(circle at 0 0,rgba(255,216,107,.13),transparent 45%),rgba(255,255,255,.066);padding:14px;margin:13px 0;color:#eef1f8;font-size:13px;line-height:1.45}.notice b{color:#fff}.notice .muted{color:var(--muted);display:block;margin-top:6px}
+    .quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.quick-actions.three{grid-template-columns:1fr 1fr 1fr}.btn{border:1px solid var(--line);background:rgba(255,255,255,.07);color:#fff;border-radius:18px;padding:13px 10px;font-size:13px;font-weight:900;text-align:center;text-decoration:none;cursor:pointer;backdrop-filter:blur(15px)}.btn.gold{border:0;color:#101116;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 14px 40px rgba(255,174,69,.25)}
+    .search-wrap{position:sticky;top:0;z-index:12;padding:8px 0 10px;background:linear-gradient(180deg,rgba(6,7,13,.96),rgba(6,7,13,.74) 72%,transparent);backdrop-filter:blur(10px)}.search{width:100%;padding:14px 15px;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:rgba(255,255,255,.075);color:#fff;outline:none;font-size:15px}.search::placeholder{color:#8991a6}.summary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}.chip{border-radius:999px;padding:6px 9px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.09);color:#f5f7fb;font-size:11px;font-weight:780;line-height:1}.chip.gold{color:#151515;background:linear-gradient(135deg,var(--gold),var(--gold2));border:0;font-weight:950}
+    .section-list{display:grid;gap:11px}.section-card{border-radius:24px;border:1px solid var(--line);background:radial-gradient(circle at 100% 0%,rgba(255,66,177,.09),transparent 36%),linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.05));box-shadow:0 12px 42px rgba(0,0,0,.22);overflow:hidden}.section-head{padding:14px 14px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;cursor:pointer}.section-title{font-size:16px;font-weight:950;line-height:1.18;margin-bottom:7px}.section-meta{display:flex;gap:7px;flex-wrap:wrap}.arrow{font-size:22px;line-height:1;color:rgba(255,255,255,.75);font-weight:950;transition:.18s}.section-card.open .arrow{transform:rotate(180deg)}.items{display:none;border-top:1px solid rgba(255,255,255,.08);padding:10px 12px 12px}.section-card.open .items{display:block}.section-hint{border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:10px 11px;color:#cfd4e2;font-size:12px;line-height:1.38;margin-bottom:6px}.item-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.075)}.item-row:last-child{border-bottom:0}.item-title{font-size:14px;font-weight:720;line-height:1.35;color:#f1f3f8}.go-btn{border:0;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#111217;font-size:12px;font-weight:950;padding:9px 11px;cursor:pointer;white-space:nowrap}.collapse-inside{width:100%;margin-top:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:#fff;border-radius:16px;padding:13px 12px;font-weight:900;cursor:pointer}.empty{border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.07);padding:15px;color:var(--muted);font-size:14px;line-height:1.4;text-align:center}.float-top,.float-collapse{position:fixed;z-index:30;bottom:18px;border:1px solid rgba(255,255,255,.16);background:rgba(8,9,15,.84);color:#fff;backdrop-filter:blur(18px);box-shadow:0 14px 44px rgba(0,0,0,.35);border-radius:999px;font-size:13px;font-weight:950;padding:12px 14px;cursor:pointer}.float-top{right:14px}.float-collapse{left:14px;display:none}.float-collapse.show{display:block}.modal-backdrop{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.58);display:none;align-items:flex-end;justify-content:center;padding:14px}.modal-backdrop.show{display:flex}.modal{width:100%;max-width:460px;border-radius:28px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(180deg,rgba(28,31,44,.98),rgba(12,13,21,.98));box-shadow:0 24px 90px rgba(0,0,0,.55);padding:18px}.modal h2{margin:0 0 9px;font-size:21px;line-height:1.1}.modal p{margin:0 0 14px;color:#d7dbe7;font-size:14px;line-height:1.45}.modal-actions{display:grid;gap:10px}.modal-actions.two{grid-template-columns:1fr 1fr}.modal .btn{width:100%;padding:14px 10px}.small-note{font-size:11px;color:var(--muted);text-align:center;margin-top:9px;line-height:1.35}
+
+    .search-box{position:relative}.search{padding-right:46px}.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.08);color:#fff;font-size:20px;line-height:1;display:none;align-items:center;justify-content:center;cursor:pointer}.search-clear.show{display:flex}
+    .summary{align-items:center}.summary-item{color:var(--muted);font-size:12px;line-height:1.25}.summary-item strong{color:#fff;font-weight:950}.summary-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.28);display:inline-block}
+    .section-symbol{display:inline-grid;place-items:center;width:24px;height:24px;margin-right:8px;border-radius:9px;background:linear-gradient(135deg,rgba(255,66,177,.18),rgba(42,169,255,.14));border:1px solid rgba(255,255,255,.10);color:var(--gold);font-size:12px;vertical-align:1px}.section-meta-text{color:var(--muted);font-size:12px;font-weight:800}.section-title{display:flex;align-items:flex-start;gap:0}.section-title-text{display:inline;flex:1}
+
+    @media(max-width:380px){.hero h1{font-size:27px}.quick-actions.three{grid-template-columns:1fr}.item-row{grid-template-columns:1fr}.go-btn{width:100%;padding:11px}.float-collapse{max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.quick-actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="app" id="top">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">18+</div>
+        <div>
+          <div class="brand-title">SEX EDUCATION</div>
+          <div class="brand-sub">закрытая библиотека</div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <section class="hero">
+      <div class="kicker">Навигация по закрытому каналу</div>
+      <h1>Список материалов<br>для мужчин</h1>
+      <p class="subtitle">Здесь можно заранее посмотреть список материалов и быстро найти нужный урок, курс или файл.</p>
+    </section>
+
+    <div class="notice">
+      <b>Важно:</b> чтобы открыть материал по кнопке «Перейти», нужно иметь активную подписку и состоять в соответствующем закрытом Telegram-канале.
+      <span class="muted">Материалы открываются только при активной подписке и участии в закрытом Telegram-канале.</span>
+</div>
+<div class="search-wrap">
+      <div class="search-box"><input id="search" class="search" type="search" placeholder="Поиск по материалам и разделам" oninput="render()" /><button id="searchClear" class="search-clear" type="button" onclick="clearSearch()" aria-label="Очистить поиск">×</button></div>
+      <div class="summary">
+        <span class="summary-item"><strong id="resultCounter">загрузка...</strong></span>
+        <span class="summary-dot"></span>
+        <span class="summary-item" id="sectionCounter">разделы</span>
+        <span class="summary-dot"></span>
+        <span class="summary-item" id="queryCounter">полный список</span>
+      </div>
+    </div>
+
+    <div class="section-list" id="sectionList"></div>
+  </div>
+
+  <button class="float-collapse" id="collapseFab" onclick="collapseCurrent()">Свернуть раздел ↑</button>
+  <button class="float-top" onclick="scrollTopFast()">↑ Наверх</button>
+
+  <div class="modal-backdrop" id="accessModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <h2 id="modalTitle">Материал</h2>
+      <p>Этот материал находится внутри закрытого Telegram-канала. Если подписка уже активна и ты состоишь в канале — открой материал. Если Telegram покажет, что сообщение недоступно, значит нужен доступ к закрытому каналу.</p>
+      <div class="modal-actions">
+        <button class="btn gold" onclick="openPendingMaterial()">Открыть материал</button>
+        <button class="btn" onclick="openPlans()">Смотреть тарифы</button>
+        <button class="btn" onclick="closeModal()">Отмена</button>
+      </div>
+      <div class="small-note">Доступ к постам работает только для участников закрытого канала.</div>
+    </div>
+  </div>
+
+
+  <script>
+    const SHEET_ID = "1WopTNvOLNqPYbhIJOp1RZ3eJfg1sqgWEDJXgidIdRL4";
+    const CHANNEL = {"key": "men", "plansUrl": "index.html?plans=men", "sheetNames": ["nav_men"]};
+
+    let MATERIALS = [];
+    let openSectionNo = null;
+    let pendingLink = null;
+    let loadingMaterials = true;
+    let loadError = "";
+    let loadedSheetName = "";
+
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) { tg.ready(); tg.expand(); }
+
+    function esc(s){
+      return String(s || '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function normalizeText(s){
+      return String(s || '')
+        .toLowerCase()
+        .replace(/ё/g, 'е')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function scrollTopFast(){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openTelegram(url){
+      if(!url) return;
+      if(tg && tg.openTelegramLink && /^https:\/\/t\.me\//i.test(url)) {
+        tg.openTelegramLink(url);
+      } else {
+        window.open(url, '_blank');
+      }
+      setTimeout(() => { if(tg && tg.close) tg.close(); }, 450);
+    }
+
+    function openPlans(){
+      window.location.href = CHANNEL.plansUrl || 'index.html';
+    }
+
+    function setLoadingText(){
+      const list = document.getElementById('sectionList');
+      const resultCounter = document.getElementById('resultCounter');
+      const sectionCounter = document.getElementById('sectionCounter');
+      const queryCounter = document.getElementById('queryCounter');
+      if(resultCounter) resultCounter.textContent = 'загрузка...';
+      if(sectionCounter) sectionCounter.textContent = 'Google Таблица';
+      if(queryCounter) queryCounter.textContent = 'актуальный список';
+      if(list) list.innerHTML = `<div class="loading">Загружаю актуальный список материалов из Google Таблицы...</div>`;
+    }
+
+    function updateSearchClear(){
+      const input = document.getElementById('search');
+      const btn = document.getElementById('searchClear');
+      if(!input || !btn) return;
+      btn.classList.toggle('show', !!input.value.trim());
+    }
+
+    function cellText(cell){
+      if(!cell) return '';
+      if(cell.f !== undefined && cell.f !== null) return String(cell.f).trim();
+      if(cell.v !== undefined && cell.v !== null) return String(cell.v).trim();
+      return '';
+    }
+
+    function columnIndex(cols, variants, fallback){
+      const normalized = cols.map(c => normalizeText(c.label || c.id || ''));
+      for(const variant of variants){
+        const idx = normalized.indexOf(normalizeText(variant));
+        if(idx >= 0) return idx;
+      }
+      for(let i=0;i<normalized.length;i++){
+        for(const variant of variants){
+          const v = normalizeText(variant);
+          if(v && normalized[i].includes(v)) return i;
+        }
+      }
+      return fallback;
+    }
+
+    function parseSheetResponse(response){
+      const table = response && response.table;
+      if(!table || !Array.isArray(table.rows)) return [];
+
+      const cols = table.cols || [];
+      const noIdx = columnIndex(cols, ['№', 'номер', 'no'], 0);
+      const sectionIdx = columnIndex(cols, ['Раздел', 'section'], 1);
+      const titleIdx = columnIndex(cols, ['Название материала', 'Материал', 'Название', 'title'], 2);
+      const linkIdx = columnIndex(cols, ['Ссылка', 'link', 'url'], 3);
+
+      let lastNo = '';
+      let lastSection = '';
+      const rows = [];
+
+      table.rows.forEach((row) => {
+        const cells = row.c || [];
+        let no = cellText(cells[noIdx]);
+        let section = cellText(cells[sectionIdx]);
+        let title = cellText(cells[titleIdx]);
+        let link = cellText(cells[linkIdx]);
+
+        // Поддержка объединённых ячеек в Google Sheets: значения раздела и № протягиваются вниз.
+        if(no) lastNo = no; else no = lastNo;
+        if(section) lastSection = section; else section = lastSection;
+
+        title = title.replace(/^[-•\s]+/, '').trim();
+        if(!title || !link) return;
+        if(!/^https?:\/\//i.test(link)) return;
+
+        rows.push({
+          no: no || String(rows.length + 1),
+          section: section || 'Без раздела',
+          title,
+          link
+        });
+      });
+
+      return rows;
+    }
+
+    function loadSheetJsonp(sheetName){
+      return new Promise((resolve, reject) => {
+        const callbackName = '__sexEducSheet_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const url = 'https://docs.google.com/spreadsheets/d/' + encodeURIComponent(SHEET_ID) +
+          '/gviz/tq?headers=1&sheet=' + encodeURIComponent(sheetName) +
+          '&tqx=responseHandler:' + callbackName;
+
+        let done = false;
+        const timer = setTimeout(() => {
+          if(done) return;
+          done = true;
+          cleanup();
+          reject(new Error('Не удалось загрузить лист: ' + sheetName));
+        }, 12000);
+
+        function cleanup(){
+          clearTimeout(timer);
+          try { delete window[callbackName]; } catch(e) { window[callbackName] = undefined; }
+          if(script && script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callbackName] = function(response){
+          if(done) return;
+          done = true;
+          cleanup();
+          if(response && response.status === 'error'){
+            const msg = response.errors && response.errors.length
+              ? response.errors.map(e => e.detailed_message || e.message).join('; ')
+              : 'Google Таблица вернула ошибку';
+            reject(new Error(msg));
+            return;
+          }
+          resolve(response);
+        };
+
+        script.onerror = () => {
+          if(done) return;
+          done = true;
+          cleanup();
+          reject(new Error('Ошибка загрузки Google Таблицы'));
+        };
+        script.src = url;
+        document.head.appendChild(script);
+      });
+    }
+
+    async function loadMaterialsFromGoogleSheet(){
+      loadingMaterials = true;
+      loadError = '';
+      setLoadingText();
+
+      let lastErr = null;
+      for(const sheetName of CHANNEL.sheetNames){
+        try {
+          const response = await loadSheetJsonp(sheetName);
+          const parsed = parseSheetResponse(response);
+          if(parsed.length){
+            MATERIALS = parsed;
+            loadedSheetName = sheetName;
+            loadingMaterials = false;
+            render();
+            return;
+          }
+          lastErr = new Error('В листе «' + sheetName + '» не найдены строки с колонками № / Раздел / Название материала / Ссылка');
+        } catch(err) {
+          lastErr = err;
+        }
+      }
+
+      MATERIALS = [];
+      loadingMaterials = false;
+      loadError = (lastErr && lastErr.message) ? lastErr.message : 'Не удалось загрузить Google Таблицу';
+      render();
+    }
+
+    function groupedData(q){
+      const query = normalizeText(q);
+      const map = new Map();
+      MATERIALS.forEach(item => {
+        const hay = normalizeText(item.section + ' ' + item.title);
+        if(query && !hay.includes(query)) return;
+        const key = String(item.no || item.section || 'section');
+        if(!map.has(key)) map.set(key, { no: item.no, section: item.section, items: [] });
+        map.get(key).items.push(item);
+      });
+      return Array.from(map.values());
+    }
+
+    function render(){
+      updateSearchClear();
+      const list = document.getElementById('sectionList');
+      const resultCounter = document.getElementById('resultCounter');
+      const sectionCounter = document.getElementById('sectionCounter');
+      const queryCounter = document.getElementById('queryCounter');
+      const q = (document.getElementById('search')?.value || '').trim();
+
+      if(loadingMaterials){
+        setLoadingText();
+        setCollapseFab(false);
+        return;
+      }
+
+      if(loadError){
+        if(resultCounter) resultCounter.textContent = '0 материалов';
+        if(sectionCounter) sectionCounter.textContent = 'ошибка загрузки';
+        if(queryCounter) queryCounter.textContent = 'Google Таблица';
+        if(list) list.innerHTML = `<div class="empty"><b>Не удалось загрузить список из Google Таблицы.</b><br><br>${esc(loadError)}<br><br>Проверь, что таблица открыта по ссылке для просмотра и что в листе есть колонки: <b>№ / Раздел / Название материала / Ссылка</b>.</div>`;
+        setCollapseFab(false);
+        return;
+      }
+
+      const groups = groupedData(q);
+      const count = groups.reduce((sum, g) => sum + g.items.length, 0);
+      if(resultCounter) resultCounter.textContent = count + ' материалов';
+      if(sectionCounter) sectionCounter.textContent = groups.length + ' разделов';
+      if(queryCounter) queryCounter.textContent = q ? 'поиск включён' : 'из таблицы' + (loadedSheetName ? ' · ' + loadedSheetName : '');
+
+      if(!groups.length){
+        list.innerHTML = `<div class="empty">Ничего не найдено. Попробуй другое слово или очисти поиск.</div>`;
+        setCollapseFab(false);
+        return;
+      }
+
+      list.innerHTML = '';
+      groups.forEach(group => {
+        const isOpen = q || String(openSectionNo) === String(group.no);
+        const safeId = String(group.no || group.section).replace(/[^a-zA-Z0-9_-]/g,'_');
+        const card = document.createElement('div');
+        card.className = 'section-card' + (isOpen ? ' open' : '');
+        card.id = 'section-' + safeId;
+
+        const head = document.createElement('div');
+        head.className = 'section-head';
+        head.onclick = () => toggleSection(group.no);
+        head.innerHTML = `<div><div class="section-title"><span class="section-symbol">✦</span><span class="section-title-text">${esc(group.section)}</span></div><div class="section-meta"><span class="section-meta-text">${group.items.length} материалов</span></div></div><div class="arrow">⌄</div>`;
+
+        const items = document.createElement('div');
+        items.className = 'items';
+        items.innerHTML = `<div class="section-hint">Материалы открываются внутри закрытого Telegram-канала. Если доступа нет, Telegram может показать, что сообщение недоступно.</div>`;
+
+        group.items.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'item-row';
+          const title = document.createElement('div');
+          title.className = 'item-title';
+          title.textContent = item.title;
+          const btn = document.createElement('button');
+          btn.className = 'go-btn';
+          btn.type = 'button';
+          btn.textContent = 'Перейти';
+          btn.onclick = (ev) => { ev.stopPropagation(); showAccessModal(item.link, item.title); };
+          row.appendChild(title);
+          row.appendChild(btn);
+          items.appendChild(row);
+        });
+
+        const collapse = document.createElement('button');
+        collapse.className = 'collapse-inside';
+        collapse.type = 'button';
+        collapse.textContent = 'Свернуть раздел ↑';
+        collapse.onclick = (ev) => { ev.stopPropagation(); collapseSection(group.no); };
+        items.appendChild(collapse);
+
+        card.appendChild(head);
+        card.appendChild(items);
+        list.appendChild(card);
+      });
+      setCollapseFab(Boolean(openSectionNo) && !q);
+    }
+
+    function toggleSection(no){
+      const q = document.getElementById('search').value.trim();
+      if(q) return;
+      openSectionNo = String(openSectionNo) === String(no) ? null : no;
+      render();
+      if(openSectionNo){
+        setTimeout(() => {
+          const el = document.getElementById('section-' + String(no).replace(/[^a-zA-Z0-9_-]/g,'_'));
+          if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+        }, 40);
+      }
+    }
+
+    function collapseSection(no){
+      openSectionNo = null;
+      render();
+      setTimeout(() => {
+        const el = document.getElementById('section-' + String(no).replace(/[^a-zA-Z0-9_-]/g,'_'));
+        if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 40);
+    }
+
+    function collapseCurrent(){
+      if(openSectionNo) collapseSection(openSectionNo);
+    }
+
+    function setCollapseFab(show){
+      const btn = document.getElementById('collapseFab');
+      if(btn) btn.classList.toggle('show', !!show);
+    }
+
+    function showAccessModal(link, title){
+      pendingLink = link;
+      document.getElementById('modalTitle').textContent = title || 'Материал';
+      document.getElementById('accessModal').classList.add('show');
+    }
+    function closeModal(){
+      document.getElementById('accessModal').classList.remove('show');
+      pendingLink = null;
+    }
+    function openPendingMaterial(){
+      if(pendingLink) openTelegram(pendingLink);
+    }
+
+    function clearSearch(){
+      const input = document.getElementById('search');
+      if(!input) return;
+      input.value = '';
+      render();
+      input.focus();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      render();
+      loadMaterialsFromGoogleSheet();
+    });
+  </script>
+
+</body>
+</html>
