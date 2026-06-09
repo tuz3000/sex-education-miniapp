@@ -6,6 +6,28 @@
   <title>SEX EDUCATION 18+</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+  <script>
+(function () {
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  const urlParams = new URLSearchParams(window.location.search);
+  const startParam =
+    (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ||
+    urlParams.get('tgWebAppStartParam') ||
+    urlParams.get('startapp') ||
+    '';
+
+  const routes = {
+    nav_men: 'nav_men.html',
+    nav_women: 'nav_women.html',
+    nav_bdsm_swing: 'nav_bdsm_swing.html'
+  };
+
+  if (routes[startParam]) {
+    window.location.replace(routes[startParam]);
+  }
+})();
+</script>
+
   <style>
     * {
       box-sizing: border-box;
