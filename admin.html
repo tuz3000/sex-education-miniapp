@@ -106,6 +106,26 @@
     .raw-box { display:none; margin-top:12px; }
     .raw-box textarea { min-height:180px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; }
 
+    .funnel-panel { margin-bottom:12px; }
+    .funnel-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:12px; }
+    .funnel-meta { color:var(--muted); font-size:12px; line-height:1.35; }
+    .funnel { display:grid; gap:10px; }
+    .funnel-row {
+      display:grid; grid-template-columns:minmax(180px,1.2fr) 3fr minmax(170px,.8fr); gap:12px; align-items:center;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.045); border-radius:18px; padding:12px;
+    }
+    .funnel-title { font-weight:900; font-size:13px; line-height:1.25; color:#fff; }
+    .funnel-hint { color:var(--muted); font-size:11px; line-height:1.3; margin-top:4px; }
+    .funnel-track { height:16px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; position:relative; }
+    .funnel-fill { height:100%; min-width:2px; border-radius:999px; background:linear-gradient(90deg,var(--gold),var(--pink),var(--blue)); }
+    .funnel-count { font-size:22px; font-weight:950; line-height:1; color:#fff; text-align:right; }
+    .funnel-sub { color:var(--muted); font-size:11px; line-height:1.35; margin-top:5px; text-align:right; }
+    .funnel-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+    .funnel-mini { border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.045); border-radius:16px; padding:12px; }
+    .funnel-mini b { display:block; font-size:18px; margin-bottom:4px; }
+    .funnel-mini span { color:var(--muted); font-size:11px; line-height:1.3; }
+
+
     @media(max-width:900px){
       .top { display:block; }
       .actions { justify-content:flex-start; margin-top:12px; }
@@ -120,6 +140,9 @@
       .cards { grid-template-columns:1fr; }
       .bar-row { grid-template-columns:1fr; gap:5px; }
       .bar-val { text-align:left; }
+      .funnel-row { grid-template-columns:1fr; }
+      .funnel-count,.funnel-sub { text-align:left; }
+      .funnel-summary { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -165,6 +188,18 @@
     </div>
 
     <div class="cards" id="cards"></div>
+
+    <div class="panel wide funnel-panel">
+      <div class="funnel-head">
+        <div>
+          <h2>Воронка продаж</h2>
+          <div class="panel-note">Путь пользователя: открыл Mini App → посмотрел тарифы → нажал тариф → перешёл к оплате/боту → оплатил/получил доступ. Считается по уже существующим событиям, статистика не меняется.</div>
+        </div>
+        <div class="funnel-meta" id="funnelMeta">Загрузи данные, чтобы увидеть воронку.</div>
+      </div>
+      <div id="salesFunnel" class="funnel"></div>
+      <div id="funnelSummary" class="funnel-summary"></div>
+    </div>
 
     <div class="grid">
       <div class="panel"><h2>События</h2><div class="panel-note">Что чаще всего делают пользователи. Русское название показывается сверху, технический код сохраняется.</div><div id="eventsChart" class="bar-list"></div></div>
@@ -221,6 +256,11 @@
       checkout_open: "Переход к оплате",
       pay_click: "Клик по оплате",
       payment_click: "Клик по оплате",
+      payment_success: "Успешная оплата",
+      purchase_success: "Успешная покупка",
+      paid: "Оплачено",
+      access_granted: "Доступ выдан",
+      subscription_active: "Подписка активна",
       status_open: "Открытие «Моя подписка»",
       subscription_open: "Открытие подписки",
       subscription_click: "Клик по подписке",
@@ -256,6 +296,11 @@
       checkout_open: "Пользователь перешёл к оплате или оформлению доступа.",
       pay_click: "Пользователь нажал кнопку оплаты.",
       payment_click: "Пользователь нажал кнопку оплаты.",
+      payment_success: "Оплата прошла успешно.",
+      purchase_success: "Покупка / оформление доступа завершены успешно.",
+      paid: "Пользователь оплатил доступ.",
+      access_granted: "Пользователю был выдан доступ.",
+      subscription_active: "У пользователя активная подписка.",
       status_open: "Пользователь открыл раздел проверки своей подписки.",
       subscription_open: "Пользователь открыл информацию о подписке.",
       support_open: "Пользователь открыл поддержку.",
@@ -481,9 +526,198 @@
 
     function renderAll() {
       renderCards();
+      renderSalesFunnel();
       renderCharts();
       renderEventLegend();
       renderTable();
+    }
+
+
+    function getFunnelSteps(events) {
+      const definitions = [
+        {
+          key: "open",
+          title: "1. Открыли Mini App",
+          hint: "Первый вход в приложение.",
+          match: e => isOpenEvent(e)
+        },
+        {
+          key: "plans",
+          title: "2. Посмотрели тарифы",
+          hint: "Открыли тарифы / планы доступа.",
+          match: e => isPlansEvent(e)
+        },
+        {
+          key: "tariff_click",
+          title: "3. Нажали тариф",
+          hint: "Выбрали конкретный тариф или кнопку оформления.",
+          match: e => isTariffClickEvent(e)
+        },
+        {
+          key: "checkout",
+          title: "4. Перешли к оплате / боту",
+          hint: "Нажали оплату, оформление или открыли бота для покупки.",
+          match: e => isCheckoutEvent(e)
+        },
+        {
+          key: "success",
+          title: "5. Оплатили / получили доступ",
+          hint: "Будет считаться, если в статистику отправляется событие успешной оплаты или выдачи доступа.",
+          match: e => isSuccessEvent(e)
+        }
+      ];
+
+      const hasUserKeys = events.some(e => userKey(e));
+
+      return definitions.map(def => {
+        const matched = events.filter(def.match);
+        const users = new Set(matched.map(userKey).filter(Boolean));
+        return {
+          ...def,
+          eventsCount: matched.length,
+          usersCount: users.size,
+          count: hasUserKeys ? users.size : matched.length,
+          unit: hasUserKeys ? "пользователей / сессий" : "событий"
+        };
+      });
+    }
+
+    function renderSalesFunnel() {
+      const el = document.getElementById("salesFunnel");
+      const summary = document.getElementById("funnelSummary");
+      const meta = document.getElementById("funnelMeta");
+      if (!el || !summary || !meta) return;
+
+      const steps = getFunnelSteps(filteredEvents);
+      const first = steps[0]?.count || 0;
+      const max = Math.max(...steps.map(s => s.count), 1);
+      const unit = steps[0]?.unit || "пользователей / сессий";
+
+      if (!filteredEvents.length) {
+        meta.textContent = "Нет событий в выбранном периоде.";
+        el.innerHTML = '<div class="empty">Пока нет данных для воронки</div>';
+        summary.innerHTML = "";
+        return;
+      }
+
+      meta.textContent = "Показано за выбранный период: " + filteredEvents.length + " событий. Основной расчёт: " + unit + ".";
+
+      el.innerHTML = steps.map((step, i) => {
+        const prev = i > 0 ? steps[i - 1].count : step.count;
+        const pctOfStart = first ? Math.round(step.count / first * 100) : 0;
+        const pctPrev = i === 0 ? 100 : (prev ? Math.round(step.count / prev * 100) : 0);
+        const width = Math.max(2, Math.round(step.count / max * 100));
+        const diff = i === 0 ? 0 : prev - step.count;
+        const diffText = i === 0 ? "старт" : (diff >= 0 ? "потеря: " + diff : "на " + Math.abs(diff) + " больше прошлого шага");
+
+        return `
+          <div class="funnel-row">
+            <div>
+              <div class="funnel-title">${escapeHtml(step.title)}</div>
+              <div class="funnel-hint">${escapeHtml(step.hint)}</div>
+            </div>
+            <div>
+              <div class="funnel-track"><div class="funnel-fill" style="width:${width}%"></div></div>
+              <div class="funnel-hint">${pctOfStart}% от первого шага · ${i === 0 ? "100%" : pctPrev + "% от прошлого шага"} · ${escapeHtml(diffText)}</div>
+            </div>
+            <div>
+              <div class="funnel-count">${step.count}</div>
+              <div class="funnel-sub">${escapeHtml(step.unit)}<br>${step.eventsCount} событий</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const plans = steps[1]?.count || 0;
+      const tariffClicks = steps[2]?.count || 0;
+      const checkout = steps[3]?.count || 0;
+      const success = steps[4]?.count || 0;
+      const tariffConversion = first ? Math.round(tariffClicks / first * 100) : 0;
+      const checkoutConversion = tariffClicks ? Math.round(checkout / tariffClicks * 100) : 0;
+      const successConversion = first ? Math.round(success / first * 100) : 0;
+
+      const weakest = getWeakestFunnelStep(steps);
+      const successNote = success === 0
+        ? "Если здесь всегда 0 — это нормально, если Nemiling/оплата пока не отправляет событие успешной оплаты в статистику. Старые данные не трогаем."
+        : "Есть события успешной оплаты / выдачи доступа.";
+
+      summary.innerHTML = `
+        <div class="funnel-mini"><b>${tariffConversion}%</b><span>Открыли Mini App → нажали тариф</span></div>
+        <div class="funnel-mini"><b>${checkoutConversion}%</b><span>Нажали тариф → перешли к оплате / боту</span></div>
+        <div class="funnel-mini"><b>${successConversion}%</b><span>Открыли Mini App → оплатили / получили доступ</span></div>
+        <div class="funnel-mini"><b>${escapeHtml(weakest.title)}</b><span>${escapeHtml(weakest.text)}</span></div>
+        <div class="funnel-mini"><b>${plans}</b><span>Посмотрели тарифы за выбранный период</span></div>
+        <div class="funnel-mini"><b>${tariffClicks}</b><span>Нажали на конкретный тариф</span></div>
+        <div class="funnel-mini"><b>${checkout}</b><span>Перешли к оплате / открыли бота</span></div>
+        <div class="funnel-mini"><b>${success}</b><span>${escapeHtml(successNote)}</span></div>
+      `;
+    }
+
+    function getWeakestFunnelStep(steps) {
+      let weakest = { title: "Недостаточно данных", text: "После загрузки данных здесь появится самый слабый шаг воронки." };
+      let biggestDrop = -Infinity;
+
+      for (let i = 1; i < steps.length; i++) {
+        const prev = steps[i - 1].count;
+        const current = steps[i].count;
+        if (!prev) continue;
+        const drop = prev - current;
+        const dropPct = Math.round(drop / prev * 100);
+        if (drop > biggestDrop) {
+          biggestDrop = drop;
+          weakest = {
+            title: steps[i].title.replace(/^\d+\.\s*/, ""),
+            text: drop >= 0
+              ? "Самая большая потеря: минус " + drop + " (" + dropPct + "%) относительно прошлого шага."
+              : "На этом шаге событий больше, чем на предыдущем. Возможно, часть старых событий записывалась без предыдущего шага."
+          };
+        }
+      }
+      return weakest;
+    }
+
+    function userKey(e) {
+      return e.userId || e.username || e.sessionId || "";
+    }
+
+    function eventCode(e) {
+      return String(e?.event || "").toLowerCase();
+    }
+
+    function eventBlob(e) {
+      return [e.event, eventName(e.event), e.direction, directionName(e.direction), e.tariff, e.price, JSON.stringify(e.data || {})].join(" ").toLowerCase();
+    }
+
+    function isOpenEvent(e) {
+      const code = eventCode(e);
+      return ["app_open", "mini_app_open", "start", "page_view"].includes(code) || (code.includes("app") && code.includes("open"));
+    }
+
+    function isPlansEvent(e) {
+      const code = eventCode(e);
+      if (["plans_open", "tariffs_open", "tariff_open"].includes(code)) return true;
+      return (code.includes("plan") || code.includes("tariff")) && code.includes("open") && !code.includes("click");
+    }
+
+    function isTariffClickEvent(e) {
+      const code = eventCode(e);
+      if (["tariff_click", "plan_click"].includes(code)) return true;
+      return (code.includes("tariff") || code.includes("plan")) && code.includes("click");
+    }
+
+    function isCheckoutEvent(e) {
+      const code = eventCode(e);
+      const blob = eventBlob(e);
+      if (["checkout_open", "pay_click", "payment_click", "bot_open"].includes(code)) return true;
+      if ((code.includes("checkout") || code.includes("pay") || code.includes("payment")) && (code.includes("open") || code.includes("click"))) return true;
+      return (blob.includes("оплат") || blob.includes("оформ")) && (blob.includes("click") || blob.includes("клик") || blob.includes("open") || blob.includes("откры"));
+    }
+
+    function isSuccessEvent(e) {
+      const code = eventCode(e);
+      if (["payment_success", "purchase_success", "paid", "access_granted", "subscription_active"].includes(code)) return true;
+      return (code.includes("success") || code.includes("paid") || code.includes("granted") || code.includes("active"))
+        && (code.includes("pay") || code.includes("payment") || code.includes("purchase") || code.includes("access") || code.includes("subscription"));
     }
 
     function renderCards() {
@@ -613,7 +847,7 @@
     function uniqueUsers(events) {
       const set = new Set();
       events.forEach(e => {
-        const key = e.userId || e.username || e.sessionId;
+        const key = userKey(e);
         if (key) set.add(key);
       });
       return set.size;
