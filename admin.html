@@ -99,6 +99,9 @@
     .tag.pink { border-color:rgba(255,66,177,.35); color:#ffd5ed; }
     .tag.blue { border-color:rgba(42,169,255,.35); color:#d9f1ff; }
     .tag.gold { border-color:rgba(255,216,107,.35); color:#fff2c2; }
+    .event-cell { display:flex; flex-direction:column; gap:5px; align-items:flex-start; }
+    .event-code { color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:10px; line-height:1.2; }
+    .event-legend td:first-child { min-width:180px; }
     .empty { color:var(--muted); padding:14px; border:1px dashed rgba(255,255,255,.12); border-radius:16px; font-size:13px; }
     .raw-box { display:none; margin-top:12px; }
     .raw-box textarea { min-height:180px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; }
@@ -164,10 +167,21 @@
     <div class="cards" id="cards"></div>
 
     <div class="grid">
-      <div class="panel"><h2>События</h2><div class="panel-note">Что чаще всего делают пользователи.</div><div id="eventsChart" class="bar-list"></div></div>
+      <div class="panel"><h2>События</h2><div class="panel-note">Что чаще всего делают пользователи. Русское название показывается сверху, технический код сохраняется.</div><div id="eventsChart" class="bar-list"></div></div>
       <div class="panel"><h2>Разделы</h2><div class="panel-note">Интерес к направлениям и открытиям тарифов.</div><div id="directionsChart" class="bar-list"></div></div>
       <div class="panel"><h2>Тарифы</h2><div class="panel-note">Клики по конкретным тарифам и ценам.</div><div id="tariffsChart" class="bar-list"></div></div>
       <div class="panel"><h2>Пользователи</h2><div class="panel-note">Самые активные пользователи / сессии.</div><div id="usersChart" class="bar-list"></div></div>
+
+      <div class="panel wide">
+        <h2>Справочник событий</h2>
+        <div class="panel-note">Перевод событий для понимания без английского. Это только отображение в админке — исходные события в статистике не меняются.</div>
+        <div class="table-wrap" style="max-height:300px">
+          <table class="event-legend">
+            <thead><tr><th>Понятно по-русски</th><th>Технический код</th><th>Кол-во</th><th>Что означает</th></tr></thead>
+            <tbody id="eventLegend"></tbody>
+          </table>
+        </div>
+      </div>
 
       <div class="panel wide">
         <h2>Последние события</h2>
@@ -190,6 +204,80 @@
 
   <script>
     const STATS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwLMrj5ijWZMPOQRDClzlbF75gRs6KkPYE2BLzJJyQ4ZmLWNvUow5jj06cWFNWT033f/exec";
+
+    // Важно: эти переводы работают только на стороне админки.
+    // В Google Sheets / Apps Script / статистике исходные event-коды НЕ меняются,
+    // поэтому уже накопленная статистика не слетит.
+    const EVENT_LABELS = {
+      unknown: "Неизвестное событие",
+      start: "Старт Mini App",
+      app_open: "Открытие Mini App",
+      mini_app_open: "Открытие Mini App",
+      page_view: "Просмотр страницы",
+      plans_open: "Открытие тарифов",
+      tariffs_open: "Открытие тарифов",
+      tariff_open: "Открытие тарифа",
+      tariff_click: "Клик по тарифу",
+      checkout_open: "Переход к оплате",
+      pay_click: "Клик по оплате",
+      payment_click: "Клик по оплате",
+      status_open: "Открытие «Моя подписка»",
+      subscription_open: "Открытие подписки",
+      subscription_click: "Клик по подписке",
+      support_open: "Открытие поддержки",
+      support_click: "Клик по поддержке",
+      help_open: "Открытие помощи",
+      direction_open: "Открытие раздела",
+      category_open: "Открытие категории",
+      section_open: "Открытие подраздела",
+      nav_open: "Открытие списка материалов",
+      materials_open: "Открытие материалов",
+      material_open: "Открытие материала",
+      material_click: "Клик по материалу",
+      link_click: "Клик по ссылке",
+      external_link: "Переход по внешней ссылке",
+      bot_open: "Открытие бота",
+      channel_click: "Клик по каналу",
+      public_channel_click: "Клик по публичному каналу",
+      quiz_open: "Открытие квиза",
+      quiz_start: "Старт квиза",
+      quiz_answer: "Ответ в квизе",
+      quiz_result: "Результат квиза",
+      quiz_finish: "Завершение квиза"
+    };
+
+    const EVENT_DESCRIPTIONS = {
+      app_open: "Пользователь открыл мини-приложение.",
+      mini_app_open: "Пользователь открыл мини-приложение.",
+      page_view: "Пользователь увидел или обновил страницу.",
+      plans_open: "Пользователь открыл блок с тарифами.",
+      tariffs_open: "Пользователь открыл блок с тарифами.",
+      tariff_click: "Пользователь нажал на конкретный тариф / кнопку оформления.",
+      checkout_open: "Пользователь перешёл к оплате или оформлению доступа.",
+      pay_click: "Пользователь нажал кнопку оплаты.",
+      payment_click: "Пользователь нажал кнопку оплаты.",
+      status_open: "Пользователь открыл раздел проверки своей подписки.",
+      subscription_open: "Пользователь открыл информацию о подписке.",
+      support_open: "Пользователь открыл поддержку.",
+      support_click: "Пользователь нажал на поддержку.",
+      direction_open: "Пользователь открыл одно из направлений: мужчины, женщины, БДСМ & свинг или всё сразу.",
+      category_open: "Пользователь открыл категорию / направление.",
+      section_open: "Пользователь открыл подраздел внутри материалов.",
+      nav_open: "Пользователь открыл навигацию или список материалов.",
+      materials_open: "Пользователь открыл материалы.",
+      material_open: "Пользователь открыл конкретный материал.",
+      material_click: "Пользователь нажал на конкретный материал.",
+      link_click: "Пользователь нажал на ссылку.",
+      external_link: "Пользователь ушёл по внешней ссылке.",
+      bot_open: "Пользователь открыл Telegram-бота.",
+      channel_click: "Пользователь нажал на канал.",
+      public_channel_click: "Пользователь нажал на публичный канал.",
+      quiz_open: "Пользователь открыл квиз / подбор.",
+      quiz_start: "Пользователь начал квиз / подбор.",
+      quiz_answer: "Пользователь выбрал ответ в квизе.",
+      quiz_result: "Пользователь получил результат квиза.",
+      quiz_finish: "Пользователь завершил квиз."
+    };
 
     let rawPayload = null;
     let allEvents = [];
@@ -343,8 +431,12 @@
     function fillEventFilter(events) {
       const select = document.getElementById("eventFilter");
       const current = select.value;
-      const names = [...new Set(events.map(e => e.event).filter(Boolean))].sort();
-      select.innerHTML = '<option value="">Все события</option>' + names.map(name => `<option value="${escapeAttr(name)}">${escapeHtml(name)}</option>`).join("");
+      const names = [...new Set(events.map(e => e.event).filter(Boolean))]
+        .sort((a,b) => eventName(a).localeCompare(eventName(b), "ru"));
+      select.innerHTML = '<option value="">Все события</option>' + names.map(name => {
+        const ru = eventName(name);
+        return `<option value="${escapeAttr(name)}">${escapeHtml(ru)} (${escapeHtml(name)})</option>`;
+      }).join("");
       select.value = names.includes(current) ? current : "";
     }
 
@@ -362,7 +454,7 @@
         if (direction && e.direction !== direction) return false;
 
         if (q) {
-          const hay = [e.event, e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})].join(" ").toLowerCase();
+          const hay = [e.event, eventName(e.event), eventDescription(e.event), e.direction, directionName(e.direction), e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})].join(" ").toLowerCase();
           if (!hay.includes(q)) return false;
         }
         return true;
@@ -390,6 +482,7 @@
     function renderAll() {
       renderCards();
       renderCharts();
+      renderEventLegend();
       renderTable();
     }
 
@@ -410,14 +503,14 @@
       const cards = [
         ["Всего событий", total, "за выбранный период", "rgba(255,66,177,.18)"],
         ["Уникальных пользователей", users, "по user_id / username / session", "rgba(42,169,255,.18)"],
-        ["Открытий Mini App", opens, "app_open", "rgba(141,95,255,.18)"],
-        ["Кликов по тарифам", tariffClicks, "tariff_click", "rgba(255,216,107,.18)"],
-        ["Кликов поддержка", supportClicks, "support_*", "rgba(110,231,168,.16)"],
+        ["Открытий Mini App", opens, eventName("app_open"), "rgba(141,95,255,.18)"],
+        ["Кликов по тарифам", tariffClicks, eventName("tariff_click"), "rgba(255,216,107,.18)"],
+        ["Кликов поддержка", supportClicks, "support_click / support_open", "rgba(110,231,168,.16)"],
         ["Кликов подписка", subClicks, "status / subscription", "rgba(255,66,177,.16)"],
-        ["Открытий разделов", directionOpens, topDirection ? "топ: " + topDirection : "direction_open", "rgba(42,169,255,.16)"],
+        ["Открытий разделов", directionOpens, topDirection ? "топ: " + directionName(topDirection) : eventName("direction_open"), "rgba(42,169,255,.16)"],
         ["Квиз / подбор", quiz, "quiz_open / quiz_result", "rgba(141,95,255,.16)"],
         ["Конверсия в тариф", conversion + "%", "клики тарифов / открытия", "rgba(255,216,107,.18)"],
-        ["Топ-раздел", topDirection || "—", "по событиям с direction", "rgba(42,169,255,.16)"],
+        ["Топ-раздел", topDirection ? directionName(topDirection) : "—", "по событиям с direction", "rgba(42,169,255,.16)"],
         ["Топ-тариф", topTariff || "—", "по кликам тарифов", "rgba(255,216,107,.18)"],
         ["Событий в исходнике", allEvents.length, "до фильтров", "rgba(255,255,255,.10)"]
       ];
@@ -432,13 +525,13 @@
     }
 
     function renderCharts() {
-      renderBarList("eventsChart", countBy(filteredEvents, e => e.event), 12);
-      renderBarList("directionsChart", countBy(filteredEvents, e => e.direction || "без раздела"), 10);
+      renderBarList("eventsChart", countBy(filteredEvents, e => e.event), 12, eventName);
+      renderBarList("directionsChart", countBy(filteredEvents, e => e.direction || "без раздела"), 10, directionName);
       renderBarList("tariffsChart", countBy(filteredEvents.filter(e => e.tariff || e.event.includes("tariff")), e => [e.tariff || e.event, e.price].filter(Boolean).join(" — ")), 10);
       renderBarList("usersChart", countBy(filteredEvents, e => userLabel(e)), 10);
     }
 
-    function renderBarList(id, counts, limit) {
+    function renderBarList(id, counts, limit, labeler = null) {
       const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, limit);
       const el = document.getElementById(id);
       if (!entries.length) {
@@ -448,8 +541,31 @@
       const max = Math.max(...entries.map(x => x[1])) || 1;
       el.innerHTML = entries.map(([name, value]) => {
         const pct = Math.max(2, Math.round(value / max * 100));
-        return `<div class="bar-row"><div class="bar-name" title="${escapeAttr(name)}">${escapeHtml(name)}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${value}</div></div>`;
+        const label = labeler ? labeler(name) : name;
+        return `<div class="bar-row"><div class="bar-name" title="${escapeAttr(name)}">${escapeHtml(label)}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${value}</div></div>`;
       }).join("");
+    }
+
+    function renderEventLegend() {
+      const tbody = document.getElementById("eventLegend");
+      if (!tbody) return;
+
+      const counts = countBy(filteredEvents, e => e.event);
+      const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 50);
+
+      if (!entries.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty">Пока нет данных</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = entries.map(([code, value]) => `
+        <tr>
+          <td>${escapeHtml(eventName(code))}</td>
+          <td class="mono">${escapeHtml(code)}</td>
+          <td><span class="tag gold">${value}</span></td>
+          <td>${escapeHtml(eventDescription(code))}</td>
+        </tr>
+      `).join("");
     }
 
     function renderTable() {
@@ -468,7 +584,7 @@
       tbody.innerHTML = rows.map(e => `
         <tr>
           <td>${escapeHtml(formatDate(e.date, e.tsRaw))}</td>
-          <td><span class="tag ${tagClass(e.event)}">${escapeHtml(e.event)}</span></td>
+          <td><div class="event-cell"><span class="tag ${tagClass(e.event)}" title="${escapeAttr(e.event)}">${escapeHtml(eventName(e.event))}</span><span class="event-code">${escapeHtml(e.event)}</span></div></td>
           <td>${escapeHtml(directionName(e.direction))}</td>
           <td>${escapeHtml([e.tariff, e.price].filter(Boolean).join(" — "))}</td>
           <td>${escapeHtml(userLabel(e))}</td>
@@ -516,8 +632,51 @@
       return entries[0] ? entries[0][0] : "";
     }
 
+    function eventName(event) {
+      const key = String(event || "unknown");
+      const lower = key.toLowerCase();
+      if (EVENT_LABELS[key]) return EVENT_LABELS[key];
+      if (EVENT_LABELS[lower]) return EVENT_LABELS[lower];
+
+      if (lower.includes("tariff") && lower.includes("click")) return "Клик по тарифу";
+      if (lower.includes("tariff") || lower.includes("plan")) return "Тарифы";
+      if (lower.includes("support") || lower.includes("help")) return lower.includes("click") ? "Клик по поддержке" : "Открытие поддержки";
+      if (lower.includes("status") || lower.includes("subscription")) return "Моя подписка";
+      if (lower.includes("direction") || lower.includes("category") || lower.includes("section")) return "Открытие раздела";
+      if (lower.includes("quiz")) return "Квиз / подбор";
+      if (lower.includes("material")) return lower.includes("click") ? "Клик по материалу" : "Открытие материала";
+      if (lower.includes("bot")) return "Открытие бота";
+      if (lower.includes("channel")) return "Клик по каналу";
+      if (lower.includes("pay") || lower.includes("checkout")) return "Оплата / оформление";
+      if (lower.includes("open")) return "Открытие";
+      if (lower.includes("click")) return "Клик";
+
+      return key.replaceAll("_", " ").replaceAll("-", " ");
+    }
+
+    function eventDescription(event) {
+      const key = String(event || "unknown");
+      const lower = key.toLowerCase();
+      if (EVENT_DESCRIPTIONS[key]) return EVENT_DESCRIPTIONS[key];
+      if (EVENT_DESCRIPTIONS[lower]) return EVENT_DESCRIPTIONS[lower];
+
+      if (lower.includes("tariff") && lower.includes("click")) return "Пользователь нажал на тариф или кнопку оформления доступа.";
+      if (lower.includes("tariff") || lower.includes("plan")) return "Событие связано с тарифами.";
+      if (lower.includes("support") || lower.includes("help")) return "Событие связано с поддержкой.";
+      if (lower.includes("status") || lower.includes("subscription")) return "Событие связано с проверкой или оформлением подписки.";
+      if (lower.includes("direction") || lower.includes("category") || lower.includes("section")) return "Пользователь открыл раздел, категорию или направление.";
+      if (lower.includes("quiz")) return "Событие связано с квизом / подбором.";
+      if (lower.includes("material")) return "Событие связано с просмотром или кликом по материалу.";
+      if (lower.includes("bot")) return "Пользователь открыл или попытался открыть Telegram-бота.";
+      if (lower.includes("channel")) return "Пользователь нажал на ссылку канала.";
+      if (lower.includes("pay") || lower.includes("checkout")) return "Событие связано с оплатой или оформлением доступа.";
+      if (lower.includes("open")) return "Пользователь что-то открыл.";
+      if (lower.includes("click")) return "Пользователь нажал на элемент интерфейса.";
+      return "Неизвестный код события. Он сохранён как есть, перевод можно добавить в EVENT_LABELS.";
+    }
+
     function directionName(key) {
-      const map = { men:"Мужчины", women:"Женщины", bdsm:"БДСМ & Свинг", all:"Всё сразу" };
+      const map = { men:"Мужчины", women:"Женщины", bdsm:"БДСМ & Свинг", all:"Всё сразу", "без раздела":"Без раздела" };
       return map[key] || key || "";
     }
 
@@ -572,9 +731,9 @@
     }
 
     function exportCsv() {
-      const headers = ["time","event","direction","tariff","price","userId","username","firstName","sessionId","data"];
+      const headers = ["time","event_ru","event","direction_ru","direction","tariff","price","userId","username","firstName","sessionId","data"];
       const rows = filteredEvents.map(e => [
-        formatDate(e.date, e.tsRaw), e.event, e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})
+        formatDate(e.date, e.tsRaw), eventName(e.event), e.event, directionName(e.direction), e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})
       ]);
       const csv = [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\n");
       const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
