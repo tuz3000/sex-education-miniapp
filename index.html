@@ -129,22 +129,32 @@
       border-radius: 14px;
       display: grid;
       place-items: center;
-      font-size: 12px;
+      font-size: 15px;
+      line-height: 1;
       font-weight: 950;
+      letter-spacing: -.45px;
       color: #0d1018;
       background:
         radial-gradient(circle at 25% 18%, rgba(255,255,255,.68), transparent 22%),
         linear-gradient(135deg, var(--pink), var(--blue));
       box-shadow:
         0 0 22px rgba(255,66,177,.25),
-        0 0 22px rgba(42,169,255,.2);
+        0 0 22px rgba(42,169,255,.20);
     }
 
     .brand-title {
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: .2px;
+      font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Segoe UI", sans-serif;
+      font-size: 13.5px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: .65px;
       white-space: nowrap;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #ffffff 0%, #f6d7ff 38%, #9ddfff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 18px rgba(201,125,255,.10);
     }
 
     .brand-sub {
@@ -220,25 +230,99 @@
     .hero-title {
       margin: 0;
       text-align: center;
-      font-size: 33px;
-      line-height: .96;
+      font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Segoe UI", sans-serif;
+      font-size: clamp(24px, 7.05vw, 31px);
+      line-height: 1;
       font-weight: 950;
-      letter-spacing: 1.3px;
+      letter-spacing: .35px;
       text-transform: uppercase;
-      background: linear-gradient(90deg, var(--pink), #c87bff 50%, var(--blue-2));
+      white-space: nowrap;
+      background: linear-gradient(
+        105deg,
+        #ff42b1 0%,
+        #c87bff 20%,
+        #f5d9ff 34%,
+        #ffffff 42%,
+        #8edfff 50%,
+        #c87bff 64%,
+        #ff42b1 82%,
+        #7fd9ff 100%
+      );
+      background-size: 230% 100%;
+      background-position: 100% 50%;
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 15px rgba(255,66,177,.18));
+      color: transparent;
+      filter:
+        drop-shadow(0 0 12px rgba(255,66,177,.18))
+        drop-shadow(0 0 18px rgba(42,169,255,.10));
+      animation: heroTitleShimmer 4.8s ease-in-out infinite;
+      will-change: background-position, filter;
     }
 
     .hero-age {
       text-align: center;
-      margin: 8px 0 14px;
-      font-size: 23px;
-      font-weight: 900;
-      letter-spacing: 4px;
-      color: #db7fff;
-      text-shadow: 0 0 18px rgba(219,127,255,.42);
+      margin: 10px 0 15px;
+      font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Segoe UI", sans-serif;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: 5px;
+      background: linear-gradient(
+        105deg,
+        #b96cff 0%,
+        #ed9dff 28%,
+        #ffffff 44%,
+        #7fd9ff 54%,
+        #b96cff 78%,
+        #ff77cb 100%
+      );
+      background-size: 220% 100%;
+      background-position: 100% 50%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      filter: drop-shadow(0 0 16px rgba(219,127,255,.34));
+      animation: heroAgeShimmer 4.8s ease-in-out infinite .18s;
+      will-change: background-position, filter;
+    }
+
+    @keyframes heroTitleShimmer {
+      0%, 100% {
+        background-position: 100% 50%;
+        filter:
+          drop-shadow(0 0 12px rgba(255,66,177,.18))
+          drop-shadow(0 0 18px rgba(42,169,255,.10));
+      }
+      50% {
+        background-position: 0% 50%;
+        filter:
+          drop-shadow(0 0 17px rgba(255,66,177,.28))
+          drop-shadow(0 0 22px rgba(42,169,255,.18));
+      }
+    }
+
+    @keyframes heroAgeShimmer {
+      0%, 100% {
+        background-position: 100% 50%;
+        filter: drop-shadow(0 0 14px rgba(219,127,255,.30));
+      }
+      50% {
+        background-position: 0% 50%;
+        filter:
+          drop-shadow(0 0 20px rgba(219,127,255,.46))
+          drop-shadow(0 0 12px rgba(127,217,255,.18));
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-title,
+      .hero-age {
+        animation: none;
+        background-position: 50% 50%;
+      }
     }
 
     .hero-subtitle {
@@ -315,42 +399,56 @@
       line-height: 1.05;
     }
 
-    /* Центровка двух главных кнопок: иконка слева, текст строго по центру кнопки */
+    /* Компактные кнопки: крупнее иконка и текст, без пустого пространства по краям */
     .secondary-row .ghost-btn {
-      min-height: 86px;
-      padding: 14px 8px;
+      min-height: 68px;
+      padding: 11px 10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 15.5px;
+      font-weight: 900;
+    }
+
+    .secondary-row .ghost-btn:first-child {
+      border-color: rgba(255,174,69,.19);
+      background:
+        radial-gradient(circle at 12% 15%, rgba(255,216,107,.10), transparent 44%),
+        linear-gradient(135deg, rgba(255,66,177,.10), rgba(255,255,255,.055));
+    }
+
+    .secondary-row .ghost-btn:nth-child(2) {
+      border-color: rgba(127,217,255,.18);
+      background:
+        radial-gradient(circle at 88% 14%, rgba(42,169,255,.12), transparent 46%),
+        linear-gradient(135deg, rgba(141,95,255,.10), rgba(255,255,255,.055));
     }
 
     .secondary-row .ghost-btn .btn-flex {
-      display: grid;
-      grid-template-columns: 42px minmax(0, 1fr) 42px;
+      display: inline-flex;
       align-items: center;
-      justify-items: center;
-      gap: 0;
-      width: 100%;
+      justify-content: center;
+      gap: 10px;
+      width: auto;
+      max-width: 100%;
     }
 
     .secondary-row .ghost-btn .btn-flex::after {
-      content: "";
-      width: 34px;
-      height: 34px;
-      display: block;
+      content: none;
+      display: none;
     }
 
     .secondary-row .ghost-btn .svg-ico {
-      width: 34px;
-      height: 34px;
-      justify-self: center;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
     }
 
     .secondary-row .ghost-btn .btn-flex span:last-child {
       display: block;
-      width: 100%;
-      text-align: center;
-      line-height: 1.05;
+      width: auto;
+      text-align: left;
+      line-height: 1.08;
       white-space: normal;
     }
 
@@ -977,7 +1075,7 @@
         border-radius: 22px;
       }
       .hero-title {
-        font-size: 30px;
+        font-size: clamp(24px, 7.05vw, 28px);
       }
     }
 
@@ -1222,7 +1320,8 @@
 
     @media (max-width: 390px) {
       .brand-title {
-        font-size: 12px;
+        font-size: 12.5px;
+        letter-spacing: .48px;
       }
       .brand-sub {
         font-size: 10.5px;
@@ -1241,9 +1340,9 @@
     <div id="home" class="screen active">
       <div class="topbar">
         <div class="brand">
-          <div class="brand-mark">✦</div>
+          <div class="brand-mark" aria-hidden="true">18+</div>
           <div>
-            <div class="brand-title">SEX-ОБРАЗОВАНИЕ 🔞</div>
+            <div class="brand-title">SEX-ОБРАЗОВАНИЕ</div>
             <div class="brand-sub">закрытая библиотека</div>
           </div>
         </div>
@@ -1286,21 +1385,16 @@
         <div class="hero-glow"></div>
       </section>
 
-      <div class="stats">
-        <div class="stat"><strong>3</strong><span>основных раздела</span></div>
-        <div class="stat"><strong>18+</strong><span>формат библиотеки</span></div>
-        <div class="stat"><strong>2000+</strong><span>материалов</span></div>
-      </div>
       <div class="section-head">
-        <div class="section-title">Выберите раздел</div>
-        <div class="section-note">Краткий обзор того, что находится внутри закрытых каналов.</div>
+        <div class="section-title">Выберите канал</div>
+        <div class="section-note">Мужской, женский или БДСМ & Свинг.</div>
       </div>
 
       <div class="home-search-box">
-        <input id="homeSearch" class="home-search" type="search" placeholder="Поиск по разделам" oninput="filterHomeSearch()" />
+        <input id="homeSearch" class="home-search" type="search" placeholder="Поиск по каналам" oninput="filterHomeSearch()" />
         <button id="homeSearchClear" class="clear-search" type="button" onclick="clearHomeSearch()" aria-label="Очистить поиск">×</button>
       </div>
-      <div id="homeSearchEmpty" class="home-empty">Ничего не найдено. Очистите поиск или выберите раздел из списка.</div>
+      <div id="homeSearchEmpty" class="home-empty">Ничего не найдено. Очистите поиск или выберите канал из списка.</div>
 
       <div class="directions">
         <div class="direction-card" data-direction-card data-search="мужчины мужской для мужчин секс техники массаж здоровье отношения знакомства кунилингус сквирт" style="--card-accent:rgba(42,169,255,.25)" onclick="openDirection('men')">
