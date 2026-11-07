@@ -1,249 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Админка Mini App PRO</title>
-
-  <style>
-    * { box-sizing: border-box; }
-    :root {
-      --bg:#06070d; --line:rgba(255,255,255,.12); --muted:#aab1c4;
-      --pink:#ff42b1; --blue:#2aa9ff; --violet:#8d5fff; --gold:#ffd86b; --gold2:#ffae45;
-      --green:#6ee7a8; --red:#ff6b7a;
-    }
-    html,body {
-      margin:0; min-height:100%; background:#06070d; color:#fff;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-    }
-    body:before {
-      content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
-      background:
-        radial-gradient(circle at 10% 0%,rgba(255,66,177,.18),transparent 30%),
-        radial-gradient(circle at 90% 0%,rgba(42,169,255,.16),transparent 32%),
-        linear-gradient(180deg,#111425 0%,#06070d 72%);
-    }
-    body:after {
-      content:""; position:fixed; inset:0; z-index:-1; opacity:.08; pointer-events:none;
-      background-image:
-        linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
-      background-size:30px 30px; mask-image:linear-gradient(to bottom,#000,transparent 78%);
-    }
-
-    .app { max-width:1180px; margin:0 auto; padding:18px; }
-    .top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; }
-    .brand h1 {
-      margin:0; font-size:30px; line-height:1; letter-spacing:-.6px;
-      background:linear-gradient(90deg,var(--pink),#c87bff 50%,#7fd9ff);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .brand p { margin:8px 0 0; color:var(--muted); font-size:14px; line-height:1.35; }
-    .actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
-
-    button,.btn {
-      border:1px solid var(--line); background:rgba(255,255,255,.07); color:#fff;
-      border-radius:14px; padding:11px 13px; font-size:13px; font-weight:800; cursor:pointer; text-decoration:none;
-    }
-    button.primary {
-      color:#111; border:0; background:linear-gradient(135deg,var(--gold),var(--gold2));
-      box-shadow:0 12px 32px rgba(255,174,69,.18);
-    }
-
-    .status {
-      border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--muted);
-      border-radius:18px; padding:12px 14px; margin-bottom:14px; font-size:13px; line-height:1.4;
-    }
-    .status.ok { color:#d8ffe9; border-color:rgba(110,231,168,.32); background:rgba(110,231,168,.08); }
-    .status.err { color:#ffd7dc; border-color:rgba(255,107,122,.32); background:rgba(255,107,122,.08); }
-
-    .filters { display:grid; grid-template-columns:1.2fr .9fr .9fr .9fr auto; gap:10px; margin:14px 0 16px; }
-    input,select,textarea {
-      width:100%; border:1px solid var(--line); background:rgba(255,255,255,.065); color:#fff;
-      border-radius:14px; padding:12px 12px; font-size:13px; outline:none;
-    }
-    option { background:#111425; color:#fff; }
-
-    .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
-    .card {
-      border:1px solid var(--line); border-radius:22px; padding:16px;
-      background:
-        radial-gradient(circle at 100% 0%,var(--accent,rgba(255,255,255,.08)),transparent 42%),
-        rgba(255,255,255,.065);
-      min-height:104px;
-    }
-    .card .label { color:var(--muted); font-size:12px; line-height:1.2; }
-    .card .num { font-size:30px; font-weight:950; margin-top:10px; line-height:1; }
-    .card .sub { color:var(--muted); font-size:12px; margin-top:8px; line-height:1.25; }
-
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
-    .wide { grid-column:1 / -1; }
-    .panel { border:1px solid var(--line); border-radius:22px; padding:16px; background:rgba(255,255,255,.065); }
-    .panel h2 { margin:0 0 12px; font-size:18px; letter-spacing:-.2px; }
-    .panel-note { color:var(--muted); font-size:12px; line-height:1.35; margin-top:-6px; margin-bottom:12px; }
-
-    .bar-list { display:grid; gap:9px; }
-    .bar-row { display:grid; grid-template-columns:minmax(100px,1fr) 3fr auto; gap:10px; align-items:center; font-size:13px; }
-    .bar-name { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#eef1f7; }
-    .bar-track { height:10px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; }
-    .bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--pink),var(--blue)); min-width:2px; }
-    .bar-val { color:var(--gold); font-weight:900; min-width:34px; text-align:right; }
-
-    table { width:100%; border-collapse:collapse; font-size:12px; }
-    th,td { padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.08); vertical-align:top; }
-    th { color:var(--muted); font-weight:800; text-align:left; position:sticky; top:0; background:#101220; z-index:1; }
-    td { color:#edf0f7; }
-    .table-wrap { overflow:auto; max-height:430px; border-radius:16px; border:1px solid rgba(255,255,255,.08); }
-    .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:11px; color:#cfd4e5; }
-    .tag { display:inline-flex; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); border-radius:999px; padding:4px 8px; font-size:11px; color:#fff; white-space:nowrap; }
-    .tag.pink { border-color:rgba(255,66,177,.35); color:#ffd5ed; }
-    .tag.blue { border-color:rgba(42,169,255,.35); color:#d9f1ff; }
-    .tag.gold { border-color:rgba(255,216,107,.35); color:#fff2c2; }
-    .event-cell { display:flex; flex-direction:column; gap:5px; align-items:flex-start; }
-    .event-code { color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:10px; line-height:1.2; }
-    .event-legend td:first-child { min-width:180px; }
-    .empty { color:var(--muted); padding:14px; border:1px dashed rgba(255,255,255,.12); border-radius:16px; font-size:13px; }
-    .raw-box { display:none; margin-top:12px; }
-    .raw-box textarea { min-height:180px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; }
-
-    .funnel-panel { margin-bottom:12px; }
-    .funnel-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:12px; }
-    .funnel-meta { color:var(--muted); font-size:12px; line-height:1.35; }
-    .funnel { display:grid; gap:10px; }
-    .funnel-row {
-      display:grid; grid-template-columns:minmax(180px,1.2fr) 3fr minmax(170px,.8fr); gap:12px; align-items:center;
-      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.045); border-radius:18px; padding:12px;
-    }
-    .funnel-title { font-weight:900; font-size:13px; line-height:1.25; color:#fff; }
-    .funnel-hint { color:var(--muted); font-size:11px; line-height:1.3; margin-top:4px; }
-    .funnel-track { height:16px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; position:relative; }
-    .funnel-fill { height:100%; min-width:2px; border-radius:999px; background:linear-gradient(90deg,var(--gold),var(--pink),var(--blue)); }
-    .funnel-count { font-size:22px; font-weight:950; line-height:1; color:#fff; text-align:right; }
-    .funnel-sub { color:var(--muted); font-size:11px; line-height:1.35; margin-top:5px; text-align:right; }
-    .funnel-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
-    .funnel-mini { border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.045); border-radius:16px; padding:12px; }
-    .funnel-mini b { display:block; font-size:18px; margin-bottom:4px; }
-    .funnel-mini span { color:var(--muted); font-size:11px; line-height:1.3; }
-
-
-    @media(max-width:900px){
-      .top { display:block; }
-      .actions { justify-content:flex-start; margin-top:12px; }
-      .filters { grid-template-columns:1fr 1fr; }
-      .cards { grid-template-columns:1fr 1fr; }
-      .grid { grid-template-columns:1fr; }
-    }
-    @media(max-width:520px){
-      .app { padding:14px; }
-      .brand h1 { font-size:25px; }
-      .filters { grid-template-columns:1fr; }
-      .cards { grid-template-columns:1fr; }
-      .bar-row { grid-template-columns:1fr; gap:5px; }
-      .bar-val { text-align:left; }
-      .funnel-row { grid-template-columns:1fr; }
-      .funnel-count,.funnel-sub { text-align:left; }
-      .funnel-summary { grid-template-columns:1fr; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090b14">
+<title>Sex Education · Analytics Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#090b14;--base:#0e111e;--surface:#141827;--surface2:#191e30;--stroke:#2b3043;--text:#f5f5fc;--muted:#99a3b9;--muted2:#6c7690;--pink:#ff4ba8;--purple:#9775ff;--cyan:#60d6ff;--amber:#f4c87a;--green:#6ddbb3;--red:#ff738b;--radius:19px;--shadow:0 18px 50px rgba(0,0,0,.18)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}button:disabled{opacity:.45;cursor:not-allowed}::selection{background:rgba(255,75,168,.42)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse 700px 350px at 65% -5%,rgba(137,79,255,.12),transparent),radial-gradient(ellipse 500px 330px at 15% 0,rgba(255,75,168,.11),transparent)}
+.layout{display:grid;grid-template-columns:238px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;border-right:1px solid var(--stroke);padding:24px 15px 18px;background:rgba(12,15,26,.95);display:flex;flex-direction:column;gap:24px;z-index:15}.brand{display:flex;gap:11px;align-items:center;padding:4px 10px}.brand-mark{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(140deg,#fc4ba7,#9956ea);font-weight:1000;font-size:23px;box-shadow:0 8px 25px rgba(240,80,175,.22)}.brand h1{font-size:16px;letter-spacing:.25px;line-height:1.1;margin:0}.brand small{display:block;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:5px}.nav-title{font-size:10px;letter-spacing:1.7px;color:var(--muted2);padding:0 14px;margin:1px 0 9px;text-transform:uppercase;font-weight:850}.nav{display:grid;gap:4px}.nav-btn{border:0;text-align:left;display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;background:transparent;color:var(--muted);font-weight:700;transition:.15s}.nav-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7}.nav-btn.active{background:linear-gradient(90deg,rgba(255,75,168,.15),rgba(150,105,255,.06));color:#fff;box-shadow:inset 3px 0 0 var(--pink)}.nav-btn:hover{background:rgba(255,255,255,.065);color:#fff}.side-foot{margin-top:auto;padding:14px 13px;border:1px solid var(--stroke);background:rgba(255,255,255,.025);border-radius:14px}.side-foot p{margin:8px 0;color:var(--muted);font-size:11px;line-height:1.5}.side-foot strong{display:flex;align-items:center;gap:8px;font-size:12px}.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted2);box-shadow:0 0 0 3px rgba(255,255,255,.035)}.status-dot.ok{background:var(--green)}.status-dot.bad{background:var(--red)}
+.main{min-width:0;max-width:1580px;width:100%;padding:25px 30px 48px;margin:0 auto}.toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:23px}.eyebrow{display:flex;align-items:center;gap:8px;color:var(--pink);text-transform:uppercase;font-size:10px;letter-spacing:1.8px;font-weight:900}.heading{font-size:30px;letter-spacing:-1px;line-height:1.15;margin:7px 0 7px}.subtitle{color:var(--muted);margin:0;font-size:13px}.toolbar-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:37px;padding:9px 13px;border-radius:11px;border:1px solid var(--stroke);background:var(--surface);color:var(--text);font-size:12px;font-weight:750;white-space:nowrap}.btn:hover{border-color:#545976;background:#22263a}.btn.primary{background:linear-gradient(115deg,var(--pink),#b85bf7);border-color:transparent;color:#fff;box-shadow:0 8px 23px rgba(255,75,168,.18)}.btn.primary:hover{filter:brightness(1.08)}.btn.ghost{background:transparent}.btn.small{padding:6px 10px;min-height:31px;font-size:11px}.btn[aria-pressed="true"]{background:#2b2345;border-color:#7b5fb2}.btn.icon{padding:9px 10px}.btn svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none}.pulse{animation:pulse 1.2s infinite alternate}@keyframes pulse{to{opacity:.5}}
+.notice{padding:12px 14px;border:1px solid var(--stroke);border-radius:12px;background:rgba(255,255,255,.025);display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;font-size:12px;color:var(--muted)}.notice b{color:var(--text)}.notice.good{border-color:rgba(109,219,179,.3);background:rgba(109,219,179,.045)}.notice.error{border-color:rgba(255,115,139,.45);background:rgba(255,115,139,.06)}.notice .pill{margin-left:auto;flex-shrink:0}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px;border:1px solid var(--stroke);background:rgba(18,22,37,.88);border-radius:16px;margin-bottom:19px}.filter-label{color:var(--muted2);font-size:10px;letter-spacing:1px;font-weight:850;text-transform:uppercase;white-space:nowrap}.periods{display:flex;gap:2px;padding:3px;border:1px solid var(--stroke);border-radius:10px;background:var(--bg);flex-wrap:wrap}.period-btn{border:0;background:transparent;border-radius:7px;color:var(--muted);font-size:11px;font-weight:800;padding:7px 10px}.period-btn[aria-pressed="true"]{color:#fff;background:#34304e;box-shadow:0 2px 9px rgba(0,0,0,.2)}.search-wrap{position:relative;flex:1;min-width:190px}.search-wrap input{padding-left:33px}.search-wrap svg{position:absolute;top:10px;left:11px;width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2}.field{background:#111625;border:1px solid var(--stroke);color:#eaeafa;padding:8px 11px;border-radius:10px;min-height:36px;min-width:0;font-size:12px}.field option{background:#101420}.date-fields{display:none;gap:7px;align-items:center}.date-fields.show{display:flex}.date-fields input{width:140px;color-scheme:dark}.filter-detail{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:-7px 2px 16px;color:var(--muted);font-size:11px}.filtered-count{font-weight:800;color:#cdd3ee}.filter-detail .push{margin-left:auto}.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--stroke);color:var(--muted);font-weight:700;padding:4px 9px;border-radius:999px;font-size:10px}
+.page{display:none}.page.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:15px}.stat-card{position:relative;overflow:hidden;padding:18px;border:1px solid var(--stroke);border-radius:var(--radius);background:linear-gradient(150deg,#1b1f32,#121626 80%);min-height:137px}.stat-card:before{content:"";position:absolute;width:160px;height:160px;border-radius:50%;background:var(--glow,rgba(255,75,168,.1));filter:blur(54px);right:-70px;top:-76px}.stat-top{display:flex;align-items:center;justify-content:space-between;gap:5px;position:relative}.stat-label{font-size:12px;color:var(--muted);font-weight:730}.stat-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:var(--tint,rgba(255,75,168,.14));color:var(--accent,var(--pink));font-size:16px}.stat-value{font-size:31px;line-height:1.15;font-weight:850;letter-spacing:-1px;margin-top:14px;position:relative;overflow-wrap:anywhere}.stat-meta{display:flex;gap:7px;align-items:center;margin-top:7px;color:var(--muted);font-size:10px;position:relative}.delta{font-weight:800;color:var(--green)}.delta.minus{color:var(--red)}.delta.flat{color:var(--muted)}.muted{color:var(--muted)}.tiny{font-size:11px;color:var(--muted);line-height:1.5}.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 12px}.section-title h2{margin:0;font-size:19px;letter-spacing:-.3px}.section-title p{margin:4px 0 0;color:var(--muted);font-size:12px}.panel{background:linear-gradient(145deg,#171b2c,#121625 80%);border:1px solid var(--stroke);border-radius:var(--radius);padding:19px;min-width:0;box-shadow:var(--shadow)}.panel h3{margin:0 0 4px;font-size:15px;letter-spacing:-.1px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:17px;flex-wrap:wrap}.panel-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}.panel-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,1fr);gap:14px;margin-bottom:14px}.panel-grid.equal{grid-template-columns:repeat(2,minmax(0,1fr))}.panel-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.chart-legend{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--pink)}.chart-shell{height:260px;display:grid;place-items:center}.chart-shell svg{display:block;width:100%;height:100%;overflow:visible}.chart-shell svg text{font-family:inherit;fill:#8390ab;font-size:11px}.chart-shell .gridline{stroke:#363b4d;stroke-width:1;stroke-dasharray:3 5}.chart-shell .line{fill:none;stroke:#ff5bb4;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-shell circle{fill:#ff5bb4;stroke:#161b2c;stroke-width:2}.summary-strip{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.summary-strip span{font-size:11px;background:rgba(255,255,255,.04);padding:5px 9px;border:1px solid var(--stroke);border-radius:8px;color:var(--muted)}
+.bar-list{display:grid;gap:12px}.bar-row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(70px,1.2fr) auto;align-items:center;gap:12px}.bar-name{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;color:#d8dcec}.bar-track{background:#292e41;height:8px;border-radius:999px;overflow:hidden}.bar-fill{height:100%;width:var(--w);border-radius:999px;background:linear-gradient(90deg,var(--purple),var(--pink))}.bar-value{font-size:12px;font-weight:850;color:#f6d4eb;text-align:right;font-variant-numeric:tabular-nums}.empty{padding:30px 12px;border:1px dashed #3a4056;border-radius:13px;color:var(--muted);text-align:center;font-size:12px;line-height:1.65}.heat-container{overflow:auto;max-width:100%}.heat-grid{display:grid;grid-template-columns:42px repeat(24, minmax(13px,1fr));gap:4px;min-width:560px;align-items:center}.heat-cell{height:17px;border-radius:4px;background:#22283b;min-width:0}.heat-label{font-size:10px;color:var(--muted);text-align:right;padding-right:5px}.heat-hour{text-align:center;font-size:9px;color:#8390aa}.heat-scale{display:flex;gap:5px;align-items:center;color:var(--muted);font-size:10px;margin-top:14px}.heat-swatch{width:13px;height:13px;border-radius:3px}
+.funnel{display:grid;gap:12px}.funnel-step{display:grid;grid-template-columns:42px minmax(130px,1fr) minmax(120px,2fr) 135px;gap:14px;align-items:center;border:1px solid #30354a;background:rgba(255,255,255,.025);padding:13px;border-radius:14px}.funnel-order{display:grid;place-items:center;width:35px;height:35px;background:#25263d;border:1px solid #3f405d;border-radius:11px;color:#e7d7ff;font-size:12px;font-weight:900}.funnel-name strong{font-size:12px}.funnel-name small{display:block;font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4}.funnel-track{height:13px;border-radius:999px;background:#272d3e;overflow:hidden}.funnel-fill{width:var(--w);height:100%;background:linear-gradient(90deg,#a16cff,#ff5fb3);border-radius:999px}.funnel-right{text-align:right;font-variant-numeric:tabular-nums}.funnel-right b{display:block;font-size:19px;line-height:1.2}.funnel-right span{font-size:10px;color:var(--muted)}.funnel-insights{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.insight{border:1px solid var(--stroke);padding:14px;border-radius:13px;background:rgba(255,255,255,.035)}.insight b{display:block;font-size:18px}.insight span{display:block;color:var(--muted);font-size:10px;line-height:1.45;margin-top:4px}.callout{border:1px solid rgba(244,200,122,.3);background:rgba(244,200,122,.055);border-radius:13px;padding:13px;color:#f7d8a7;font-size:12px;line-height:1.6;margin:12px 0}.callout strong{color:#ffeaca}.guide-list{padding-left:17px;color:var(--muted);font-size:12px;line-height:1.75}
+.table-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}.table-outer{overflow:auto;border-radius:12px;border:1px solid #303549;max-height:620px}table{width:100%;border-collapse:collapse;font-size:11px}th{position:sticky;top:0;background:#202438;color:#aeb8ce;text-align:left;white-space:nowrap;z-index:2;font-size:10px;letter-spacing:.4px}th,td{padding:11px 12px;border-bottom:1px solid #292f41;vertical-align:top}td{color:#d7dcea}tbody tr:hover{background:rgba(255,255,255,.035)}td.wrap{min-width:140px;max-width:250px;overflow-wrap:anywhere}td.mono,.mono{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.event-tag{display:inline-flex;font-size:10px;font-weight:700;border-radius:8px;padding:3px 7px;background:#342840;color:#f7c4e4;border:1px solid #5d385d}.event-tag.blue{background:#1d3142;color:#b4e7ff;border-color:#34556a}.event-tag.gold{background:#342e25;color:#ffe3b4;border-color:#685335}.event-tag.green{background:#1c382f;color:#a5f0cf;border-color:#35634f}.table-link{border:0;background:transparent;color:#a6d9ff;font-size:11px;text-align:left;text-decoration:underline;text-decoration-color:#546b84;padding:0}.pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:13px}.pagination span{color:var(--muted);font-size:11px}.table-row-click{cursor:pointer}.profile-head{display:flex;align-items:center;gap:11px;margin-bottom:17px}.avatar{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(125deg,#5543aa,#c75cb0);font-size:19px;font-weight:800}.profile-head strong{display:block;font-size:15px}.profile-head small{color:var(--muted)}.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.profile-metric{background:#212539;border-radius:12px;padding:11px}.profile-metric b{font-size:19px;display:block}.profile-metric span{font-size:10px;color:var(--muted)}.scroll-list{max-height:400px;overflow:auto}.timeline-row{padding:9px 8px 9px 16px;border-left:2px solid #6d4f8b;position:relative;border-bottom:1px solid #2b3042}.timeline-row:before{content:"";width:8px;height:8px;position:absolute;left:-5px;top:14px;border-radius:50%;background:#f35cb4}.timeline-row small{display:block;color:var(--muted);font-size:10px}
+.diag-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.diag-item{border:1px solid var(--stroke);border-radius:13px;padding:12px;background:#1e2233}.diag-item strong{font-size:18px;display:block}.diag-item small{font-size:11px;color:var(--muted)}.raw{display:block;white-space:pre-wrap;word-break:break-all;background:#0b0e1a;border:1px solid var(--stroke);color:#afc9df;padding:14px;max-height:340px;overflow:auto;border-radius:12px;font:11px/1.6 ui-monospace,monospace}.details-toggle{background:transparent;border:0;color:var(--cyan);font-weight:800;padding:0;font-size:12px}.log-note{color:var(--muted);font-size:11px;margin:10px 0 0}.footer{margin-top:25px;font-size:11px;color:var(--muted2);border-top:1px solid var(--stroke);padding-top:15px;line-height:1.7}
+.modal{position:fixed;inset:0;z-index:50;display:none}.modal.open{display:block}.modal-backdrop{position:absolute;inset:0;background:rgba(1,3,10,.7);backdrop-filter:blur(5px)}.drawer{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);background:#141828;border-left:1px solid #3b3f53;box-shadow:-30px 0 80px #0009;padding:23px;overflow:auto}.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}.drawer-head h2{margin:0;font-size:18px}.drawer p{color:var(--muted);font-size:12px}.drawer .raw{max-height:55vh}.drawer .kv{display:grid;grid-template-columns:115px 1fr;gap:10px;border-bottom:1px solid #313648;padding:10px 0;font-size:12px}.drawer .kv span:first-child{color:var(--muted)}.drawer .kv span:last-child{overflow-wrap:anywhere}
+@media(max-width:1180px){.cards{grid-template-columns:repeat(3,1fr)}.panel-grid{grid-template-columns:1fr 1fr}.main{padding:22px}.sidebar{width:210px}.layout{grid-template-columns:210px minmax(0,1fr)}}
+@media(max-width:950px){.sidebar{height:auto;position:static;width:auto;padding:12px 14px;gap:7px}.layout{display:block}.brand{padding:0 4px}.brand small,.side-foot,.nav-title{display:none}.nav{display:flex;overflow:auto;gap:6px;padding-top:8px;scrollbar-width:none}.nav-btn{white-space:nowrap;justify-content:center;padding:9px 10px;font-size:11px;width:auto}.nav-btn svg{width:15px;height:15px}.main{padding:18px 16px 35px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.panel-grid{grid-template-columns:1fr}.panel-grid.equal,.panel-grid.three{grid-template-columns:1fr 1fr}}
+@media(max-width:580px){.heading{font-size:25px}.toolbar-actions{width:100%}.toolbar-actions .btn{flex:1}.filter-bar{align-items:stretch}.filter-label{display:none}.periods{width:100%;justify-content:space-around}.period-btn{flex:1;padding:7px 4px}.search-wrap{min-width:100%}.filter-bar select{flex:1}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat-card{padding:13px;min-height:123px}.stat-value{font-size:25px}.stat-label{font-size:11px}.stat-icon{width:26px;height:26px;font-size:13px}.panel{padding:14px}.panel-grid.equal,.panel-grid.three{grid-template-columns:1fr}.funnel-step{grid-template-columns:30px 1fr auto;gap:9px}.funnel-order{width:27px;height:27px}.funnel-track{grid-column:2/-1;grid-row:2}.funnel-right{grid-column:3;grid-row:1}.funnel-insights,.profile-grid,.diag-grid{grid-template-columns:1fr 1fr}.date-fields.show{width:100%}.date-fields input{flex:1;width:90px}.filter-detail .push{margin-left:0}.bar-row{grid-template-columns:minmax(72px,1fr) minmax(60px,1fr) 33px;gap:8px}.drawer{padding:16px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
-
 <body>
-  <div class="app">
-    <div class="top">
-      <div class="brand">
-        <h1>Админка Mini App PRO</h1>
-        <p>Статистика открытий, разделов, тарифов, поддержки, подписки, квиза и действий пользователей.</p>
-      </div>
-      <div class="actions">
-        <button class="primary" onclick="loadData()">Загрузить</button>
-        <button onclick="toggleAutoRefresh()" id="autoBtn">Авто: выкл</button>
-        <button onclick="exportCsv()">CSV</button>
-        <button onclick="exportJson()">JSON</button>
-        <a class="btn" href="./index.html" target="_blank">Открыть Mini App</a>
-      </div>
-    </div>
-
-    <div id="status" class="status">Готово к загрузке. Нажми «Загрузить».</div>
-
-    <div class="filters">
-      <input id="search" placeholder="Поиск: событие, тариф, username, данные..." oninput="applyFilters()">
-      <select id="period" onchange="applyFilters()">
-        <option value="all">Всё время</option>
-        <option value="today">Сегодня</option>
-        <option value="7">7 дней</option>
-        <option value="30">30 дней</option>
-        <option value="90">90 дней</option>
-      </select>
-      <select id="eventFilter" onchange="applyFilters()">
-        <option value="">Все события</option>
-      </select>
-      <select id="directionFilter" onchange="applyFilters()">
-        <option value="">Все разделы</option>
-        <option value="men">Мужчины</option>
-        <option value="women">Женщины</option>
-        <option value="bdsm">БДСМ & Свинг</option>
-        <option value="all">Всё сразу</option>
-      </select>
-      <button onclick="resetFilters()">Сброс</button>
-    </div>
-
-    <div class="cards" id="cards"></div>
-
-    <div class="panel wide funnel-panel">
-      <div class="funnel-head">
-        <div>
-          <h2>Воронка продаж</h2>
-          <div class="panel-note">Путь пользователя: открыл Mini App → посмотрел тарифы → нажал тариф → перешёл к оплате/боту → оплатил/получил доступ. Считается по уже существующим событиям, статистика не меняется.</div>
-        </div>
-        <div class="funnel-meta" id="funnelMeta">Загрузи данные, чтобы увидеть воронку.</div>
-      </div>
-      <div id="salesFunnel" class="funnel"></div>
-      <div id="funnelSummary" class="funnel-summary"></div>
-    </div>
-
-    <div class="grid">
-      <div class="panel"><h2>События</h2><div class="panel-note">Что чаще всего делают пользователи. Русское название показывается сверху, технический код сохраняется.</div><div id="eventsChart" class="bar-list"></div></div>
-      <div class="panel"><h2>Разделы</h2><div class="panel-note">Интерес к направлениям и открытиям тарифов.</div><div id="directionsChart" class="bar-list"></div></div>
-      <div class="panel"><h2>Тарифы</h2><div class="panel-note">Клики по конкретным тарифам и ценам.</div><div id="tariffsChart" class="bar-list"></div></div>
-      <div class="panel"><h2>Пользователи</h2><div class="panel-note">Самые активные пользователи / сессии.</div><div id="usersChart" class="bar-list"></div></div>
-
-      <div class="panel wide">
-        <h2>Справочник событий</h2>
-        <div class="panel-note">Перевод событий для понимания без английского. Это только отображение в админке — исходные события в статистике не меняются.</div>
-        <div class="table-wrap" style="max-height:300px">
-          <table class="event-legend">
-            <thead><tr><th>Понятно по-русски</th><th>Технический код</th><th>Кол-во</th><th>Что означает</th></tr></thead>
-            <tbody id="eventLegend"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="panel wide">
-        <h2>Последние события</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Время</th><th>Событие</th><th>Раздел</th><th>Тариф / цена</th><th>Пользователь</th><th>Данные</th></tr></thead>
-            <tbody id="eventsTable"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="panel wide">
-        <h2>Сырые данные / диагностика</h2>
-        <div class="panel-note">Если данные не появились — нажми «Показать JSON». Там будет видно, что вернул Apps Script.</div>
-        <button onclick="toggleRaw()">Показать / скрыть JSON</button>
-        <div class="raw-box" id="rawBox"><textarea id="rawJson" readonly></textarea></div>
-      </div>
-    </div>
+<div class="layout">
+<aside class="sidebar">
+  <a href="./admin.html" class="brand" aria-label="Аналитика Sex Education"><div class="brand-mark">S</div><div><h1>SEX EDUCATION</h1><small>Analytics Studio</small></div></a>
+  <div><div class="nav-title">Рабочее пространство</div><nav class="nav" aria-label="Разделы аналитики">
+    <button type="button" class="nav-btn active" data-page="overview"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.4"/><rect x="14" y="3" width="7" height="7" rx="1.4"/><rect x="3" y="14" width="7" height="7" rx="1.4"/><rect x="14" y="14" width="7" height="7" rx="1.4"/></svg>Обзор</button>
+    <button type="button" class="nav-btn" data-page="funnel"><svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v7l-4 2v-9z"/></svg>Воронка</button>
+    <button type="button" class="nav-btn" data-page="audience"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Аудитория</button>
+    <button type="button" class="nav-btn" data-page="events"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg>Журнал событий</button>
+    <button type="button" class="nav-btn" data-page="diagnostics"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/></svg>Диагностика</button>
+  </nav></div>
+  <div class="side-foot"><strong><i id="sidebarDot" class="status-dot"></i> <span id="sidebarStatus">Нет подключения</span></strong><p>Режим только чтение. Все расчёты выполняются в браузере. База статистики не изменяется.</p><a class="btn small" href="./index.html" target="_blank" rel="noopener noreferrer">Открыть Mini App ↗</a></div>
+</aside>
+<main class="main">
+  <header class="toolbar"><div><div class="eyebrow">✦ Продуктовая аналитика</div><h1 class="heading" id="pageHeading">Панель управления</h1><p class="subtitle" id="pageSubtitle">Посещаемость, интерес, действия и путь к подписке</p></div><div class="toolbar-actions"><button class="btn" id="autoBtn" type="button" title="Автоматическое обновление каждую минуту">◷ Авто: выкл</button><button class="btn" id="exportMenuBtn" type="button">↓ CSV</button><button class="btn primary" id="reloadBtn" type="button">↻ Обновить данные</button></div></header>
+  <div class="notice" id="notice" role="status"><span id="noticeIcon">◌</span><div id="noticeText"><b>Подключение к статистике</b> - данные загружаются из существующего Apps Script.</div><span class="badge pill" id="updatedAt">Не загружено</span></div>
+  <div class="filter-bar"><span class="filter-label">Период</span><div class="periods" id="periods"><button type="button" class="period-btn" data-period="today" aria-pressed="false">Сегодня</button><button type="button" class="period-btn" data-period="yesterday" aria-pressed="false">Вчера</button><button type="button" class="period-btn" data-period="7" aria-pressed="false">7 дней</button><button type="button" class="period-btn" data-period="30" aria-pressed="false">30 дней</button><button type="button" class="period-btn" data-period="90" aria-pressed="false">90 дней</button><button type="button" class="period-btn" data-period="all" aria-pressed="true">Всё</button><button type="button" class="period-btn" data-period="custom" aria-pressed="false">Даты</button></div>
+    <div class="date-fields" id="dateFields"><input class="field" id="dateFrom" type="date" aria-label="Дата от"><span class="muted">-</span><input class="field" id="dateTo" type="date" aria-label="Дата до"></div>
+    <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input class="field" id="search" type="search" placeholder="Поиск по событиям, данным, пользователям..." aria-label="Поиск"></div>
+    <select class="field" id="eventFilter" aria-label="Фильтр события"><option value="">Все события</option></select><select class="field" id="directionFilter" aria-label="Фильтр направления"><option value="">Все направления</option></select><button type="button" class="btn small ghost" id="resetBtn">Сбросить</button>
   </div>
+  <div class="filter-detail"><span id="filterSummary" class="filtered-count">Ожидание данных</span><span class="badge" id="timeZoneNote">Время: устройство</span><span class="push"><button type="button" class="details-toggle" id="exportJsonBtn">Выгрузить JSON</button> · <button type="button" class="details-toggle" id="exportRawBtn">Исходный ответ</button></span></div>
 
-  <script>
-    const STATS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwLMrj5ijWZMPOQRDClzlbF75gRs6KkPYE2BLzJJyQ4ZmLWNvUow5jj06cWFNWT033f/exec";
+  <section class="page active" data-section="overview">
+    <div class="cards" id="overviewCards"></div>
+    <div class="panel-grid"><div class="panel"><div class="panel-head"><div><h3>Динамика активности</h3><div class="panel-sub" id="trendSub">По времени событий</div></div><div class="chart-legend" id="trendModes"><button class="btn small" data-trend="events" aria-pressed="true">События</button><button class="btn small" data-trend="opens" aria-pressed="false">Открытия</button><button class="btn small" data-trend="users" aria-pressed="false">Пользователи</button></div></div><div class="chart-shell" id="trendChart"></div><div class="summary-strip" id="trendSummary"></div></div>
+    <div class="panel"><div class="panel-head"><div><h3>Топ событий</h3><div class="panel-sub">Самые частые действия за выбранный период</div></div><span class="badge" id="eventTypesBadge">0 типов</span></div><div class="bar-list" id="topEvents"></div></div></div>
+    <div class="panel-grid equal"><div class="panel"><div class="panel-head"><div><h3>Направления</h3><div class="panel-sub">Только события, содержащие название раздела</div></div></div><div id="topDirections" class="bar-list"></div></div><div class="panel"><div class="panel-head"><div><h3>Тарифы и выбор</h3><div class="panel-sub">События, связанные с тарифами и ценами</div></div></div><div id="topTariffs" class="bar-list"></div></div></div>
+    <div class="panel"><div class="panel-head"><div><h3>Активность по дням и часам</h3><div class="panel-sub">Время по настройкам устройства. Более яркий цвет = больше событий.</div></div></div><div class="heat-container" id="heatmap"></div><div class="heat-scale" id="heatLegend"></div></div>
+  </section>
 
-    // Важно: эти переводы работают только на стороне админки.
-    // В Google Sheets / Apps Script / статистике исходные event-коды НЕ меняются,
-    // поэтому уже накопленная статистика не слетит.
-    const EVENT_LABELS = {
+  <section class="page" data-section="funnel"><div class="section-title"><div><h2>Путь пользователя к оформлению</h2><p>Два режима: независимые касания и действия в строгом порядке по известному ID.</p></div><div class="toolbar-actions" id="funnelModes"><button class="btn small" data-funnel="reach" aria-pressed="true">Все касания</button><button class="btn small" data-funnel="sequential" aria-pressed="false">Путь по порядку</button></div></div>
+    <div class="panel"><div class="panel-head"><div><h3 id="funnelTitle">Независимые этапы</h3><div class="panel-sub" id="funnelInfo">Показаны действия, которые удалось распознать в имеющихся событиях.</div></div><span id="funnelUnit" class="badge">Пользователи</span></div><div class="funnel" id="funnelSteps"></div><div class="funnel-insights" id="funnelInsights"></div></div>
+    <div class="callout"><strong>Важно про оплату.</strong> «Нажал оплатить», «Открыл бота» и «Подписка активна» не доказывают успешную покупку. Завершённую оплату показываем только при наличии соответствующего события. Если платёжный сервис не передаёт событие, сумма и число фактических продаж из этой админки неизвестны.</div>
+    <div class="panel-grid equal"><div class="panel"><h3>Платёжные и соседние действия</h3><p class="panel-sub">Открытия тарифов, клики, оформление, выдача доступа и подтверждение оплаты.</p><div class="bar-list" id="funnelActions"></div></div><div class="panel"><h3>Что означает эта воронка</h3><ol class="guide-list"><li>Независимые касания - число известных пользователей, выполнивших каждый шаг, независимо от порядка.</li><li>«Путь по порядку» - только пользователи с ID и датированными событиями, прошедшие шаги последовательно.</li><li>Неизвестные ID и неполные журналы делают охват и конверсию неполными.</li><li>Проценты - аналитика записанных событий, а не бухгалтерский отчёт.</li></ol></div></div>
+  </section>
+
+  <section class="page" data-section="audience"><div class="cards" id="audienceCards"></div><div class="panel-grid equal"><div class="panel"><div class="panel-head"><div><h3>Самые активные пользователи</h3><div class="panel-sub">Кликни на пользователя, чтобы открыть его историю событий</div></div></div><div id="activeUsers" class="bar-list"></div></div><div class="panel"><div class="panel-head"><div><h3>События без идентификатора</h3><div class="panel-sub">Нельзя надёжно связать с конкретным человеком</div></div></div><div id="identityQuality"></div></div></div>
+    <div class="panel"><div class="panel-head"><div><h3>Список пользователей</h3><div class="panel-sub">Только идентификаторы, имеющиеся в журнале событий</div></div></div><div class="table-outer"><table><thead><tr><th>Пользователь</th><th>Событий</th><th>Активных дней</th><th>Первое событие</th><th>Последнее событие</th><th>Действие</th></tr></thead><tbody id="usersTable"></tbody></table></div><div class="pagination"><span id="usersCount"></span><div class="toolbar-actions"><button class="btn small" id="usersPrev">Назад</button><button class="btn small" id="usersNext">Вперёд</button></div></div></div>
+  </section>
+
+  <section class="page" data-section="events"><div class="panel"><div class="panel-head"><div><h3>Журнал событий</h3><div class="panel-sub">Исходные коды событий сохранены. Нажми «Детали» для полного JSON.</div></div><div class="toolbar-actions"><select class="field" id="eventsSort" aria-label="Сортировка"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="event">По событию</option></select><select class="field" id="pageSize" aria-label="Строк на странице"><option value="25">25 строк</option><option value="50">50 строк</option><option value="100">100 строк</option></select></div></div>
+    <div class="table-outer"><table><thead><tr><th>Время</th><th>Событие</th><th>Раздел</th><th>Тариф / цена</th><th>Пользователь</th><th>Данные</th><th></th></tr></thead><tbody id="eventsTable"></tbody></table></div><div class="pagination"><span id="paginationText">Нет данных</span><div class="toolbar-actions"><button class="btn small" id="prevPage">← Назад</button><button class="btn small" id="nextPage">Вперёд →</button></div></div></div>
+    <div class="section-title"><div><h2>Справочник событий</h2><p>Перевод и назначение событий. Оригинальные названия остаются без изменений.</p></div></div><div class="panel"><div class="table-outer" style="max-height:390px"><table><thead><tr><th>Название</th><th>Код</th><th>Кол-во</th><th>Значение</th></tr></thead><tbody id="eventDictionary"></tbody></table></div></div>
+  </section>
+
+  <section class="page" data-section="diagnostics"><div class="section-title"><div><h2>Состояние данных</h2><p>Здесь можно проверить качество выгрузки без вмешательства в Google Apps Script.</p></div></div><div id="diagCards" class="diag-grid"></div><div class="panel-grid equal"><div class="panel"><h3>Проверка качества</h3><div id="qualityReport" class="bar-list" style="margin-top:18px"></div><p class="log-note">Если сервер возвращает только последние N событий, ни один HTML-отчёт не сможет увидеть пропущенную историю.</p></div><div class="panel"><h3>Параметры источника</h3><div class="kv"><span class="muted">Источник</span><span>Google Apps Script (JSONP)</span></div><div class="kv"><span class="muted">Метод</span><span>GET · action=events</span></div><div class="kv"><span class="muted">Режим</span><span>Только чтение</span></div><div class="kv"><span class="muted">Последняя загрузка</span><span id="diagLoaded">-</span></div><div class="kv"><span class="muted">Строк получено</span><span id="diagCount">-</span></div></div></div>
+    <div class="panel"><div class="panel-head"><div><h3>Ответ сервера / диагностика</h3><div class="panel-sub">Не публикуй экспорт: он может содержать Telegram ID, username и другие сведения.</div></div><button class="btn small" id="copyDiag">Копировать краткий отчёт</button></div><details><summary class="details-toggle" style="cursor:pointer">Показать метрики, возвращённые сервером</summary><pre class="raw" id="metricsJson"></pre></details><details style="margin-top:14px"><summary class="details-toggle" style="cursor:pointer">Показать исходный JSON (может быть большим)</summary><pre class="raw" id="rawJson"></pre></details></div>
+  </section>
+  <div class="footer">Sex Education · Analytics Studio · Данные только читаются. Весь анализ выполняется в этом браузере. Временные зоны для дат и часов - локальная зона устройства. Для приватной админки требуется отдельная серверная авторизация.</div>
+</main></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-backdrop" data-close="1"></div><aside class="drawer"><div class="drawer-head"><h2 id="modalTitle">Детали события</h2><button class="btn icon" data-close="1" aria-label="Закрыть">✕</button></div><div id="modalContent"></div></aside></div>
+<script>
+'use strict';
+// Совместимость с прежней админкой: этот адрес, JSONP и action=events оставлены без изменений.
+// Нет POST/PUT/DELETE или каких-либо команд записи в хранилище.
+const STATS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwLMrj5ijWZMPOQRDClzlbF75gRs6KkPYE2BLzJJyQ4ZmLWNvUow5jj06cWFNWT033f/exec";
+const EVENT_LABELS = {
       unknown: "Неизвестное событие",
       start: "Старт Mini App",
       app_open: "Открытие Mini App",
@@ -285,8 +124,7 @@
       quiz_result: "Результат квиза",
       quiz_finish: "Завершение квиза"
     };
-
-    const EVENT_DESCRIPTIONS = {
+const EVENT_DESCRIPTIONS = {
       app_open: "Пользователь открыл мини-приложение.",
       mini_app_open: "Пользователь открыл мини-приложение.",
       page_view: "Пользователь увидел или обновил страницу.",
@@ -323,685 +161,83 @@
       quiz_result: "Пользователь получил результат квиза.",
       quiz_finish: "Пользователь завершил квиз."
     };
-
-    let rawPayload = null;
-    let allEvents = [];
-    let filteredEvents = [];
-    let serverMetrics = {};
-    let autoTimer = null;
-
-    function setStatus(text, type = "") {
-      const el = document.getElementById("status");
-      el.textContent = text;
-      el.className = "status" + (type ? " " + type : "");
-    }
-
-    function loadJsonp(params = {}) {
-      return new Promise((resolve, reject) => {
-        const cb = "stats_cb_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-        const script = document.createElement("script");
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error("JSONP timeout. Проверь, что Apps Script поддерживает параметр callback."));
-        }, 15000);
-
-        function cleanup() {
-          clearTimeout(timeout);
-          try { delete window[cb]; } catch(e) { window[cb] = undefined; }
-          if (script.parentNode) script.parentNode.removeChild(script);
-        }
-
-        window[cb] = (data) => {
-          cleanup();
-          resolve(data);
-        };
-
-        const qs = new URLSearchParams({
-          action: "events",
-          callback: cb,
-          _: Date.now(),
-          ...params
-        });
-
-        script.onerror = () => {
-          cleanup();
-          reject(new Error("Не удалось загрузить JSONP-скрипт. Проверь публикацию Web App."));
-        };
-
-        script.src = STATS_ENDPOINT + "?" + qs.toString();
-        document.body.appendChild(script);
-      });
-    }
-
-    async function loadData() {
-      setStatus("Загружаю данные через JSONP...", "");
-
-      try {
-        const data = await loadJsonp();
-        rawPayload = data;
-        document.getElementById("rawJson").value = JSON.stringify(data, null, 2);
-
-        const parsed = normalizePayload(data);
-        allEvents = parsed.events;
-        serverMetrics = parsed.metrics || {};
-
-        fillEventFilter(allEvents);
-        applyFilters();
-
-        setStatus("Данные загружены. Событий: " + allEvents.length + ".", "ok");
-      } catch (e) {
-        rawPayload = null;
-        allEvents = [];
-        filteredEvents = [];
-        renderAll();
-        setStatus("Не удалось загрузить данные: " + e.message + " Нужно обновить Apps Script кодом, который я прислал.", "err");
-      }
-    }
-
-    function normalizePayload(data) {
-      let events = [];
-      let metrics = {};
-
-      if (Array.isArray(data)) {
-        events = data;
-      } else if (data && typeof data === "object") {
-        events = data.events || data.logs || data.rows || data.items || data.lastEvents || data.data?.events || data.data?.logs || data.data?.rows || [];
-        metrics = data.metrics || data.stats || data.summary || data.data?.metrics || data.data?.stats || {};
-      }
-
-      if (!Array.isArray(events)) events = [];
-      events = events.map(normalizeEvent).filter(Boolean);
-
-      return { events, metrics };
-    }
-
-    function normalizeEvent(e, index) {
-      if (!e || typeof e !== "object") return null;
-
-      let data = e.data ?? e.payload ?? e.params ?? e.details ?? {};
-      if (typeof data === "string") {
-        try { data = JSON.parse(data); } catch (_) { data = { text: data }; }
-      }
-      if (!data || typeof data !== "object") data = {};
-
-      const event = e.event || e.name || e.type || e.action || data.event || "unknown";
-      const tsRaw = e.timestamp || e.time || e.date || e.created_at || e.createdAt || e.ts || data.timestamp || data.time || "";
-      const dateObj = parseDate(tsRaw);
-
-      const userId = e.user_id || e.userId || e.telegram_id || e.tg_id || e.user?.id || data.user_id || data.userId || "";
-      const username = e.username || e.user?.username || data.username || "";
-      const firstName = e.first_name || e.firstName || e.user?.first_name || data.first_name || "";
-      const sessionId = e.session_id || e.sessionId || data.session_id || data.sessionId || "";
-      const direction = data.direction || data.category || e.direction || e.category || "";
-      const tariff = data.tariff || e.tariff || "";
-      const price = data.price || e.price || "";
-
-      return {
-        id: e.id || index,
-        event: String(event),
-        tsRaw,
-        date: dateObj,
-        userId: String(userId || ""),
-        username: String(username || ""),
-        firstName: String(firstName || ""),
-        sessionId: String(sessionId || ""),
-        direction: String(direction || ""),
-        tariff: String(tariff || ""),
-        price: String(price || ""),
-        data,
-        raw: e
-      };
-    }
-
-    function parseDate(value) {
-      if (!value) return null;
-      if (value instanceof Date && !isNaN(value)) return value;
-      if (typeof value === "number") {
-        const d = new Date(value);
-        return isNaN(d) ? null : d;
-      }
-      const s = String(value);
-      let d = new Date(s);
-      if (!isNaN(d)) return d;
-
-      const m = s.match(/(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-      if (m) {
-        const year = Number(m[3].length === 2 ? "20" + m[3] : m[3]);
-        d = new Date(year, Number(m[2]) - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0));
-        return isNaN(d) ? null : d;
-      }
-      return null;
-    }
-
-    function fillEventFilter(events) {
-      const select = document.getElementById("eventFilter");
-      const current = select.value;
-      const names = [...new Set(events.map(e => e.event).filter(Boolean))]
-        .sort((a,b) => eventName(a).localeCompare(eventName(b), "ru"));
-      select.innerHTML = '<option value="">Все события</option>' + names.map(name => {
-        const ru = eventName(name);
-        return `<option value="${escapeAttr(name)}">${escapeHtml(ru)} (${escapeHtml(name)})</option>`;
-      }).join("");
-      select.value = names.includes(current) ? current : "";
-    }
-
-    function applyFilters() {
-      const q = document.getElementById("search").value.trim().toLowerCase();
-      const period = document.getElementById("period").value;
-      const eventName = document.getElementById("eventFilter").value;
-      const direction = document.getElementById("directionFilter").value;
-      const since = getSinceDate(period);
-
-      filteredEvents = allEvents.filter(e => {
-        if (since && e.date && e.date < since) return false;
-        if (since && !e.date) return false;
-        if (eventName && e.event !== eventName) return false;
-        if (direction && e.direction !== direction) return false;
-
-        if (q) {
-          const hay = [e.event, eventName(e.event), eventDescription(e.event), e.direction, directionName(e.direction), e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})].join(" ").toLowerCase();
-          if (!hay.includes(q)) return false;
-        }
-        return true;
-      });
-
-      renderAll();
-    }
-
-    function getSinceDate(period) {
-      const now = new Date();
-      if (period === "today") return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const days = Number(period);
-      if (!days) return null;
-      return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    }
-
-    function resetFilters() {
-      document.getElementById("search").value = "";
-      document.getElementById("period").value = "all";
-      document.getElementById("eventFilter").value = "";
-      document.getElementById("directionFilter").value = "";
-      applyFilters();
-    }
-
-    function renderAll() {
-      renderCards();
-      renderSalesFunnel();
-      renderCharts();
-      renderEventLegend();
-      renderTable();
-    }
-
-
-    function getFunnelSteps(events) {
-      const definitions = [
-        {
-          key: "open",
-          title: "1. Открыли Mini App",
-          hint: "Первый вход в приложение.",
-          match: e => isOpenEvent(e)
-        },
-        {
-          key: "plans",
-          title: "2. Посмотрели тарифы",
-          hint: "Открыли тарифы / планы доступа.",
-          match: e => isPlansEvent(e)
-        },
-        {
-          key: "tariff_click",
-          title: "3. Нажали тариф",
-          hint: "Выбрали конкретный тариф или кнопку оформления.",
-          match: e => isTariffClickEvent(e)
-        },
-        {
-          key: "checkout",
-          title: "4. Перешли к оплате / боту",
-          hint: "Нажали оплату, оформление или открыли бота для покупки.",
-          match: e => isCheckoutEvent(e)
-        },
-        {
-          key: "success",
-          title: "5. Оплатили / получили доступ",
-          hint: "Будет считаться, если в статистику отправляется событие успешной оплаты или выдачи доступа.",
-          match: e => isSuccessEvent(e)
-        }
-      ];
-
-      const hasUserKeys = events.some(e => userKey(e));
-
-      return definitions.map(def => {
-        const matched = events.filter(def.match);
-        const users = new Set(matched.map(userKey).filter(Boolean));
-        return {
-          ...def,
-          eventsCount: matched.length,
-          usersCount: users.size,
-          count: hasUserKeys ? users.size : matched.length,
-          unit: hasUserKeys ? "пользователей / сессий" : "событий"
-        };
-      });
-    }
-
-    function renderSalesFunnel() {
-      const el = document.getElementById("salesFunnel");
-      const summary = document.getElementById("funnelSummary");
-      const meta = document.getElementById("funnelMeta");
-      if (!el || !summary || !meta) return;
-
-      const steps = getFunnelSteps(filteredEvents);
-      const first = steps[0]?.count || 0;
-      const max = Math.max(...steps.map(s => s.count), 1);
-      const unit = steps[0]?.unit || "пользователей / сессий";
-
-      if (!filteredEvents.length) {
-        meta.textContent = "Нет событий в выбранном периоде.";
-        el.innerHTML = '<div class="empty">Пока нет данных для воронки</div>';
-        summary.innerHTML = "";
-        return;
-      }
-
-      meta.textContent = "Показано за выбранный период: " + filteredEvents.length + " событий. Основной расчёт: " + unit + ".";
-
-      el.innerHTML = steps.map((step, i) => {
-        const prev = i > 0 ? steps[i - 1].count : step.count;
-        const pctOfStart = first ? Math.round(step.count / first * 100) : 0;
-        const pctPrev = i === 0 ? 100 : (prev ? Math.round(step.count / prev * 100) : 0);
-        const width = Math.max(2, Math.round(step.count / max * 100));
-        const diff = i === 0 ? 0 : prev - step.count;
-        const diffText = i === 0 ? "старт" : (diff >= 0 ? "потеря: " + diff : "на " + Math.abs(diff) + " больше прошлого шага");
-
-        return `
-          <div class="funnel-row">
-            <div>
-              <div class="funnel-title">${escapeHtml(step.title)}</div>
-              <div class="funnel-hint">${escapeHtml(step.hint)}</div>
-            </div>
-            <div>
-              <div class="funnel-track"><div class="funnel-fill" style="width:${width}%"></div></div>
-              <div class="funnel-hint">${pctOfStart}% от первого шага · ${i === 0 ? "100%" : pctPrev + "% от прошлого шага"} · ${escapeHtml(diffText)}</div>
-            </div>
-            <div>
-              <div class="funnel-count">${step.count}</div>
-              <div class="funnel-sub">${escapeHtml(step.unit)}<br>${step.eventsCount} событий</div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      const plans = steps[1]?.count || 0;
-      const tariffClicks = steps[2]?.count || 0;
-      const checkout = steps[3]?.count || 0;
-      const success = steps[4]?.count || 0;
-      const tariffConversion = first ? Math.round(tariffClicks / first * 100) : 0;
-      const checkoutConversion = tariffClicks ? Math.round(checkout / tariffClicks * 100) : 0;
-      const successConversion = first ? Math.round(success / first * 100) : 0;
-
-      const weakest = getWeakestFunnelStep(steps);
-      const successNote = success === 0
-        ? "Если здесь всегда 0 — это нормально, если Nemiling/оплата пока не отправляет событие успешной оплаты в статистику. Старые данные не трогаем."
-        : "Есть события успешной оплаты / выдачи доступа.";
-
-      summary.innerHTML = `
-        <div class="funnel-mini"><b>${tariffConversion}%</b><span>Открыли Mini App → нажали тариф</span></div>
-        <div class="funnel-mini"><b>${checkoutConversion}%</b><span>Нажали тариф → перешли к оплате / боту</span></div>
-        <div class="funnel-mini"><b>${successConversion}%</b><span>Открыли Mini App → оплатили / получили доступ</span></div>
-        <div class="funnel-mini"><b>${escapeHtml(weakest.title)}</b><span>${escapeHtml(weakest.text)}</span></div>
-        <div class="funnel-mini"><b>${plans}</b><span>Посмотрели тарифы за выбранный период</span></div>
-        <div class="funnel-mini"><b>${tariffClicks}</b><span>Нажали на конкретный тариф</span></div>
-        <div class="funnel-mini"><b>${checkout}</b><span>Перешли к оплате / открыли бота</span></div>
-        <div class="funnel-mini"><b>${success}</b><span>${escapeHtml(successNote)}</span></div>
-      `;
-    }
-
-    function getWeakestFunnelStep(steps) {
-      let weakest = { title: "Недостаточно данных", text: "После загрузки данных здесь появится самый слабый шаг воронки." };
-      let biggestDrop = -Infinity;
-
-      for (let i = 1; i < steps.length; i++) {
-        const prev = steps[i - 1].count;
-        const current = steps[i].count;
-        if (!prev) continue;
-        const drop = prev - current;
-        const dropPct = Math.round(drop / prev * 100);
-        if (drop > biggestDrop) {
-          biggestDrop = drop;
-          weakest = {
-            title: steps[i].title.replace(/^\d+\.\s*/, ""),
-            text: drop >= 0
-              ? "Самая большая потеря: минус " + drop + " (" + dropPct + "%) относительно прошлого шага."
-              : "На этом шаге событий больше, чем на предыдущем. Возможно, часть старых событий записывалась без предыдущего шага."
-          };
-        }
-      }
-      return weakest;
-    }
-
-    function userKey(e) {
-      return e.userId || e.username || e.sessionId || "";
-    }
-
-    function eventCode(e) {
-      return String(e?.event || "").toLowerCase();
-    }
-
-    function eventBlob(e) {
-      return [e.event, eventName(e.event), e.direction, directionName(e.direction), e.tariff, e.price, JSON.stringify(e.data || {})].join(" ").toLowerCase();
-    }
-
-    function isOpenEvent(e) {
-      const code = eventCode(e);
-      return ["app_open", "mini_app_open", "start", "page_view"].includes(code) || (code.includes("app") && code.includes("open"));
-    }
-
-    function isPlansEvent(e) {
-      const code = eventCode(e);
-      if (["plans_open", "tariffs_open", "tariff_open"].includes(code)) return true;
-      return (code.includes("plan") || code.includes("tariff")) && code.includes("open") && !code.includes("click");
-    }
-
-    function isTariffClickEvent(e) {
-      const code = eventCode(e);
-      if (["tariff_click", "plan_click"].includes(code)) return true;
-      return (code.includes("tariff") || code.includes("plan")) && code.includes("click");
-    }
-
-    function isCheckoutEvent(e) {
-      const code = eventCode(e);
-      const blob = eventBlob(e);
-      if (["checkout_open", "pay_click", "payment_click", "bot_open"].includes(code)) return true;
-      if ((code.includes("checkout") || code.includes("pay") || code.includes("payment")) && (code.includes("open") || code.includes("click"))) return true;
-      return (blob.includes("оплат") || blob.includes("оформ")) && (blob.includes("click") || blob.includes("клик") || blob.includes("open") || blob.includes("откры"));
-    }
-
-    function isSuccessEvent(e) {
-      const code = eventCode(e);
-      if (["payment_success", "purchase_success", "paid", "access_granted", "subscription_active"].includes(code)) return true;
-      return (code.includes("success") || code.includes("paid") || code.includes("granted") || code.includes("active"))
-        && (code.includes("pay") || code.includes("payment") || code.includes("purchase") || code.includes("access") || code.includes("subscription"));
-    }
-
-    function renderCards() {
-      const events = filteredEvents;
-      const total = events.length || numberFrom(serverMetrics.totalEvents) || numberFrom(serverMetrics.total) || 0;
-      const users = uniqueUsers(events) || numberFrom(serverMetrics.uniqueUsers) || 0;
-      const opens = countIncludes(events, ["app_open"]);
-      const tariffClicks = countIncludes(events, ["tariff_click"]);
-      const supportClicks = countIncludes(events, ["support"]);
-      const subClicks = countIncludes(events, ["status", "subscription", "подпис"]);
-      const directionOpens = countIncludes(events, ["direction_open"]);
-      const quiz = countIncludes(events, ["quiz"]);
-      const conversion = opens ? Math.round((tariffClicks / opens) * 100) : 0;
-      const topDirection = topName(countBy(events, e => e.direction || ""));
-      const topTariff = topName(countBy(events, e => e.tariff || ""));
-
-      const cards = [
-        ["Всего событий", total, "за выбранный период", "rgba(255,66,177,.18)"],
-        ["Уникальных пользователей", users, "по user_id / username / session", "rgba(42,169,255,.18)"],
-        ["Открытий Mini App", opens, eventName("app_open"), "rgba(141,95,255,.18)"],
-        ["Кликов по тарифам", tariffClicks, eventName("tariff_click"), "rgba(255,216,107,.18)"],
-        ["Кликов поддержка", supportClicks, "support_click / support_open", "rgba(110,231,168,.16)"],
-        ["Кликов подписка", subClicks, "status / subscription", "rgba(255,66,177,.16)"],
-        ["Открытий разделов", directionOpens, topDirection ? "топ: " + directionName(topDirection) : eventName("direction_open"), "rgba(42,169,255,.16)"],
-        ["Квиз / подбор", quiz, "quiz_open / quiz_result", "rgba(141,95,255,.16)"],
-        ["Конверсия в тариф", conversion + "%", "клики тарифов / открытия", "rgba(255,216,107,.18)"],
-        ["Топ-раздел", topDirection ? directionName(topDirection) : "—", "по событиям с direction", "rgba(42,169,255,.16)"],
-        ["Топ-тариф", topTariff || "—", "по кликам тарифов", "rgba(255,216,107,.18)"],
-        ["Событий в исходнике", allEvents.length, "до фильтров", "rgba(255,255,255,.10)"]
-      ];
-
-      document.getElementById("cards").innerHTML = cards.map(c => `
-        <div class="card" style="--accent:${c[3]}">
-          <div class="label">${escapeHtml(c[0])}</div>
-          <div class="num">${escapeHtml(String(c[1]))}</div>
-          <div class="sub">${escapeHtml(c[2])}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderCharts() {
-      renderBarList("eventsChart", countBy(filteredEvents, e => e.event), 12, eventName);
-      renderBarList("directionsChart", countBy(filteredEvents, e => e.direction || "без раздела"), 10, directionName);
-      renderBarList("tariffsChart", countBy(filteredEvents.filter(e => e.tariff || e.event.includes("tariff")), e => [e.tariff || e.event, e.price].filter(Boolean).join(" — ")), 10);
-      renderBarList("usersChart", countBy(filteredEvents, e => userLabel(e)), 10);
-    }
-
-    function renderBarList(id, counts, limit, labeler = null) {
-      const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, limit);
-      const el = document.getElementById(id);
-      if (!entries.length) {
-        el.innerHTML = '<div class="empty">Пока нет данных</div>';
-        return;
-      }
-      const max = Math.max(...entries.map(x => x[1])) || 1;
-      el.innerHTML = entries.map(([name, value]) => {
-        const pct = Math.max(2, Math.round(value / max * 100));
-        const label = labeler ? labeler(name) : name;
-        return `<div class="bar-row"><div class="bar-name" title="${escapeAttr(name)}">${escapeHtml(label)}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${value}</div></div>`;
-      }).join("");
-    }
-
-    function renderEventLegend() {
-      const tbody = document.getElementById("eventLegend");
-      if (!tbody) return;
-
-      const counts = countBy(filteredEvents, e => e.event);
-      const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 50);
-
-      if (!entries.length) {
-        tbody.innerHTML = '<tr><td colspan="4" class="empty">Пока нет данных</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = entries.map(([code, value]) => `
-        <tr>
-          <td>${escapeHtml(eventName(code))}</td>
-          <td class="mono">${escapeHtml(code)}</td>
-          <td><span class="tag gold">${value}</span></td>
-          <td>${escapeHtml(eventDescription(code))}</td>
-        </tr>
-      `).join("");
-    }
-
-    function renderTable() {
-      const rows = [...filteredEvents].sort((a,b) => {
-        const at = a.date ? a.date.getTime() : 0;
-        const bt = b.date ? b.date.getTime() : 0;
-        return bt - at;
-      }).slice(0, 300);
-
-      const tbody = document.getElementById("eventsTable");
-      if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty">Пока нет данных</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = rows.map(e => `
-        <tr>
-          <td>${escapeHtml(formatDate(e.date, e.tsRaw))}</td>
-          <td><div class="event-cell"><span class="tag ${tagClass(e.event)}" title="${escapeAttr(e.event)}">${escapeHtml(eventName(e.event))}</span><span class="event-code">${escapeHtml(e.event)}</span></div></td>
-          <td>${escapeHtml(directionName(e.direction))}</td>
-          <td>${escapeHtml([e.tariff, e.price].filter(Boolean).join(" — "))}</td>
-          <td>${escapeHtml(userLabel(e))}</td>
-          <td class="mono">${escapeHtml(shortJson(e.data))}</td>
-        </tr>
-      `).join("");
-    }
-
-    function countBy(events, getter) {
-      const map = {};
-      events.forEach(e => {
-        const name = String(getter(e) || "").trim();
-        if (!name) return;
-        map[name] = (map[name] || 0) + 1;
-      });
-      return map;
-    }
-
-    function countIncludes(events, needles) {
-      return events.filter(e => {
-        const s = [e.event, e.direction, e.tariff, JSON.stringify(e.data || {})].join(" ").toLowerCase();
-        return needles.some(n => s.includes(String(n).toLowerCase()));
-      }).length;
-    }
-
-    function uniqueUsers(events) {
-      const set = new Set();
-      events.forEach(e => {
-        const key = userKey(e);
-        if (key) set.add(key);
-      });
-      return set.size;
-    }
-
-    function userLabel(e) {
-      if (e.username) return "@" + e.username;
-      if (e.firstName) return e.firstName + (e.userId ? " · " + e.userId : "");
-      if (e.userId) return e.userId;
-      if (e.sessionId) return "session " + e.sessionId.slice(0, 10);
-      return "неизвестно";
-    }
-
-    function topName(counts) {
-      const entries = Object.entries(counts).filter(([k]) => k).sort((a,b) => b[1] - a[1]);
-      return entries[0] ? entries[0][0] : "";
-    }
-
-    function eventName(event) {
-      const key = String(event || "unknown");
-      const lower = key.toLowerCase();
-      if (EVENT_LABELS[key]) return EVENT_LABELS[key];
-      if (EVENT_LABELS[lower]) return EVENT_LABELS[lower];
-
-      if (lower.includes("tariff") && lower.includes("click")) return "Клик по тарифу";
-      if (lower.includes("tariff") || lower.includes("plan")) return "Тарифы";
-      if (lower.includes("support") || lower.includes("help")) return lower.includes("click") ? "Клик по поддержке" : "Открытие поддержки";
-      if (lower.includes("status") || lower.includes("subscription")) return "Моя подписка";
-      if (lower.includes("direction") || lower.includes("category") || lower.includes("section")) return "Открытие раздела";
-      if (lower.includes("quiz")) return "Квиз / подбор";
-      if (lower.includes("material")) return lower.includes("click") ? "Клик по материалу" : "Открытие материала";
-      if (lower.includes("bot")) return "Открытие бота";
-      if (lower.includes("channel")) return "Клик по каналу";
-      if (lower.includes("pay") || lower.includes("checkout")) return "Оплата / оформление";
-      if (lower.includes("open")) return "Открытие";
-      if (lower.includes("click")) return "Клик";
-
-      return key.replaceAll("_", " ").replaceAll("-", " ");
-    }
-
-    function eventDescription(event) {
-      const key = String(event || "unknown");
-      const lower = key.toLowerCase();
-      if (EVENT_DESCRIPTIONS[key]) return EVENT_DESCRIPTIONS[key];
-      if (EVENT_DESCRIPTIONS[lower]) return EVENT_DESCRIPTIONS[lower];
-
-      if (lower.includes("tariff") && lower.includes("click")) return "Пользователь нажал на тариф или кнопку оформления доступа.";
-      if (lower.includes("tariff") || lower.includes("plan")) return "Событие связано с тарифами.";
-      if (lower.includes("support") || lower.includes("help")) return "Событие связано с поддержкой.";
-      if (lower.includes("status") || lower.includes("subscription")) return "Событие связано с проверкой или оформлением подписки.";
-      if (lower.includes("direction") || lower.includes("category") || lower.includes("section")) return "Пользователь открыл раздел, категорию или направление.";
-      if (lower.includes("quiz")) return "Событие связано с квизом / подбором.";
-      if (lower.includes("material")) return "Событие связано с просмотром или кликом по материалу.";
-      if (lower.includes("bot")) return "Пользователь открыл или попытался открыть Telegram-бота.";
-      if (lower.includes("channel")) return "Пользователь нажал на ссылку канала.";
-      if (lower.includes("pay") || lower.includes("checkout")) return "Событие связано с оплатой или оформлением доступа.";
-      if (lower.includes("open")) return "Пользователь что-то открыл.";
-      if (lower.includes("click")) return "Пользователь нажал на элемент интерфейса.";
-      return "Неизвестный код события. Он сохранён как есть, перевод можно добавить в EVENT_LABELS.";
-    }
-
-    function directionName(key) {
-      const map = { men:"Мужчины", women:"Женщины", bdsm:"БДСМ & Свинг", all:"Всё сразу", "без раздела":"Без раздела" };
-      return map[key] || key || "";
-    }
-
-    function tagClass(event) {
-      const s = String(event).toLowerCase();
-      if (s.includes("tariff")) return "gold";
-      if (s.includes("support")) return "blue";
-      if (s.includes("direction") || s.includes("quiz")) return "pink";
-      return "";
-    }
-
-    function formatDate(date, raw) {
-      if (date) {
-        return date.toLocaleString("ru-RU", {
-          year:"2-digit", month:"2-digit", day:"2-digit",
-          hour:"2-digit", minute:"2-digit", second:"2-digit"
-        });
-      }
-      return raw ? String(raw) : "";
-    }
-
-    function shortJson(obj) {
-      const s = JSON.stringify(obj || {});
-      return s.length > 220 ? s.slice(0, 220) + "…" : s;
-    }
-
-    function numberFrom(v) {
-      const n = Number(v);
-      return Number.isFinite(n) ? n : 0;
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;");
-    }
-
-    function escapeAttr(value) {
-      return escapeHtml(value).replaceAll("'","&#039;");
-    }
-
-    function toggleRaw() {
-      const box = document.getElementById("rawBox");
-      box.style.display = box.style.display === "block" ? "none" : "block";
-    }
-
-    function exportJson() {
-      const blob = new Blob([JSON.stringify(filteredEvents, null, 2)], { type:"application/json;charset=utf-8" });
-      downloadBlob(blob, "miniapp_events_filtered.json");
-    }
-
-    function exportCsv() {
-      const headers = ["time","event_ru","event","direction_ru","direction","tariff","price","userId","username","firstName","sessionId","data"];
-      const rows = filteredEvents.map(e => [
-        formatDate(e.date, e.tsRaw), eventName(e.event), e.event, directionName(e.direction), e.direction, e.tariff, e.price, e.userId, e.username, e.firstName, e.sessionId, JSON.stringify(e.data || {})
-      ]);
-      const csv = [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\n");
-      const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
-      downloadBlob(blob, "miniapp_events_filtered.csv");
-    }
-
-    function csvCell(v) {
-      const s = String(v ?? "");
-      return '"' + s.replaceAll('"','""') + '"';
-    }
-
-    function downloadBlob(blob, filename) {
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-    }
-
-    function toggleAutoRefresh() {
-      const btn = document.getElementById("autoBtn");
-      if (autoTimer) {
-        clearInterval(autoTimer);
-        autoTimer = null;
-        btn.textContent = "Авто: выкл";
-        return;
-      }
-      autoTimer = setInterval(loadData, 60000);
-      btn.textContent = "Авто: 60 сек";
-      loadData();
-    }
-
-    renderAll();
-  </script>
+const $ = id => document.getElementById(id);
+const state={raw:null,metrics:{},all:[],filtered:[],loaded:false,loading:false,lastLoad:null,period:'all',search:'',event:'',direction:'',page:'overview',trend:'events',funnel:'reach',sort:'new',tablePage:0,tableSize:25,userPage:0,requestId:0,auto:null,sourceError:'',loadMs:0};
+const titleMap={overview:['Панель управления','Общий обзор активности и поведения пользователей'],funnel:['Воронка действий','Путь от открытия приложения до оформления доступа'],audience:['Аудитория','Активность людей и качество идентификаторов'],events:['Журнал событий','Подробный журнал и справочник кодов'],diagnostics:['Диагностика','Источник, качество событий и экспорт данных']};
+const colors=[['#ff4ba8','rgba(255,75,168,.13)'],['#9775ff','rgba(151,117,255,.13)'],['#60d6ff','rgba(96,214,255,.13)'],['#f4c87a','rgba(244,200,122,.13)'],['#6ddbb3','rgba(109,219,179,.13)'],['#ff738b','rgba(255,115,139,.13)']];
+const formatNum=n=>Number(n||0).toLocaleString('ru-RU');
+const escapeHtml=x=>String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const compact=s=>String(s??'').length>105?String(s).slice(0,105)+'…':String(s??'');
+const dateGood=d=>d instanceof Date&&!Number.isNaN(d.getTime());
+const shortDate=d=>dateGood(d)?d.toLocaleDateString('ru-RU'):'нет даты';
+const displayDate=d=>dateGood(d)?d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'неизвестно';
+function safeString(v){return v===null||v===undefined?'':typeof v==='object'?JSON.stringify(v):String(v)}
+function choose(...xs){for(const x of xs)if(x!==undefined&&x!==null&&x!=='')return x;return ''}
+function normalizeData(raw){if(typeof raw==='string'){try{return JSON.parse(raw)}catch{return {text:raw}}}return raw&&typeof raw==='object'?raw:{}}
+function parseDate(v){if(v===null||v===undefined||v==='')return null;if(v instanceof Date)return dateGood(v)?v:null;if(typeof v==='number'){const ms=Math.abs(v)<1e11?v*1000:v;const d=new Date(ms);return dateGood(d)?d:null;}const s=String(v).trim();if(/^\d{10,13}$/.test(s))return parseDate(Number(s));let m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);if(m){let y=Number(m[3]);if(y<100)y+=2000;const d=new Date(y,Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0));if(d.getFullYear()===y&&d.getMonth()===Number(m[2])-1&&d.getDate()===Number(m[1]))return d;return null}const d=new Date(s);return dateGood(d)?d:null}
+function normalizeEvent(e,index){if(!e||typeof e!=='object')return null;const data=normalizeData(choose(e.data,e.payload,e.params,e.details,{}));const code=safeString(choose(e.event,e.name,e.type,e.action,data.event,'unknown'));const rawTime=choose(e.timestamp,e.time,e.date,e.created_at,e.createdAt,e.ts,data.timestamp,data.time,'');const uid=safeString(choose(e.user_id,e.userId,e.telegram_id,e.tg_id,e.user?.id,data.user_id,data.userId,data.telegram_id,''));const uname=safeString(choose(e.username,e.user?.username,data.username,''));const fname=safeString(choose(e.first_name,e.firstName,e.user?.first_name,data.first_name,''));const session=safeString(choose(e.session_id,e.sessionId,data.session_id,data.sessionId,''));const direction=safeString(choose(data.direction,data.category,e.direction,e.category,''));const tariff=safeString(choose(data.tariff,e.tariff,data.plan,e.plan,''));const price=safeString(choose(data.price,e.price,''));return {row:index,id:choose(e.id,index),event:code,code:code.toLowerCase(),date:parseDate(rawTime),tsRaw:rawTime,userId:uid,username:uname,firstName:fname,sessionId:session,direction,tariff,price,data,raw:e}}
+function normalizePayload(payload){if(Array.isArray(payload))return {events:payload.map(normalizeEvent).filter(Boolean),metrics:{},sourceRows:payload.length};const p=payload&&typeof payload==='object'?payload:{};const candidates=[p.events,p.logs,p.rows,p.items,p.lastEvents,p.data?.events,p.data?.logs,p.data?.rows];const found=candidates.find(Array.isArray)||[];return {events:found.map(normalizeEvent).filter(Boolean),metrics:choose(p.metrics,p.stats,p.summary,p.data?.metrics,p.data?.stats,{})||{},sourceRows:found.length}}
+function keyOf(e){return e.userId?'id:'+e.userId:e.username?'user:'+e.username.toLowerCase():e.sessionId?'session:'+e.sessionId:''}
+function labelOf(e){if(e.username)return '@'+e.username;if(e.firstName)return e.firstName+(e.userId?' · '+e.userId:'');if(e.userId)return e.userId;if(e.sessionId)return 'session '+e.sessionId.slice(0,13);return 'без ID'}
+function eventName(code){const s=String(code||'unknown'),k=s.toLowerCase();if(EVENT_LABELS[s])return EVENT_LABELS[s];if(EVENT_LABELS[k])return EVENT_LABELS[k];if(/tariff|plan/.test(k))return /click/.test(k)?'Выбор тарифа':'Тарифы';if(/support|help/.test(k))return 'Поддержка';if(/subscription|status/.test(k))return 'Подписка';if(/quiz/.test(k))return 'Квиз / подбор';if(/direction|category|section/.test(k))return 'Раздел';if(/material/.test(k))return 'Материал';if(/purchase|payment|checkout/.test(k))return 'Оплата / оформление';return s.replace(/[_-]/g,' ')}
+function eventDescription(code){const s=String(code||'unknown'),k=s.toLowerCase();return EVENT_DESCRIPTIONS[s]||EVENT_DESCRIPTIONS[k]||'Событие с исходным кодом '+s+'. Точное значение зависит от кода Mini App.'}
+function directionName(s){return {men:'МУЖСКОЙ',women:'ЖЕНСКИЙ',bdsm:'БДСМ & свинг',all:'Всё сразу'}[String(s||'').toLowerCase()]||s||'Не указан'}
+function kindOf(e){if(isPaid(e))return 'green';if(isCheckout(e)||isTariffClick(e))return 'gold';if(/support|bot|channel/.test(e.code))return 'blue';return ''}
+function isOpen(e){return ['app_open','mini_app_open','start','page_view'].includes(e.code)||/^(?:app|mini_app)_.*open$/.test(e.code)}
+function isPlans(e){return ['plans_open','tariffs_open','tariff_open'].includes(e.code)||/(tariff|plan).*open/.test(e.code)}
+function isTariffClick(e){return ['tariff_click','plan_click'].includes(e.code)||/(tariff|plan).*click/.test(e.code)}
+function isCheckout(e){return ['checkout_open','pay_click','payment_click'].includes(e.code)||/(checkout|pay|payment).*(open|click)/.test(e.code)}
+function isPaid(e){return ['payment_success','purchase_success','paid'].includes(e.code)||/(payment|purchase|pay)_(?:success|completed|paid)$/.test(e.code)}
+function isAccess(e){return ['access_granted','subscription_active'].includes(e.code)}
+function countMatches(a,fn){return a.reduce((n,e)=>n+(fn(e)?1:0),0)}
+function uniqueKeys(a){return new Set(a.map(keyOf).filter(Boolean))}
+function nameCount(a,getter){const m=new Map();for(const e of a){const s=safeString(getter(e)).trim();if(!s)continue;m.set(s,(m.get(s)||0)+1)}return [...m.entries()].sort((x,y)=>y[1]-x[1])}
+function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+function periodBounds(period,base=new Date()){const end=new Date(base);const day=startOfDay(base);if(period==='all')return null;if(period==='today')return {start:day,end:new Date(day.getTime()+86400000),label:'сегодня'};if(period==='yesterday')return {start:new Date(day.getTime()-86400000),end:day,label:'вчера'};if(period==='custom'){let f=$('dateFrom').value,t=$('dateTo').value;if(!f&&!t)return null;const start=f?new Date(f+'T00:00:00'):new Date(0);const finish=t?new Date(t+'T00:00:00'):new Date('9999-01-01T00:00:00');const end=t?new Date(finish.getTime()+86400000):finish;return {start,end,label:'выбранные даты'}}let days=Number(period);if(!days)return null;return {start:new Date(day.getTime()-(days-1)*86400000),end:new Date(day.getTime()+86400000),label:days+' дней'}}
+function inPeriod(e,b){return !b||(dateGood(e.date)&&e.date>=b.start&&e.date<b.end)}
+function previousBounds(b){if(!b)return null;const diff=b.end.getTime()-b.start.getTime();if(!Number.isFinite(diff)||diff<1||diff>365*86400000)return null;return {start:new Date(b.start.getTime()-diff),end:b.start}}
+function searchText(e){return [e.event,eventName(e.event),eventDescription(e.event),e.direction,directionName(e.direction),e.tariff,e.price,e.userId,e.username,e.firstName,e.sessionId,JSON.stringify(e.data)].join(' ').toLowerCase()}
+function filterEvents(){const b=periodBounds(state.period);const q=state.search.trim().toLowerCase();state.filtered=state.all.filter(e=>inPeriod(e,b)&&(!state.event||e.event===state.event)&&(!state.direction||e.direction===state.direction)&&(!q||searchText(e).includes(q)));state.tablePage=0;state.userPage=0;$('filterSummary').textContent=formatNum(state.filtered.length)+' событий из '+formatNum(state.all.length)+' полученных · '+formatNum(uniqueKeys(state.filtered).size)+' ID';paint()}
+function renderFilters(){document.querySelectorAll('[data-period]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.period===state.period)));$('dateFields').classList.toggle('show',state.period==='custom');$('search').value=state.search;$('eventFilter').value=state.event;$('directionFilter').value=state.direction}
+function updateDropdowns(){const list=Object.entries(Object.fromEntries(nameCount(state.all,e=>e.event))).sort((a,b)=>eventName(a[0]).localeCompare(eventName(b[0]),'ru'));$('eventFilter').innerHTML='<option value="">Все события</option>'+list.map(([x])=>'<option value="'+escapeHtml(x)+'">'+escapeHtml(eventName(x))+' · '+escapeHtml(x)+'</option>').join('');const dirs=[...new Set(state.all.map(e=>e.direction).filter(Boolean))].sort();$('directionFilter').innerHTML='<option value="">Все направления</option>'+dirs.map(x=>'<option value="'+escapeHtml(x)+'">'+escapeHtml(directionName(x))+'</option>').join('');if(state.event&&!list.some(([x])=>x===state.event))state.event='';if(state.direction&&!dirs.includes(state.direction))state.direction='';renderFilters()}
+function loadJsonp(){return new Promise((resolve,reject)=>{const callback='stats_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);const script=document.createElement('script');let done=false;const timer=setTimeout(()=>finish(new Error('Тайм-аут ответа 20 секунд. Проверь Apps Script и доступность сети.')),20000);function finish(err,data){if(done)return;done=true;clearTimeout(timer);delete window[callback];script.remove();err?reject(err):resolve(data)}window[callback]=(data)=>finish(null,data);script.onerror=()=>finish(new Error('Сервер статистики не ответил. Возможно, публикация Apps Script недоступна.'));const q=new URLSearchParams({action:'events',callback,_:Date.now()});script.src=STATS_ENDPOINT+'?'+q.toString();script.async=true;document.head.appendChild(script)})}
+function notice(text,type=''){const n=$('notice');n.className='notice'+(type?' '+type:'');$('noticeText').innerHTML=text;$('noticeIcon').textContent=type==='good'?'✓':type==='error'?'!':'◌';$('sidebarDot').className='status-dot'+(type==='good'?' ok':type==='error'?' bad':'');$('sidebarStatus').textContent=type==='good'?'Данные получены':type==='error'?'Ошибка загрузки':'Ожидание'}
+async function loadData(){if(state.loading)return;state.loading=true;state.sourceError='';$('reloadBtn').disabled=true;$('reloadBtn').textContent='Загрузка...';notice('Получаю события через существующий источник Google Apps Script…');const started=performance.now();try{const result=await loadJsonp();if(result&&typeof result==='object'&&!Array.isArray(result)&&(result.ok===false||result.success===false||result.error))throw new Error(String(result.error||result.message||'Apps Script вернул ошибку'));const parsed=normalizePayload(result);state.raw=result;state.all=parsed.events;state.metrics=parsed.metrics;state.loaded=true;state.lastLoad=new Date();state.loadMs=Math.round(performance.now()-started);updateDropdowns();filterEvents();notice('<b>Данные обновлены.</b> Получено '+formatNum(state.all.length)+' событий. Серверная статистика не изменена.','good');$('updatedAt').textContent='Обновлено '+state.lastLoad.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});$('diagLoaded').textContent=displayDate(state.lastLoad);$('diagCount').textContent=formatNum(state.all.length)}catch(err){state.sourceError=String(err?.message||err);const retained=state.loaded?' Последние успешно загруженные данные сохранены на экране.':'';notice('<b>Ошибка загрузки:</b> '+escapeHtml(state.sourceError)+escapeHtml(retained),'error');paint()}finally{state.loading=false;$('reloadBtn').disabled=false;$('reloadBtn').textContent='↻ Обновить данные'}}
+function deltaFor(n,prev,available){if(!available)return '';if(prev===0)return n===0?'<span class="delta flat">0%</span>':'<span class="delta flat">нет базы для %</span>';const pct=Math.round((n-prev)/prev*100);return '<span class="delta '+(pct<0?'minus':pct===0?'flat':'')+'">'+(pct>0?'+':'')+pct+'%</span>'}
+function metricHtml(label,value,sub,i=0,delta=''){const c=colors[i%colors.length];return '<article class="stat-card" style="--accent:'+c[0]+';--glow:'+c[1]+';--tint:'+c[1]+'"><div class="stat-top"><span class="stat-label">'+escapeHtml(label)+'</span><span class="stat-icon">'+['◈','◎','↗','◆','✧','◉','⬡','✓'][i%8]+'</span></div><div class="stat-value">'+escapeHtml(String(value))+'</div><div class="stat-meta">'+delta+escapeHtml(sub)+'</div></article>'}
+function renderOverview(){const a=state.filtered,b=periodBounds(state.period),pb=previousBounds(b);const prev=pb?state.all.filter(e=>inPeriod(e,pb)&&(!state.event||e.event===state.event)&&(!state.direction||e.direction===state.direction)&&(!state.search||searchText(e).includes(state.search.trim().toLowerCase()))):[];const comp=!!pb;const opens=countMatches(a,isOpen),prevOpens=countMatches(prev,isOpen);const ids=uniqueKeys(a).size,prevIds=uniqueKeys(prev).size;const tariff=countMatches(a,isTariffClick),prevTariff=countMatches(prev,isTariffClick);const checkout=countMatches(a,isCheckout),paid=countMatches(a,isPaid);const dates=new Set(a.filter(e=>dateGood(e.date)).map(e=>e.date.toDateString())).size;const missing=a.filter(e=>!keyOf(e)).length;
+  $('overviewCards').innerHTML=[metricHtml('Событий',formatNum(a.length),''+(comp?'к предыдущему периоду':'в выбранной выборке'),0,deltaFor(a.length,prev.length,comp)),metricHtml('Известных ID',formatNum(ids),'уникальные ID / сессии',1,deltaFor(ids,prevIds,comp)),metricHtml('Открытий приложения',formatNum(opens),'события запуска / просмотра',2,deltaFor(opens,prevOpens,comp)),metricHtml('Кликов по тарифам',formatNum(tariff),'события выбора тарифа',3,deltaFor(tariff,prevTariff,comp)),metricHtml('К оформлению',formatNum(checkout),'клики оплаты / checkout',4),metricHtml('Оплата (события)',paid?formatNum(paid):'Нет сигнала',paid?'подтверждены событиями':'это не означает отсутствие покупок',5),metricHtml('Активных дней',formatNum(dates),'дни, где есть время события',6),metricHtml('Без ID',formatNum(missing),'нельзя отнести к пользователю',7)].join('');
+  renderBars('topEvents',nameCount(a,e=>e.event).slice(0,8),eventName);renderBars('topDirections',nameCount(a.filter(e=>e.direction),e=>e.direction).slice(0,7),directionName);renderBars('topTariffs',nameCount(a.filter(e=>e.tariff||isTariffClick(e)),e=>[e.tariff||e.event,e.price].filter(Boolean).join(' · ')).slice(0,8));$('eventTypesBadge').textContent=nameCount(a,e=>e.event).length+' типов';renderTrend();renderHeat()}
+function renderBars(id,entries,labeler=x=>x){const el=$(id);if(!entries.length){el.innerHTML='<div class="empty">Нет подходящих событий за период</div>';return}const max=Math.max(1,...entries.map(x=>x[1]));el.innerHTML=entries.map(([x,n])=>'<div class="bar-row"><div class="bar-name" title="'+escapeHtml(x)+'">'+escapeHtml(labeler(x))+'</div><div class="bar-track"><div class="bar-fill" style="--w:'+Math.max(2,n/max*100)+'%"></div></div><div class="bar-value">'+formatNum(n)+'</div></div>').join('')}
+function binKey(d,mode){const dd=startOfDay(d);if(mode==='month')return dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0');if(mode==='week'){dd.setDate(dd.getDate()-(dd.getDay()+6)%7)}return dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0')}
+function rangeBins(events){const dates=events.filter(e=>dateGood(e.date)).map(e=>e.date);if(!dates.length)return {bins:[],mode:'day'};let minimum=Infinity,maximum=-Infinity;for(const d of dates){const t=d.getTime();if(t<minimum)minimum=t;if(t>maximum)maximum=t}const min=new Date(minimum),max=new Date(maximum);const span=(max-min)/86400000;const mode=span>180?'month':span>52?'week':'day';const bins=[],cur=startOfDay(min),last=startOfDay(max);let i=0;while(cur<=last&&i<500){const k=binKey(cur,mode);if(!bins.length||bins[bins.length-1].key!==k)bins.push({key:k,label:mode==='month'?k.slice(5)+'.'+k.slice(0,4):k.slice(5),events:0,opens:0,users:new Set()});cur.setDate(cur.getDate()+1);i++}/* axis keys built from normalized intervals */
+  const m=new Map(bins.map(x=>[x.key,x]));for(const e of events){if(!dateGood(e.date))continue;const key=binKey(e.date,mode);if(!m.has(key)){const b={key,label:key.slice(5),events:0,opens:0,users:new Set()};m.set(key,b);bins.push(b)}const b=m.get(key);b.events++;if(isOpen(e))b.opens++;const uid=keyOf(e);if(uid)b.users.add(uid)}return {bins:bins.sort((a,b)=>a.key.localeCompare(b.key)),mode}}
+function renderTrend(){const e=state.filtered;const v=rangeBins(e);const bins=v.bins;const mode=state.trend;$('trendSub').textContent=v.mode==='month'?'По месяцам':v.mode==='week'?'По неделям':'По дням';document.querySelectorAll('[data-trend]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.trend===mode)));if(!bins.length){$('trendChart').innerHTML='<div class="empty">Нет событий с корректной датой</div>';$('trendSummary').innerHTML='';return}const values=bins.map(x=>mode==='users'?x.users.size:x[mode]);const max=Math.max(1,...values),width=900,height=250,left=42,right=18,top=14,bottom=35,graphWidth=width-left-right,graphHeight=height-top-bottom;const xp=i=>left+(bins.length===1?graphWidth/2:i*graphWidth/(bins.length-1));const yp=n=>top+graphHeight-(n/max)*graphHeight;const pts=values.map((n,i)=>[xp(i),yp(n)]);const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');const area=line+' L '+xp(bins.length-1).toFixed(1)+' '+(top+graphHeight)+' L '+xp(0).toFixed(1)+' '+(top+graphHeight)+' Z';const grad='<defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff4ba8" stop-opacity=".23"/><stop offset="100%" stop-color="#ff4ba8" stop-opacity="0"/></linearGradient></defs>';let grid='';for(let j=0;j<=4;j++){const val=Math.round(max*j/4),y=yp(val);grid+='<line class="gridline" x1="'+left+'" y1="'+y+'" x2="'+(width-right)+'" y2="'+y+'"/><text x="'+(left-8)+'" y="'+(y+4)+'" text-anchor="end">'+formatNum(val)+'</text>'}let xLabels='',points='';const jump=Math.max(1,Math.ceil(bins.length/7));bins.forEach((b,i)=>{if(i%jump===0||i===bins.length-1)xLabels+='<text x="'+xp(i)+'" y="'+(height-12)+'" text-anchor="middle">'+escapeHtml(b.label)+'</text>';const n=values[i];points+='<circle cx="'+xp(i)+'" cy="'+yp(n)+'" r="'+(bins.length>55?2:3.5)+'"><title>'+escapeHtml(b.key)+' · '+formatNum(n)+'</title></circle>'});$('trendChart').innerHTML='<svg viewBox="0 0 900 250" role="img" aria-label="График '+escapeHtml(mode)+' по времени">'+grad+grid+'<path d="'+area+'" fill="url(#areaGrad)"/><path class="line" d="'+line+'"/>'+points+xLabels+'</svg>';const peak=bins.reduce((best,b,i)=>values[i]>best.v?{v:values[i],label:b.label}:best,{v:-1,label:''});$('trendSummary').innerHTML='<span>Точек: '+formatNum(bins.length)+'</span><span>Пик: '+formatNum(peak.v)+' ('+escapeHtml(peak.label)+')</span><span>Всего: '+formatNum(values.reduce((x,y)=>x+y,0))+'</span>'}
+function renderHeat(){const days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];const counts=Array.from({length:7},()=>Array(24).fill(0));for(const e of state.filtered){if(!dateGood(e.date))continue;let day=(e.date.getDay()+6)%7;counts[day][e.date.getHours()]++}const max=Math.max(1,...counts.flat());let html='<div class="heat-grid"><span></span>';for(let h=0;h<24;h++)html+='<span class="heat-hour">'+(h%3===0?h:'')+'</span>';for(let d=0;d<7;d++){html+='<span class="heat-label">'+days[d]+'</span>';for(let h=0;h<24;h++){const x=counts[d][h],opacity=x?(.1+.78*x/max):0;html+='<span class="heat-cell" style="background:'+(x?'rgba(255,78,171,'+opacity.toFixed(2)+')':'#252a3d')+'" title="'+days[d]+' '+String(h).padStart(2,'0')+':00 · '+x+' событий"></span>'}}$('heatmap').innerHTML=html+'</div>';$('heatLegend').innerHTML='<span>Меньше</span>'+[0,.18,.38,.62,.85].map(x=>'<i class="heat-swatch" style="background:'+(x?'rgba(255,78,171,'+x+')':'#252a3d')+'"></i>').join('')+'<span>Больше · '+formatNum(max)+' событий в ячейке</span>'}
+const stages=[{title:'Открыли Mini App',hint:'Старт, открытие или просмотр',fn:isOpen},{title:'Посмотрели тарифы',hint:'Открыли планы доступа',fn:isPlans},{title:'Выбрали тариф',hint:'Клик по варианту подписки',fn:isTariffClick},{title:'Перешли к оформлению',hint:'Нажали оплату / checkout',fn:isCheckout},{title:'Подтверждённая оплата',hint:'Только событие оплаты',fn:isPaid}];
+function funnelStats(){const events=state.filtered;const identifiable=events.filter(e=>keyOf(e)&&dateGood(e.date));if(state.funnel==='reach')return stages.map(s=>{const matched=events.filter(s.fn);const keys=uniqueKeys(matched);return {n:keys.size,events:matched.length,missing:matched.length-matched.filter(e=>keyOf(e)).length}});const groups=new Map();for(const e of identifiable){const key=keyOf(e);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e)}const counts=stages.map(()=>new Set());for(const [key,list] of groups){list.sort((a,b)=>a.date-b.date);let step=0;for(const e of list){if(step>=stages.length)break;if(stages[step].fn(e)){counts[step].add(key);step++}}}return counts.map((s,i)=>({n:s.size,events:events.filter(stages[i].fn).length,missing:0}))}
+function renderFunnel(){document.querySelectorAll('[data-funnel]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.funnel===state.funnel)));const numbers=funnelStats(),n0=numbers[0].n,max=Math.max(1,...numbers.map(x=>x.n));$('funnelTitle').textContent=state.funnel==='reach'?'Касания по этапам':'Последовательный путь пользователя';$('funnelInfo').textContent=state.funnel==='reach'?'Число известных ID, совершивших действие. Этапы не обязаны идти подряд.':'Только события с ID и датой. Следующий этап должен случиться после предыдущего.';$('funnelUnit').textContent='Известные ID';$('funnelSteps').innerHTML=numbers.map((s,i)=>{const pct=n0&&i?Math.round(s.n/n0*100):i===0?(n0?100:0):0;return '<div class="funnel-step"><div class="funnel-order">0'+(i+1)+'</div><div class="funnel-name"><strong>'+escapeHtml(stages[i].title)+'</strong><small>'+escapeHtml(stages[i].hint)+'</small></div><div><div class="funnel-track"><div class="funnel-fill" style="--w:'+Math.max(0,s.n/max*100)+'%"></div></div></div><div class="funnel-right"><b>'+formatNum(s.n)+'</b><span>'+formatNum(s.events)+' событий · '+pct+'% от старта</span></div></div>'}).join('');const clicks=numbers[2].n,checkout=numbers[3].n,success=numbers[4].n;const pct=(a,b)=>b?Math.round(a/b*100)+'%':'н/д';const items=[['Тариф / открытие',pct(clicks,n0),'Отношение чисел ID, не обязательно конверсия'],['Оформление / выбор',pct(checkout,clicks),'В независимом режиме порядок не проверяется'],['Подтверждения оплаты',success?formatNum(success):'Нет сигнала',success?'Записанные события оплаты':'Отсутствие события не означает отсутствие продаж']];$('funnelInsights').innerHTML=items.map(([value,note,small])=>'<div class="insight"><b>'+escapeHtml(note)+'</b><span>'+escapeHtml(value)+'<br>'+escapeHtml(small)+'</span></div>').join('');renderBars('funnelActions',stages.map(s=>[s.title,countMatches(state.filtered,s.fn)]).concat([['Доступ / статус',countMatches(state.filtered,isAccess)]]))}
+function groupUsers(){const map=new Map();for(const e of state.filtered){const k=keyOf(e);if(!k)continue;if(!map.has(k))map.set(k,{key:k,label:labelOf(e),events:[],days:new Set(),first:null,last:null});const u=map.get(k);u.events.push(e);if(dateGood(e.date)){u.days.add(e.date.toDateString());if(!u.first||e.date<u.first)u.first=e.date;if(!u.last||e.date>u.last)u.last=e.date}if(e.username)u.label='@'+e.username}return [...map.values()].sort((a,b)=>b.events.length-a.events.length)}
+function renderAudience(){const users=groupUsers(),a=state.filtered,without=a.filter(e=>!keyOf(e)).length,returning=users.filter(x=>x.days.size>=2).length;const dated=a.filter(e=>dateGood(e.date)).length;$('audienceCards').innerHTML=[metricHtml('Известных ID',formatNum(users.length),'ID, username или сессии',1),metricHtml('В разные дни',formatNum(returning),'активность ≥ 2 разных дней',4),metricHtml('Событий с ID',formatNum(a.length-without),'можно сгруппировать',2),metricHtml('Без ID',formatNum(without),'неизвестно, сколько людей',5)].join('');renderBars('activeUsers',users.slice(0,12).map(x=>[x.label,x.events.length]));$('identityQuality').innerHTML='<div class="stat-value">'+(a.length?Math.round((a.length-without)/a.length*100):0)+'%</div><p class="tiny">Доля событий с пользовательским ID, username или session ID.</p><div class="bar-track"><div class="bar-fill" style="--w:'+(a.length?(a.length-without)/a.length*100:0)+'%"></div></div><p class="tiny" style="margin-top:15px">С датой: '+formatNum(dated)+' / '+formatNum(a.length)+'. <br>Важно: разные типы идентификаторов могут относиться к одному человеку. Эти числа нельзя считать точным количеством людей.</p>';renderUsersTable(users)}
+function renderUsersTable(users){const size=25,pages=Math.max(1,Math.ceil(users.length/size));state.userPage=Math.min(state.userPage,pages-1);const slice=users.slice(state.userPage*size,(state.userPage+1)*size);$('usersTable').innerHTML=slice.map(u=>'<tr><td class="mono">'+escapeHtml(u.label)+'</td><td>'+formatNum(u.events.length)+'</td><td>'+formatNum(u.days.size)+'</td><td>'+escapeHtml(displayDate(u.first))+'</td><td>'+escapeHtml(displayDate(u.last))+'</td><td><button class="table-link" data-user="'+escapeHtml(u.key)+'">История</button></td></tr>').join('')||'<tr><td colspan="6"><div class="empty">Пользователей с ID пока нет</div></td></tr>';$('usersCount').textContent=users.length?'Страница '+(state.userPage+1)+' / '+pages+' · '+formatNum(users.length)+' ID':'0 пользователей';$('usersPrev').disabled=state.userPage===0;$('usersNext').disabled=state.userPage>=pages-1}
+function renderEvents(){const a=[...state.filtered],sort=state.sort;const cmp=(x,y)=>dateGood(x.date)&&dateGood(y.date)?x.date-y.date:(dateGood(x.date)?1:dateGood(y.date)?-1:0);a.sort(sort==='event'?(x,y)=>x.event.localeCompare(y.event,'ru'):sort==='old'?cmp:(x,y)=>cmp(y,x));const pages=Math.max(1,Math.ceil(a.length/state.tableSize));state.tablePage=Math.min(state.tablePage,pages-1);const rows=a.slice(state.tablePage*state.tableSize,(state.tablePage+1)*state.tableSize);$('eventsTable').innerHTML=rows.map(e=>'<tr><td>'+escapeHtml(displayDate(e.date))+'</td><td><span class="event-tag '+kindOf(e)+'">'+escapeHtml(eventName(e.event))+'</span><div class="mono muted">'+escapeHtml(e.event)+'</div></td><td>'+escapeHtml(directionName(e.direction))+'</td><td class="wrap">'+escapeHtml([e.tariff,e.price].filter(Boolean).join(' · ')||'—')+'</td><td class="mono">'+escapeHtml(labelOf(e))+'</td><td class="wrap mono" title="'+escapeHtml(JSON.stringify(e.data))+'">'+escapeHtml(compact(JSON.stringify(e.data)))+'</td><td><button class="table-link" data-event-row="'+e.row+'">Детали</button></td></tr>').join('')||'<tr><td colspan="7"><div class="empty">Нет подходящих событий</div></td></tr>';$('paginationText').textContent=a.length?'Строки '+(state.tablePage*state.tableSize+1)+'-'+Math.min((state.tablePage+1)*state.tableSize,a.length)+' из '+formatNum(a.length):'Нет событий';$('prevPage').disabled=state.tablePage===0;$('nextPage').disabled=state.tablePage>=pages-1;
+  $('eventDictionary').innerHTML=nameCount(state.filtered,e=>e.event).map(([code,n])=>'<tr><td>'+escapeHtml(eventName(code))+'</td><td class="mono">'+escapeHtml(code)+'</td><td>'+formatNum(n)+'</td><td class="muted">'+escapeHtml(eventDescription(code))+'</td></tr>').join('')||'<tr><td colspan="4">Нет данных</td></tr>'}
+function renderDiagnostics(){const a=state.all,missingDate=a.filter(e=>!dateGood(e.date)).length,missingKey=a.filter(e=>!keyOf(e)).length,unknown=a.filter(e=>e.code==='unknown').length;const metrics=state.metrics&&typeof state.metrics==='object'?state.metrics:{};$('diagCards').innerHTML=[['Получено событий',formatNum(a.length)],['Без даты',formatNum(missingDate)],['Без ID',formatNum(missingKey)],['Неизвестный тип',formatNum(unknown)],['Загрузка',state.loadMs?state.loadMs+' мс':'—'],['Метрических полей',formatNum(Object.keys(metrics).length)]].map(([label,value])=>'<div class="diag-item"><strong>'+escapeHtml(value)+'</strong><small>'+escapeHtml(label)+'</small></div>').join('');$('qualityReport').innerHTML=[['С корректной датой',a.length-missingDate],['С идентификатором',a.length-missingKey],['С известным типом',a.length-unknown]].map(([name,n])=>'<div><div class="bar-row"><span class="bar-name">'+escapeHtml(name)+'</span><div class="bar-track"><div class="bar-fill" style="--w:'+(a.length?n/a.length*100:0)+'%"></div></div><b class="bar-value">'+(a.length?Math.round(n/a.length*100):0)+'%</b></div></div>').join('');$('metricsJson').textContent=JSON.stringify(metrics,null,2);const rawText=state.raw===null?'Данные ещё не получены':JSON.stringify(state.raw,null,2);$('rawJson').textContent=rawText.length>120000?rawText.slice(0,120000)+'\n… ПРЕДПРОСМОТР ОБРЕЗАН. Для получения всего JSON нажми «Исходный ответ».':rawText}
+function paint(){renderOverview();renderFunnel();renderAudience();renderEvents();renderDiagnostics()}
+function changePage(page){if(!titleMap[page])return;state.page=page;document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));document.querySelectorAll('[data-section]').forEach(s=>s.classList.toggle('active',s.dataset.section===page));$('pageHeading').textContent=titleMap[page][0];$('pageSubtitle').textContent=titleMap[page][1];window.scrollTo({top:0,behavior:'auto'})}
+function openModal(title,body){$('modalTitle').textContent=title;$('modalContent').innerHTML=body;$('modal').classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(){$('modal').classList.remove('open');document.body.style.overflow=''}
+function showEvent(row){const e=state.filtered.find(x=>x.row===Number(row));if(!e)return;openModal(eventName(e.event),[['Дата',displayDate(e.date)],['Код',e.event],['Пользователь',labelOf(e)],['Направление',directionName(e.direction)],['Тариф',e.tariff||'—'],['Цена',e.price||'—']].map(([x,y])=>'<div class="kv"><span>'+escapeHtml(x)+'</span><span>'+escapeHtml(y)+'</span></div>').join('')+'<h3>Исходное событие</h3><pre class="raw">'+escapeHtml(JSON.stringify(e.raw,null,2))+'</pre>')}
+function showUser(key){const users=groupUsers(),u=users.find(x=>x.key===key);if(!u)return;const events=[...u.events].sort((a,b)=>(b.date?.getTime()||0)-(a.date?.getTime()||0));openModal('История пользователя','<div class="profile-head"><div class="avatar">◎</div><div><strong>'+escapeHtml(u.label)+'</strong><small>'+escapeHtml(u.key)+'</small></div></div><div class="profile-grid"><div class="profile-metric"><b>'+formatNum(u.events.length)+'</b><span>Событий</span></div><div class="profile-metric"><b>'+formatNum(u.days.size)+'</b><span>Дней активности</span></div><div class="profile-metric"><b>'+formatNum(countMatches(u.events,isTariffClick))+'</b><span>Кликов по тарифам</span></div></div><div class="scroll-list">'+events.slice(0,200).map(e=>'<div class="timeline-row"><strong>'+escapeHtml(eventName(e.event))+'</strong><small>'+escapeHtml(displayDate(e.date))+' · '+escapeHtml(e.event)+'</small></div>').join('')+'</div>'+(events.length>200?'<p class="tiny">Показаны последние 200 событий.</p>':''))}
+function download(content,type,name){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+function csvField(v){let s=safeString(v);if(/^[\s]*[=+@\-\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
+function exportCsv(){const heads=['time','event_ru','event','direction_ru','direction','tariff','price','user_id','username','first_name','session_id','data'];const rows=state.filtered.map(e=>[displayDate(e.date),eventName(e.event),e.event,directionName(e.direction),e.direction,e.tariff,e.price,e.userId,e.username,e.firstName,e.sessionId,JSON.stringify(e.data)]);const text='\ufeff'+[heads,...rows].map(x=>x.map(csvField).join(',')).join('\r\n');download(text,'text/csv;charset=utf-8','sexed_events_filtered.csv')}
+function exportJson(){download(JSON.stringify(state.filtered.map(e=>e.raw),null,2),'application/json;charset=utf-8','sexed_events_filtered.json')}
+function exportRaw(){if(state.raw===null){alert('Ещё нет загруженного ответа сервера.');return}download(JSON.stringify(state.raw,null,2),'application/json;charset=utf-8','sexed_server_response.json')}
+function toggleAuto(){if(state.auto){clearInterval(state.auto);state.auto=null;$('autoBtn').textContent='◷ Авто: выкл';$('autoBtn').setAttribute('aria-pressed','false')}else{state.auto=setInterval(()=>{if(!document.hidden)loadData()},60000);$('autoBtn').textContent='◷ Авто: 60 сек';$('autoBtn').setAttribute('aria-pressed','true');loadData()}}
+function applySearch(){state.search=$('search').value;filterEvents()}
+function init(){const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;$('timeZoneNote').textContent='Время: '+(tz||'устройство');document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>changePage(b.dataset.page)));document.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click',()=>{state.period=b.dataset.period;renderFilters();filterEvents()}));document.querySelectorAll('[data-trend]').forEach(b=>b.addEventListener('click',()=>{state.trend=b.dataset.trend;renderTrend()}));document.querySelectorAll('[data-funnel]').forEach(b=>b.addEventListener('click',()=>{state.funnel=b.dataset.funnel;renderFunnel()}));$('search').addEventListener('input',applySearch);$('eventFilter').addEventListener('change',e=>{state.event=e.target.value;filterEvents()});$('directionFilter').addEventListener('change',e=>{state.direction=e.target.value;filterEvents()});$('dateFrom').addEventListener('change',filterEvents);$('dateTo').addEventListener('change',filterEvents);$('resetBtn').addEventListener('click',()=>{state.period='all';state.search='';state.event='';state.direction='';$('dateFrom').value='';$('dateTo').value='';renderFilters();filterEvents()});$('reloadBtn').addEventListener('click',loadData);$('autoBtn').addEventListener('click',toggleAuto);$('exportMenuBtn').addEventListener('click',exportCsv);$('exportJsonBtn').addEventListener('click',exportJson);$('exportRawBtn').addEventListener('click',exportRaw);$('eventsSort').addEventListener('change',e=>{state.sort=e.target.value;state.tablePage=0;renderEvents()});$('pageSize').addEventListener('change',e=>{state.tableSize=Number(e.target.value);state.tablePage=0;renderEvents()});$('prevPage').addEventListener('click',()=>{state.tablePage--;renderEvents()});$('nextPage').addEventListener('click',()=>{state.tablePage++;renderEvents()});$('usersPrev').addEventListener('click',()=>{state.userPage--;renderAudience()});$('usersNext').addEventListener('click',()=>{state.userPage++;renderAudience()});document.addEventListener('click',e=>{const target=e.target.closest('[data-event-row],[data-user],[data-close]');if(!target)return;if(target.hasAttribute('data-close'))closeModal();else if(target.hasAttribute('data-event-row'))showEvent(target.dataset.eventRow);else if(target.hasAttribute('data-user'))showUser(target.dataset.user)});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});$('copyDiag').addEventListener('click',async()=>{const text='SexEd Analytics\nВсего событий: '+state.all.length+'\nБез даты: '+state.all.filter(e=>!dateGood(e.date)).length+'\nБез ID: '+state.all.filter(e=>!keyOf(e)).length+'\nПоследняя загрузка: '+displayDate(state.lastLoad)+'\nОшибка: '+(state.sourceError||'нет');try{await navigator.clipboard.writeText(text);$('copyDiag').textContent='Скопировано ✓';setTimeout(()=>$('copyDiag').textContent='Копировать краткий отчёт',1800)}catch{alert(text)}});renderFilters();updateDropdowns();paint();loadData()}
+init();
+</script>
 </body>
 </html>
