@@ -2275,13 +2275,44 @@
       return id;
     }
 
+    // Рекламная атрибуция v1: добавляется только в data_json существующего события.
+    // Никаких новых колонок, новых эндпоинтов или изменений существующих event-кодов.
+    // Telegram передаёт startapp в initDataUnsafe.start_param / tgWebAppStartParam.
+    // Данные в браузере не являются доказательством покупки или личности.
+    function getTrafficSource() {
+      const params = new URLSearchParams(window.location.search);
+      const tgParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+      const raw = String(tgParam || params.get('tgWebAppStartParam') || params.get('startapp') || '').trim();
+      // nav_* - существующие внутренние маршруты, это не рекламные кампании.
+      if (/^nav_(men|women|bdsm_swing)$/.test(raw)) return 'unmarked';
+      return /^[a-zA-Z0-9_-]{1,64}$/.test(raw) ? raw : 'unmarked';
+    }
+
+    const LAUNCH_TRAFFIC_SOURCE = getTrafficSource();
+    function getFirstTrafficSource() {
+      const key = 'sexedu_first_traffic_source_v1';
+      try {
+        const old = localStorage.getItem(key);
+        if (old && /^[a-zA-Z0-9_-]{1,64}$/.test(old)) return old;
+        localStorage.setItem(key, LAUNCH_TRAFFIC_SOURCE);
+      } catch (_) { /* Недоступное хранилище не должно мешать событиям. */ }
+      return LAUNCH_TRAFFIC_SOURCE;
+    }
+    const FIRST_TRAFFIC_SOURCE = getFirstTrafficSource();
+
     function trackEvent(event, data = {}) {
       try {
         const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || {};
-
+        // Все события одного открытия приложения получают одну метку источника.
+        // При запуске без метки источник = unmarked, а не предыдущая реклама.
+        const eventData = Object.assign({}, data, {
+          traffic_source: LAUNCH_TRAFFIC_SOURCE,
+          first_traffic_source: FIRST_TRAFFIC_SOURCE,
+          traffic_tracking_version: 1
+        });
         const payload = {
           event,
-          data,
+          data: eventData,
           user_id: tgUser.id || "",
           username: tgUser.username || "",
           first_name: tgUser.first_name || "",
@@ -2295,7 +2326,7 @@
           mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
-        });
+        }).catch(() => {});
       } catch(e) {}
     }
 
