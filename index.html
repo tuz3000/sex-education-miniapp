@@ -22,7 +22,7 @@
     nav_bdsm_swing: 'nav_bdsm_swing.html'
   };
 
-  if (routes[startParam]) {
+  if (urlParams.get('view') !== 'catalogs' && routes[startParam]) {
     window.location.replace(routes[startParam]);
   }
 })();
@@ -1464,6 +1464,27 @@
       }
     }
 
+
+    button.back{font-family:inherit;line-height:normal}
+    /* Экран выбора каталогов: фирменная графика и типографика без изменения существующих разделов. */
+    .catalogs-hero{position:relative;overflow:hidden;padding:22px 20px;border-radius:29px;border:1px solid rgba(255,255,255,.14);background:radial-gradient(circle at 10% 8%,rgba(255,66,177,.19),transparent 45%),radial-gradient(circle at 98% 5%,rgba(42,169,255,.16),transparent 43%),linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.045));box-shadow:0 16px 56px rgba(0,0,0,.25)}
+    .catalogs-kicker{font-size:10px;font-weight:900;letter-spacing:1.35px;color:var(--gold);margin-bottom:9px}
+    .catalogs-hero h1{font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Segoe UI",sans-serif;font-size:30px;font-weight:950;letter-spacing:-.4px;line-height:1.1;margin:0 0 10px;background:linear-gradient(90deg,#ff76cb,#cf91ff,#a6e8ff);color:transparent;background-clip:text;-webkit-background-clip:text}
+    .catalogs-hero p{color:var(--soft);font-size:13px;line-height:1.52;margin:0}.catalogs-hero p b{color:#fff}
+    .catalogs-list{display:grid;gap:12px;margin:15px 0}
+    .catalogs-card{width:100%;position:relative;display:grid;grid-template-columns:77px minmax(0,1fr) 14px;align-items:center;gap:13px;text-align:left;cursor:pointer;border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:13px;background:radial-gradient(circle at 90% 0%,var(--catalog-glow),transparent 55%),linear-gradient(145deg,rgba(255,255,255,.115),rgba(255,255,255,.045));color:#fff;box-shadow:0 10px 36px rgba(0,0,0,.22);transition:transform .15s,border-color .15s}
+    .catalogs-card:active{transform:scale(.986)}.catalogs-card:hover{border-color:rgba(255,255,255,.25)}
+    .catalogs-men{--catalog-glow:rgba(42,169,255,.22)}.catalogs-women{--catalog-glow:rgba(255,66,177,.23)}.catalogs-bdsm{--catalog-glow:rgba(141,95,255,.25)}
+    .catalogs-image{display:block;width:77px;height:77px;border-radius:18px;object-fit:cover;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+    .catalogs-body{min-width:0;display:flex;flex-direction:column;gap:5px}
+    .catalogs-body strong{font-size:17px;line-height:1.12;font-weight:950}.catalogs-body small{font-size:11px;color:#c2c8d8;line-height:1.28}
+    .catalogs-open{font-size:11px;font-weight:850;color:var(--blue-2);margin-top:1px}.catalogs-women .catalogs-open{color:#ffa4d7}.catalogs-bdsm .catalogs-open{color:#d6bdff}
+    .catalogs-chevron{color:rgba(255,255,255,.65);font-size:23px;font-weight:950}
+    .catalogs-info{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border:1px solid rgba(255,216,107,.22);background:rgba(255,216,107,.055);border-radius:18px;margin-top:15px}
+    .catalogs-info>span{font-size:22px;line-height:1;color:#ffd86b}.catalogs-info strong{font-size:12px;color:#fff}.catalogs-info p{margin:4px 0 0;color:#c5bfd2;font-size:11px;line-height:1.45}
+    .catalogs-footnote{color:var(--muted);font-size:11px;text-align:center;line-height:1.5;margin:14px 8px 24px}
+    @media(max-width:365px){.catalogs-card{grid-template-columns:64px minmax(0,1fr) 12px;gap:10px;padding:11px}.catalogs-image{width:64px;height:64px}.catalogs-body strong{font-size:15px}}
+
 </style>
 </head>
 
@@ -1493,7 +1514,7 @@
         <button class="main-btn" onclick="openAllTariffs()">Получить доступ</button>
 
         <div class="secondary-row">
-          <button class="ghost-btn" onclick="scrollToCatalog()">
+          <button class="ghost-btn" onclick="openCatalogChoice()">
             <span class="btn-flex">
               <svg class="svg-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <rect x="4" y="5" width="16" height="4" rx="2" stroke="#FF55B7" stroke-width="1.8"/>
@@ -1628,9 +1649,45 @@
       </div>
     </div>
 
+
+    <!-- Быстрый выбор актуальных каталогов, источник материалов остаётся прежней Google-таблицей. -->
+    <div id="catalogs" class="screen">
+      <div class="screen-nav">
+        <button class="back" type="button" onclick="navigateBack()">← Назад</button>
+        <button class="menu-trigger" type="button" onclick="toggleMoreMenu(event)" aria-label="Открыть меню" aria-expanded="false">⋮</button>
+      </div>
+      <section class="catalogs-hero">
+        <div class="catalogs-kicker">✦ БИБЛИОТЕКА SEX EDUCATION 18+</div>
+        <h1>Что внутри?</h1>
+        <p>Выбери интересующий канал и посмотри <b>полный актуальный список материалов</b> до оформления подписки.</p>
+      </section>
+      <div class="catalogs-list" aria-label="Каталоги материалов">
+        <button class="catalogs-card catalogs-men" type="button" onclick="openMaterialList('men')">
+          <img id="catalogImageMen" class="catalogs-image" alt="Обложка мужского каталога" loading="lazy" />
+          <span class="catalogs-body"><strong>Мужской канал</strong><small>Полный список видео, курсов и подборок</small><span class="catalogs-open">Смотреть материалы <span aria-hidden="true">↗</span></span></span>
+          <span class="catalogs-chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="catalogs-card catalogs-women" type="button" onclick="openMaterialList('women')">
+          <img id="catalogImageWomen" class="catalogs-image" alt="Обложка женского каталога" loading="lazy" />
+          <span class="catalogs-body"><strong>Женский канал</strong><small>Полный список видео, курсов и подборок</small><span class="catalogs-open">Смотреть материалы <span aria-hidden="true">↗</span></span></span>
+          <span class="catalogs-chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="catalogs-card catalogs-bdsm" type="button" onclick="openMaterialList('bdsm')">
+          <img id="catalogImageBdsm" class="catalogs-image" alt="Обложка каталога БДСМ и свинг" loading="lazy" />
+          <span class="catalogs-body"><strong>БДСМ &amp; Свинг</strong><small>Полный список видео, курсов и подборок</small><span class="catalogs-open">Смотреть материалы <span aria-hidden="true">↗</span></span></span>
+          <span class="catalogs-chevron" aria-hidden="true">›</span>
+        </button>
+      </div>
+      <div class="catalogs-info">
+        <span aria-hidden="true">↻</span>
+        <div><strong>Списки обновляются автоматически</strong><p>Каталоги читают материалы из существующей Google-таблицы. Отдельно обновлять Mini App при добавлении материалов не нужно.</p></div>
+      </div>
+      <p class="catalogs-footnote">Списки доступны для ознакомления. Для открытия сообщений и видео из закрытого канала требуется соответствующая подписка.</p>
+    </div>
+
     <div id="detail" class="screen">
       <div class="screen-nav">
-        <div class="back" onclick="openScreen('home')">← Назад</div>
+        <button class="back" type="button" onclick="navigateBack()">← Назад</button>
         <button class="menu-trigger" type="button" onclick="toggleMoreMenu(event)" aria-label="Открыть меню" aria-expanded="false">⋮</button>
       </div>
 
@@ -1688,7 +1745,7 @@
 
     <div id="tariffs" class="screen">
       <div class="screen-nav">
-        <div class="back" onclick="openScreen(previousScreen)">← Назад</div>
+        <button class="back" type="button" onclick="navigateBack()">← Назад</button>
         <button class="menu-trigger" type="button" onclick="toggleMoreMenu(event)" aria-label="Открыть меню" aria-expanded="false">⋮</button>
       </div>
 
@@ -1893,22 +1950,81 @@
 
     // Фиксированных резервных цен больше нет: тарифы берутся только из таблицы.
 
+    const screenHistory = [];
     function initTelegram() {
       try {
         if (window.Telegram && Telegram.WebApp) {
           Telegram.WebApp.ready();
           Telegram.WebApp.expand();
+          if (Telegram.WebApp.BackButton?.onClick) {
+            Telegram.WebApp.BackButton.onClick(navigateBack);
+          }
         }
       } catch(e) {}
     }
 
-    function openScreen(id) {
+    function syncTelegramBack() {
+      try {
+        const btn = window.Telegram?.WebApp?.BackButton;
+        if (!btn) return;
+        if (getActiveScreen() !== 'home') btn.show();
+        else btn.hide();
+      } catch (_) {}
+    }
+
+    function openScreen(id, {back = false} = {}) {
+      const next = document.getElementById(id);
+      if (!next || !next.classList.contains('screen')) return;
+      const current = getActiveScreen();
+      if (current !== id) {
+        if (back || id === 'home') {
+          if (id === 'home') screenHistory.length = 0;
+        } else {
+          screenHistory.push(current);
+          if (screenHistory.length > 18) screenHistory.shift();
+        }
+      }
       closeMoreMenu();
       closeFaq();
-      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      next.classList.add('active');
       window.scrollTo(0, 0);
+      syncTelegramBack();
     }
+
+    function navigateBack() {
+      const faq = document.getElementById('faqOverlay');
+      if (faq?.classList.contains('show')) {closeFaq(); return;}
+      const menu = document.getElementById('moreMenu');
+      if (menu?.classList.contains('show')) {closeMoreMenu(); return;}
+      if (getActiveScreen() === 'home') return;
+      const previous = screenHistory.pop() || 'home';
+      openScreen(previous,{back:true});
+    }
+
+    function openCatalogChoice() {
+      trackEvent('catalog_choice_open');
+      openScreen('catalogs');
+    }
+
+    // Пользовательский горизонтальный жест с левого края. Нативный жест ОС может иметь приоритет.
+    (function installEdgeSwipe() {
+      let touchStart = null;
+      document.addEventListener('touchstart', (event) => {
+        touchStart = null;
+        if (event.touches.length !== 1) return;
+        const t = event.touches[0];
+        if (t.clientX > 34 || (getActiveScreen() === 'home' && !document.getElementById('moreMenu')?.classList.contains('show') && !document.getElementById('faqOverlay')?.classList.contains('show'))) return;
+        touchStart = {x:t.clientX,y:t.clientY,time:Date.now()};
+      }, {passive:true});
+      document.addEventListener('touchend',(event) => {
+        if (!touchStart || !event.changedTouches.length) return;
+        const t = event.changedTouches[0], dx = t.clientX-touchStart.x, dy = t.clientY-touchStart.y;
+        if (dx > 78 && Math.abs(dy) < Math.max(40,dx*0.45) && Date.now()-touchStart.time < 1250) navigateBack();
+        touchStart = null;
+      },{passive:true});
+      document.addEventListener('touchcancel',()=>{touchStart=null;},{passive:true});
+    })();
 
     function getActiveScreen() {
       const active = document.querySelector(".screen.active");
@@ -2019,6 +2135,7 @@
         return;
       }
       trackEvent("material_list_open", { direction: key });
+      try {sessionStorage.setItem('sexedu_catalog_return_v3', 'index.html?view=catalogs');} catch (_) {}
       window.location.href = url;
     }
 
@@ -2065,8 +2182,12 @@
       const params = new URLSearchParams(window.location.search);
       const plans = params.get("plans");
       const startParam = String(window.Telegram?.WebApp?.initDataUnsafe?.start_param || params.get('tgWebAppStartParam') || params.get('startapp') || '');
-      if (startParam === 'preview' || startParam === 'catalog') {
-        setTimeout(scrollToCatalog, 280);
+      if (startParam === 'preview' || params.get('view') === 'catalogs') {
+        setTimeout(openCatalogChoice, 150);
+        return;
+      }
+      if (startParam === 'catalog') {
+        setTimeout(scrollToCatalog, 150);
         return;
       }
       if (plans) {
@@ -2351,10 +2472,14 @@
       } catch(e) {}
     }
 
+    document.getElementById('catalogImageMen').src = maleImg;
+    document.getElementById('catalogImageWomen').src = femaleImg;
+    document.getElementById('catalogImageBdsm').src = bdsmImg;
     initTelegram();
     tariffs = {};
     loadTariffsFromSheet();
     handleInitialRoute();
+    syncTelegramBack();
     trackEvent("app_open");
   </script>
 </body>
