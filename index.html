@@ -1678,10 +1678,6 @@
           <span class="catalogs-chevron" aria-hidden="true">›</span>
         </button>
       </div>
-      <div class="catalogs-info">
-        <span aria-hidden="true">↻</span>
-        <div><strong>Списки обновляются автоматически</strong><p>Каталоги читают материалы из существующей Google-таблицы. Отдельно обновлять Mini App при добавлении материалов не нужно.</p></div>
-      </div>
       <p class="catalogs-footnote">Списки доступны для ознакомления. Для открытия сообщений и видео из закрытого канала требуется соответствующая подписка.</p>
     </div>
 
@@ -1754,7 +1750,7 @@
         <p class="hero-subtitle" id="tariffSubtitle">Выберите направление и срок подписки.</p>
       </section>
 
-      <p class="detail-library-note" style="margin-top:7px">Актуальные цены загружаются из таблицы. После выбора тарифа откроется Telegram-бот Nemiling для оформления.</p>
+      <p class="detail-library-note" style="margin-top:7px">Выбери срок доступа. После выбора тарифа можно будет перейти к оформлению подписки.</p>
         <div class="tariffs" id="tariffList">
         <div class="loading">Загружаю тарифы...</div>
       </div>
@@ -2211,7 +2207,7 @@
 
     function tariffUnavailable() {
       return '<div class="empty">'+
-        (tariffSheetState === 'loading' ? 'Загружаю актуальные тарифы…' : 'Не удалось получить актуальные тарифы из таблицы. Чтобы не показывать устаревшие цены, продолжи выбор в Telegram-боте.')+
+        (tariffSheetState === 'loading' ? 'Загружаю актуальные тарифы…' : 'Не удалось загрузить тарифы. Попробуй открыть их в боте.')+
         '</div><button class="main-btn" type="button" onclick="openBotCommand(\'plans\')">Открыть тарифы в боте</button>';
     }
 
